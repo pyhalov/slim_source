@@ -101,12 +101,22 @@ $NAWK '/^\[daemon\]/ { print $0;
 $CP ${TMP_DIR}/custom.conf ${BA_BUILD}/etc/gdm
 $RM ${TMP_DIR}/custom.conf
 
-# Give jack Software Installation profile and convert root to a role
+# Give jack Software Installation and File System Management profiles, and
+# convert root to a role
 $SED -e's/^root::::/root::::type=role;/' ${BA_BUILD}/etc/user_attr \
     >${TMP_DIR}/user_attr
-echo "jack::::profiles=Software Installation;roles=root" >>${TMP_DIR}/user_attr
 $CP ${TMP_DIR}/user_attr ${BA_BUILD}/etc
 $RM ${TMP_DIR}/user_attr
+echo "jack::::profiles=Software Installation,File System Management;roles=root" \
+    >${TMP_DIR}/user_attr.slim_cd
+$CP ${TMP_DIR}/user_attr.slim_cd ${BA_BUILD}/etc/user_attr.d/slim_cd
+$RM ${TMP_DIR}/user_attr.slim_cd
+echo "File System Management:suser:cmd:::/usr/sbin/parted:euid=0" \
+    > ${TMP_DIR}/exec_attr.slim_cd
+echo "File System Management:suser:cmd:::/usr/sbin/gparted:euid=0" \
+    >> ${TMP_DIR}/exec_attr.slim_cd
+$CP ${TMP_DIR}/exec_attr.slim_cd ${BA_BUILD}/etc/security/exec_attr.d/slim_cd
+$RM ${TMP_DIR}/exec_attr.slim_cd
 
 # Give jack full sudo rights, saving sudoers for restoration during install
 $CP ${BA_BUILD}/etc/sudoers ${PKG_IMG_PATH}/save/etc
