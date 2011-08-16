@@ -546,7 +546,7 @@ confirmation_screen_set_contents(void)
 			add_detail_hbox(
 				MainWindow.ConfirmationWindow.softwarevbox,
 				FALSE, FALSE,
-				_("Desktop (GNOME 2.28)"),
+				_("Desktop (GNOME)"),
 				NULL);
 
 			/* Timezone Information */
