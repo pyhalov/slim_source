@@ -194,7 +194,7 @@ ICT_SETUP_SUDO_FAILED
 # Global variables
 DEBUGLVL = LS_DBGLVL_ERR
 CUR_ICT_FRAME = None  # frame info for debugging and tracing
-MENU_LST_DEFAULT_TITLE = "Oracle Solaris"
+MENU_LST_DEFAULT_TITLE = "OpenIndiana"
 
 
 #Module functions - intended for local use, but usable by importers
@@ -1142,7 +1142,7 @@ class ICT(object):
         nodename = na[0][:-1]
 
         status = _cmd_status('cat ' + dumpadmfile + ' | ' +
-            'sed s/solaris/' + nodename + '/ > ' + dumpadmfile_dest)
+            'sed s/openindiana/' + nodename + '/ > ' + dumpadmfile_dest)
         if status != 0:
             try:
                 os.unlink(dumpadmfile_dest)
