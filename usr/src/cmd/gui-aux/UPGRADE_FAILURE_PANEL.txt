@@ -1,7 +1,7 @@
 Upgrade Failed
 
 
-This panel displays if the Solaris OS upgrade failed.
+This panel displays if the OpenIndiana OS upgrade failed.
 
 
 Procedures

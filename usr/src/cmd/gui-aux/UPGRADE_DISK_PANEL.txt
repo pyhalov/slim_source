@@ -6,13 +6,13 @@ Note: In order to be recognized by the installer, the disks and solid-state driv
 
 Definition
 
-	An upgrade of the Solaris OS merges the new version of the Solaris OS with the existing files on the system's disk or disks. An upgrade saves as many modifications as possible that you have made to the previous version of the Solaris OS.
+	An upgrade of the OpenIndiana OS merges the new version of the OpenIndiana OS with the existing files on the system's disk or disks. An upgrade saves as many modifications as possible that you have made to the previous version of the OpenIndiana OS.
 
 
 Guidelines
 
 	* For details about a disk, move the cursor over the disk icon. A popup box provides disk specifications.
 
-	* Solaris OS releases that are too old for upgrade are noted as such and cannot be selected.
+	* OpenIndiana OS releases that are too old for upgrade are noted as such and cannot be selected.
 
 	* Developer tools are not upgraded. You can manually upgrade these tools after the installation.

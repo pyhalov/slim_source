@@ -32,7 +32,7 @@
       <default>890</default>
       <locale name="C">
         <short>The default window width</short>
-        <long>The default width in pixels of the new Solaris installer GUI.</long>
+        <long>The default width in pixels of the new OpenIndiana installer GUI.</long>
 		<default>890</default>
       </locale>
     </schema>
@@ -45,7 +45,7 @@
       <default>690</default>
       <locale name="C">
         <short>The default window height.</short>
-        <long>The default width in pixels of the new Solaris installer GUI.</long>
+        <long>The default width in pixels of the new OpenIndiana installer GUI.</long>
 		<default>690</default>
       </locale>
     </schema>
