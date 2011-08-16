@@ -236,7 +236,7 @@ class SwapDump:
                 size = max_size
 
         if (available_space < size):
-            size = available_space
+            size = available_space - 1024
 
         return (int)(size)	# Make sure size is an int
 
