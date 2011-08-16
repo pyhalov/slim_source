@@ -39,7 +39,7 @@ SYNOPSIS
 DESCRIPTION
 
      The automated installer (AI) is used to automate the 
-     installation of the Oracle Solaris OS on one or more 
+     installation of the OpenIndiana OS on one or more 
      SPARC and x86 systems over a network. The 
      installations can differ in architecture, packages 
      installed, disk capacity, and other parameters. 
@@ -57,7 +57,7 @@ DESCRIPTION
      search is initiated for a manifest that matches the
      client's machine specifications. When a matching 
      manifest is found, the client is installed with the 
-     Oracle Solaris release according to the specifications 
+     OpenIndiana release according to the specifications 
      in the manifest file.
 
      Use the installadm create-service command to set up 
@@ -75,7 +75,7 @@ DESCRIPTION
      a net image that enables client installations.
 
      Once an install server and an installation service are 
-     set up, you can install the Oracle Solaris release to a 
+     set up, you can install the OpenIndiana release to a 
      client on the network, per the default specifications 
      in the install service, by booting the client system.
 
@@ -84,8 +84,8 @@ DESCRIPTION
      install services tailored for each type of 
      installation by using the installadm create-service 
      command. For example, you can set up an install 
-     service that installs the Oracle Solaris OS to x86 
-     clients and a service that installs the Oracle Solaris
+     service that installs the OpenIndiana OS to x86 
+     clients and a service that installs the OpenIndiana
      OS to SPARC clients.
 
      If you have clients with varying machine specifications,
@@ -480,7 +480,7 @@ EXAMPLES
      Added network macro to dhcptab - 10.0.0.0.
      Created network table.
      copying boot file to 
-     /tftpboot/pxegrub.I86PC.Solaris-1
+     /tftpboot/pxegrub.I86PC.OpenIndiana-1
      Service discovery fallback mechanism set up
 
      The AI ISO image is at 
@@ -530,7 +530,7 @@ EXAMPLES
      named 0100E0815DBFE0 with:
      Boot server IP (BootSrvA) : 10.6.68.29
      Boot file      (BootFile) : 0100E0815DBFE0
-     If you are running the Solaris DHCP Server, use the 
+     If you are running the OpenIndiana DHCP Server, use the 
      following command to add the DHCP macro, 
      0100E0815DBFE0:
      /usr/sbin/dhtadm -g -A -m 0100E0815DBFE0 -d \    
@@ -538,7 +538,7 @@ EXAMPLES
      GrubMenu=menu.lst.0100E0815DBFE0:
 
      Note: Be sure to assign client IP address(es) if needed
-     (e.g., if running the Solaris DHCP Server, run pntadm(1M)).
+     (e.g., if running the OpenIndiana DHCP Server, run pntadm(1M)).
      ----
 
      In this example, the command creates a 
@@ -691,12 +691,8 @@ ATTRIBUTES
 SEE ALSO
      pntadm(1M), dhcpmgr(1M), attributes(5)
 
-     Oracle Solaris Automated Installer Guide on
-     http://docs.sun.com/
+     OpenIndiana Automated Installer Guide in the Handbook
+     http://wiki.openindiana.org/oi/OpenIndiana+Handbook
     
-     Getting Started with Oracle Solaris on
-     http://docs.sun.com/
-
-
 		Last Changed October 12, 2010
 

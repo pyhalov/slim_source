@@ -166,8 +166,8 @@ ADDITIONAL MANIFEST FIELDS
     manifest, include the following editable fields.
 
  <pkg_repo_default_authority>
-      <main url="http://pkg.opensolaris.org/release"
-        authname="opensolaris.org"/>
+      <main url="http://pkg.openindiana.org/stable"
+        authname="openindiana.org"/>
  </pkg_repo_default_authority>
 
       This field specifies the location of an IPS repository.
