@@ -28,4 +28,4 @@ license=/etc/notices/LICENSE
 
 # We run zenity this way rather so that we can pull the license text from
 # stdin to work around a problem with zenity dealing with non-UTF-8 characters.
-zenity --text-info --title="Oracle Solaris License" --width 700 --height 700 <${license}
+zenity --text-info --title="OpenIndiana License" --width 700 --height 700 <${license}
