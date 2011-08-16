@@ -26,7 +26,7 @@ A/I Webserver
 
 """
 
-_DISTRIBUTION="Oracle Solaris"
+_DISTRIBUTION="OpenIndiana"
 
 import os
 import sys
