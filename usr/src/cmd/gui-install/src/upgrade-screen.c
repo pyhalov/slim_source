@@ -90,7 +90,7 @@ validate_upgrade_target()
 		    GTK_MESSAGE_ERROR,
 		    _("Upgrade target validation failed"),
 		    _("The installer encountered an internal error validating "
-		    "the selected Oracle Solaris environment. It can not be upgraded."));
+		    "the selected OpenIndiana environment. It can not be upgraded."));
 		disable_upgrade_target(uinfo,
 		    _("Upgrade target validation error."));
 		om_free_upgrade_targets(omhandle, uinfo);
@@ -547,7 +547,7 @@ upgrade_validation_monitor(gpointer user_data)
 			    GTK_MESSAGE_ERROR,
 			    _("Free space checking failed"),
 			    _("There is insufficient free space to upgrade "
-			    "the selected Oracle Solaris environment."));
+			    "the selected OpenIndiana environment."));
 			disk_button_get_upgrade_info(&dinfo, &uinfo);
 			disable_upgrade_target(uinfo,
 			    _("Insufficient free space."));

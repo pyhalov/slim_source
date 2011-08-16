@@ -584,7 +584,7 @@ users_validate(void)
 	if (host_name_empty) {
 		gtk_entry_set_text(
 		    GTK_ENTRY(MainWindow.UsersWindow.hostnameentry),
-		    "solaris");
+		    "openindiana");
 		ret_val = gui_install_prompt_dialog(
 		    TRUE,
 		    TRUE,
@@ -777,7 +777,7 @@ users_validate_host_name(gboolean check_changed)
 		if (is_str_empty(hostname)) {
 			gtk_entry_set_text(
 					GTK_ENTRY(MainWindow.UsersWindow.hostnameentry),
-					"solaris");
+					"openindiana");
 		}
 		gtk_widget_grab_focus(
 				MainWindow.UsersWindow.hostnameentry);

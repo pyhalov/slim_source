@@ -326,7 +326,7 @@
                         <property name="can_focus">True</property>
                         <property name="activates_default">True</property>
                         <property name="width_chars">14</property>
-                        <property name="text" translatable="yes">solaris</property>
+                        <property name="text" translatable="yes">openindiana</property>
                         <signal name="changed" handler="on_users_entry_changed"/>
                         <signal name="focus_out_event" handler="on_hostname_focus_out_event"/>
                         <signal name="focus_in_event" handler="on_userentry_focus_in_event"/>

@@ -177,17 +177,17 @@ failure_screen_set_contents(void)
 	switch (InstallationProfile.installationtype) {
 		case INSTALLATION_TYPE_INITIAL_INSTALL:
 			labelstr = g_strdup_printf(labelmarkup,
-			    _("Oracle Solaris installation did not complete normally."));
+			    _("OpenIndiana installation did not complete normally."));
 			buttonstr = g_strdup_printf(buttonmarkup,
-			    _("Oracle Solaris installation log"));
+			    _("OpenIndiana installation log"));
 			break;
 
 		case INSTALLATION_TYPE_INPLACE_UPGRADE:
 			labelstr = g_strdup_printf(labelmarkup,
-			    _("Oracle Solaris Developer Preview 2 upgrade did not complete normally. "
+			    _("OpenIndiana Developer Preview 2 upgrade did not complete normally. "
 			    "The system has been restored to its previous state."));
 			buttonstr = g_strdup_printf(buttonmarkup,
-			    _("Oracle Solaris upgrade log"));
+			    _("OpenIndiana upgrade log"));
 			break;
 	}
 	gtk_label_set_label(GTK_LABEL(

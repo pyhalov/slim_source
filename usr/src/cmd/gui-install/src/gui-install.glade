@@ -27,7 +27,7 @@
   <!-- interface-naming-policy toplevel-contextual -->
   <widget class="GtkWindow" id="mainwindow">
     <property name="border_width">12</property>
-    <property name="title" translatable="yes">Oracle Solaris Installer</property>
+    <property name="title" translatable="yes">OpenIndiana Installer</property>
     <child>
       <widget class="GtkTable" id="mainwindowtable">
         <property name="visible">True</property>
@@ -96,7 +96,7 @@
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
                     <property name="yalign">0</property>
-                    <property name="label" translatable="yes">&lt;span font_desc="Bold"&gt;Oracle Solaris&lt;/span&gt;</property>
+                    <property name="label" translatable="yes">&lt;span font_desc="Bold"&gt;OpenIndiana&lt;/span&gt;</property>
                     <property name="use_markup">True</property>
                     <property name="ellipsize">end</property>
                     <accessibility>
@@ -702,7 +702,7 @@
           <widget class="GtkLabel" id="welcomesummarylabel">
             <property name="visible">True</property>
             <property name="xalign">0</property>
-            <property name="label" translatable="yes">Thanks for choosing to install the Oracle Solaris OS! Before you start, review the Release Notes for this release for a list of known problems. For detailed step-by-step procedures for completing this installation, select the Getting Started With Oracle Solaris icon on the Live CD desktop.</property>
+            <property name="label" translatable="yes">Thanks for choosing to install the OpenIndiana OS! Before you start, review the Release Notes for this release for a list of known problems. For detailed step-by-step procedures for completing this installation, select the Getting Started With OpenIndiana icon on the Live CD desktop.</property>
             <property name="use_markup">True</property>
             <property name="wrap">True</property>
             <property name="selectable">True</property>
@@ -720,7 +720,7 @@
             <property name="visible">True</property>
             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
             <property name="xalign">0</property>
-            <property name="label" translatable="yes">This installer will not upgrade existing installations of Oracle Solaris. If you would like to upgrade an existing installation, select the Getting Started With Oracle Solaris icon on the Live CD desktop, and review the upgrade instructions in that document.</property>
+            <property name="label" translatable="yes">This installer will not upgrade existing installations of OpenIndiana. If you would like to upgrade an existing installation, select the Getting Started With OpenIndiana icon on the Live CD desktop, and review the upgrade instructions in that document.</property>
             <property name="wrap">True</property>
             <property name="selectable">True</property>
             <property name="width_chars">80</property>
@@ -818,7 +818,7 @@
                       <widget class="GtkLabel" id="label12">
                         <property name="visible">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                        <property name="label" translatable="yes">&lt;span font_desc="Bold"&gt;Finding Oracle Solaris Environments&lt;/span&gt;</property>
+                        <property name="label" translatable="yes">&lt;span font_desc="Bold"&gt;Finding OpenIndiana Environments&lt;/span&gt;</property>
                         <property name="use_markup">True</property>
                       </widget>
                       <packing>
@@ -1016,7 +1016,7 @@
     </child>
   </widget>
   <widget class="GtkDialog" id="helpdialog">
-    <property name="title" translatable="yes">Oracle Solaris Help</property>
+    <property name="title" translatable="yes">OpenIndiana Help</property>
     <property name="window_position">center</property>
     <property name="default_width">750</property>
     <property name="default_height">450</property>
@@ -1096,7 +1096,7 @@
                 <property name="visible">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                 <property name="xalign">0</property>
-                <property name="label" translatable="yes">&lt;span font_desc="Bold"&gt;Oracle Solaris installation is complete. Review the Oracle Solaris installation log for more information.&lt;/span&gt;</property>
+                <property name="label" translatable="yes">&lt;span font_desc="Bold"&gt;OpenIndiana installation is complete. Review the OpenIndiana installation log for more information.&lt;/span&gt;</property>
                 <property name="use_markup">True</property>
                 <property name="wrap">True</property>
                 <property name="selectable">True</property>
@@ -1125,7 +1125,7 @@
                       <widget class="GtkLabel" id="logbuttonlabel">
                         <property name="visible">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                        <property name="label" translatable="yes">&lt;span foreground="#5582a3"&gt;Oracle Solaris installation log&lt;/span&gt;</property>
+                        <property name="label" translatable="yes">&lt;span foreground="#5582a3"&gt;OpenIndiana installation log&lt;/span&gt;</property>
                         <property name="use_markup">True</property>
                       </widget>
                     </child>
@@ -1225,7 +1225,7 @@
                 <property name="visible">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                 <property name="xalign">0</property>
-                <property name="label" translatable="yes">&lt;span font_desc="Bold"&gt;Checking for sufficient free space on the Oracle Solaris environment to perform Oracle Solaris upgrade.&lt;/span&gt;</property>
+                <property name="label" translatable="yes">&lt;span font_desc="Bold"&gt;Checking for sufficient free space on the OpenIndiana environment to perform OpenIndiana upgrade.&lt;/span&gt;</property>
                 <property name="use_markup">True</property>
                 <property name="wrap">True</property>
               </widget>

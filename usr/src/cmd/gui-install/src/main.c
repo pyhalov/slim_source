@@ -97,10 +97,10 @@ mainwindow_xml_screentitles_init(void)
 	MainWindow.ScreenSubTitles = g_new0(gchar*, NUMSCREENS);
 	MainWindow.ScreenSubTitles[WELCOME_SCREEN] =
 		g_strdup_printf(ScreenSubTitleMarkup,
-			_("Oracle Solaris"));
+			_("OpenIndiana"));
 	MainWindow.ScreenSubTitles[DISK_SCREEN] =
 		g_strdup_printf(ScreenSubTitleMarkup,
-			_("Where should Oracle Solaris be installed?"));
+			_("Where should OpenIndiana be installed?"));
 	MainWindow.ScreenSubTitles[TIMEZONE_SCREEN] =
 		g_strdup_printf(ScreenSubTitleMarkup,
 			_("Select a city near you on the map or set your time zone below,then set the date and time."));
@@ -559,7 +559,7 @@ main(int argc, char *argv[])
 				GNOME_PARAM_NONE);
 
 	if (getuid() != 0) {
-		g_warning("The Oracle Solaris installer must be run as root. Quitting.");
+		g_warning("The OpenIndiana installer must be run as root. Quitting.");
 		exit(-1);
 	}
 

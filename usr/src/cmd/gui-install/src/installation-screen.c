@@ -217,11 +217,11 @@ installation_window_set_contents(void)
 	switch (InstallationProfile.installationtype) {
 		case INSTALLATION_TYPE_INITIAL_INSTALL:
 			MainWindow.InstallationWindow.current_install_message =
-					g_strdup("Preparing for Oracle Solaris installation");
+					g_strdup("Preparing for OpenIndiana installation");
 			break;
 		case INSTALLATION_TYPE_INPLACE_UPGRADE:
 			MainWindow.InstallationWindow.current_install_message =
-					g_strdup("Preparing for Oracle Solaris upgrade");
+					g_strdup("Preparing for OpenIndiana upgrade");
 			break;
 	}
 
@@ -650,7 +650,7 @@ g_message("                             : percentage_done = %d\n",
 			switch (cb_data->curr_milestone) {
 				case OM_TARGET_INSTANTIATION :
 					MainWindow.InstallationWindow.current_install_message =
-						g_strdup(_("Preparing disk for Oracle Solaris installation"));
+						g_strdup(_("Preparing disk for OpenIndiana installation"));
 					/*
 					 * Wild, random, guess that target instantiation accounts
 					 * for approx. 5% of total installation time
@@ -731,7 +731,7 @@ g_message("                             : percentage_done = %d\n",
 
 				case OM_SOFTWARE_UPDATE :
 					MainWindow.InstallationWindow.current_install_message =
-						g_strdup(_("Updating Oracle Solaris software"));
+						g_strdup(_("Updating OpenIndiana software"));
 					/*
 					 * And software update takes 89%
 					 */

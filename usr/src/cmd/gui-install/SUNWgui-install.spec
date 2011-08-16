@@ -30,7 +30,7 @@
 %include Solaris.inc
 
 Name:                    SUNWgui-install
-Summary:                Updated Solaris installation GUI
+Summary:                Updated OpenIndiana installation GUI
 Version:                 0.2
 Source:                  gui-install-%{version}.tar.bz2
 Source1:                 gui-install-01-locale-data.tar.bz2

@@ -63,7 +63,7 @@ def parse_options():
                                   "[-t <imagepath>]"))
     # accept multiple -b options (so append to a list)
     parser.add_option("-b", dest="boot_args", action="append", type="string",
-                      nargs=1, help=_("boot arguments to pass Solaris kernel"))
+                      nargs=1, help=_("boot arguments to pass kernel"))
     parser.add_option("-e", dest="mac_address", action="callback", nargs=1,
                       type="string", help=_("MAC address of client to add"),
                       callback=check_MAC_address)

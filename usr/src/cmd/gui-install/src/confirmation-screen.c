@@ -392,7 +392,7 @@ confirmation_screen_set_contents(void)
 			add_detail_hbox(
 				MainWindow.ConfirmationWindow.softwarevbox,
 				FALSE, FALSE,
-				_("Oracle Solaris"),
+				_("OpenIndiana"),
 				NULL);
 
 			/* Timezone Information */
@@ -540,7 +540,7 @@ confirmation_screen_set_contents(void)
 			add_detail_hbox(
 				MainWindow.ConfirmationWindow.softwarevbox,
 				FALSE, FALSE,
-				_("Oracle Solaris"),
+				_("OpenIndiana"),
 				NULL);
 
 			add_detail_hbox(

@@ -170,18 +170,18 @@ finish_screen_set_contents(void)
 	switch (InstallationProfile.installationtype) {
 		case INSTALLATION_TYPE_INITIAL_INSTALL:
 			labelstr = g_strdup_printf(labelmarkup,
-			    _("Oracle Solaris installation is complete. Review the "
-			    "Oracle Solaris installation log for more information"));
+			    _("OpenIndiana installation is complete. Review the "
+			    "OpenIndiana installation log for more information"));
 			buttonstr = g_strdup_printf(buttonmarkup,
-			    _("Oracle Solaris installation log"));
+			    _("OpenIndiana installation log"));
 			break;
 
 		case INSTALLATION_TYPE_INPLACE_UPGRADE:
 			labelstr = g_strdup_printf(labelmarkup,
-			    _("Oracle Solaris upgrade is complete. Review the "
-			    "Oracle Solaris upgrade log for more information"));
+			    _("OpenIndiana upgrade is complete. Review the "
+			    "OpenIndiana upgrade log for more information"));
 			buttonstr = g_strdup_printf(buttonmarkup,
-			    _("Oracle Solaris upgrade log"));
+			    _("OpenIndiana upgrade log"));
 			break;
 	}
 	gtk_label_set_label(GTK_LABEL(

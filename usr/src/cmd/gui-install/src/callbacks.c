@@ -930,7 +930,7 @@ would_you_like_to_install_instead(void)
 
 	retval = gui_install_prompt_dialog(TRUE, FALSE, FALSE,
 	    GTK_MESSAGE_WARNING,
-	    _("No upgradeable Oracle Solaris Environments"),
+	    _("No upgradeable OpenIndiana Environments"),
 	    _("Would you like to install?"));
 	return (retval);
 }

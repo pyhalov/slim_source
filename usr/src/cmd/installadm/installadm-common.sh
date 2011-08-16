@@ -38,7 +38,7 @@ MV=/bin/mv
 SED=/usr/bin/sed
 SVCCFG=/usr/sbin/svccfg
 
-DEFAULT_GRUB_TITLE="Oracle Solaris"
+DEFAULT_GRUB_TITLE="OpenIndiana"
 VERSION="Solaris"
 HTTP_PORT=5555
 
@@ -253,7 +253,7 @@ get_image_type()
 	elif [ -d ${image_path}/platform/i86pc ]; then
 		image_type="${X86_IMAGE}"
 	else 
-		echo "Unable to determine Oracle Solaris install image type"
+		echo "Unable to determine OpenIndiana install image type"
 		exit 1
 	fi
 	echo "$image_type"

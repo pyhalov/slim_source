@@ -107,12 +107,12 @@ print_dhcp_macro_info()
 	echo "   Boot server IP (BootSrvA) : ${svr_ipaddr}"
 	echo "   Boot file      (BootFile) : ${bootfile}"
 
-	echo "If you are running Oracle Solaris DHCP Server, use the"
+	echo "If you are running OpenIndiana DHCP Server, use the"
 	echo "following command to add the DHCP macro, ${macro}:"
 	echo "   $DHTADM -A -m ${macro} -d ${macvalue}"
 	echo ""
 	echo "Note: Be sure to assign client IP address(es) if needed"
-	echo "(e.g., for Oracle Solaris DHCP Server, run pntadm(1M))."
+	echo "(e.g., for OpenIndiana DHCP Server, run pntadm(1M))."
 
 }
 

@@ -5819,7 +5819,7 @@ installationdisk_validate()
 	/* 1. No disk selected */
 	if (activedisk < 0) {
 		errorprimarytext = g_strdup(
-		    _("No disk has been selected for Oracle Solaris installation."));
+		    _("No disk has been selected for OpenIndiana installation."));
 		errorsecondarytext =
 		    g_strdup(_("Select a disk."));
 		goto errors;
@@ -5830,7 +5830,7 @@ installationdisk_validate()
 	diskcapacity = orchestrator_om_get_disk_sizemb(alldiskinfo[activedisk]);
 	if (diskcapacity < orchestrator_om_get_mininstall_sizemb()) {
 		errorprimarytext = g_strdup(
-		    _("The selected disk is not suitable for Oracle Solaris installation."));
+		    _("The selected disk is not suitable for OpenIndiana installation."));
 		errorsecondarytext =
 		    g_strdup(_("Select another disk."));
 		goto errors;
@@ -5915,7 +5915,7 @@ installationdisk_validate()
 	    orchestrator_om_get_mininstall_sizegb(FALSE)) {
 		errorprimarytext =
 		    g_strdup(_("The Solaris partition is too "
-		    "small for Solaris installation."));
+		    "small for installation."));
 		errorsecondarytext =
 		    g_strdup(_("Increase the size of the Solaris partition."));
 	}
@@ -6062,7 +6062,7 @@ warnings:
 			errorprimarytext =
 			    g_strdup(_("Unsupported partitioning configuration."));
 			errorsecondarytext =
-			    g_strdup(_("Oracle Solaris does not support changing the "
+			    g_strdup(_("OpenIndiana does not support changing the "
 			    "partition type when two or more of that "
 			    "type exist on the disk. Please Quit the "
 			    "installer, run fdisk in the terminal window "
