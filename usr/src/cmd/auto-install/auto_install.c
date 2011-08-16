@@ -45,8 +45,8 @@
  * see also ict.py
  */
 #define	ISCSI_BOOT_INDICATOR_FILE	"/.iscsi_boot"
-#define	DEFAULT_HOSTNAME	"solaris"
-#define	DEFAULT_ROOT_PASSWORD	"solaris"
+#define	DEFAULT_HOSTNAME	"openindiana"
+#define	DEFAULT_ROOT_PASSWORD	"openindiana"
 
 static  boolean_t install_done = B_FALSE;
 static	boolean_t install_failed = B_FALSE;

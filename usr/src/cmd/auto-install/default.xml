@@ -27,8 +27,8 @@
   <ai_instance name="default">
     <software>
       <source>
-        <publisher name="solaris">
-          <origin name="http://pkg.oracle.com/solaris/release"/>
+        <publisher name="openindiana.org">
+          <origin name="http://pkg.openindiana.org/stable"/>
         </publisher>
       </source>
       <!--
@@ -95,7 +95,7 @@
 
             <property_group name="other_sc_params" type="application">
               <propval name="timezone" type="astring" value="GMT"/>
-              <propval name="hostname" type="astring" value="solaris"/>
+              <propval name="hostname" type="astring" value="openindiana"/>
             </property_group>
           </instance>
         </service>
