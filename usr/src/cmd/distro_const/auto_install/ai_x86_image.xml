@@ -20,10 +20,10 @@
    
     Copyright (c) 2008, 2010, Oracle and/or its affiliates. All rights reserved.
 
-    XML specification for building an Oracle Solaris installer iso image
+    XML specification for building an OpenIndiana installer iso image
 -->
 
-<distribution name="Oracle_Solaris_AI_X86">
+<distribution name="OpenIndiana_AI_X86">
 	<distro_constr_params>
 		<!--
 		     Where to build. This can be a zfs dataset or a mountpoint.
@@ -206,13 +206,13 @@
 		<!--
 		     The preferred authority to install packages into the
 		     pkg_image area from.
-		     The default url is: http://pkg.oracle.com/solaris/release
-		     The default authname is solaris
+		     The default url is: http://pkg.openindiana.org/stable
+		     The default authname is openindiana.org
 		-->
 		<pkg_repo_default_authority>
 			<main
-				url="http://pkg.oracle.com/solaris/release"
-				authname="solaris"/>
+				url="http://pkg.openindiana.org/stable"
+				authname="openindiana.org"/>
 			<!--
 			     If you want to use one or more  mirrors that are
 			     setup for the authority, specify the urls here.
@@ -241,15 +241,15 @@
 		<!--
 		     The default preferred authority to be used by the system
 		     after it has been installed.
-		     The default url is: http://pkg.oracle.com/solaris/release
-		     The default authname is solaris
+		     The default url is: http://pkg.openindiana.org/stable
+		     The default authname is openindiana.org
 		     If you want to use one or more  mirrors that are
 		     setup for the authority, specify the urls here.
 		-->
 		<post_install_repo_default_authority>
 			<main
-				url="http://pkg.oracle.com/solaris/release"
-				authname="solaris"/>
+				url="http://pkg.openindiana.org/stable"
+				authname="openindiana.org"/>
 			<!--
 			     Uncomment before using.
 			<mirror url="" />
@@ -274,7 +274,7 @@
 
 		<!--
 		     Password for the root user/role in the image.
-                     If not specified, the default value of "solaris"
+                     If not specified, the default value of "openindiana"
                      will be used
                 -->
                 <!--

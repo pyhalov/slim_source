@@ -254,9 +254,9 @@ if ((${RAM_SIZE} < 1000 || ${RAM_SIZE} > 16384)) ; then
         exit 1
 fi
 
-if [[ "${OSTYPE}" != "opensolaris" && "${OSTYPE}" != "opensolaris_64" ]]; then
+if [[ "${OSTYPE}" != "openindiana" && "${OSTYPE}" != "openindiana_64" ]]; then
 	print -u2 "\nThe OS Type specified: ${OSTYPE} is invalid." \
-	    "It must be either \"opensolaris\"  or \"opensolaris_64\" "
+	    "It must be either \"openindiana\"  or \"openindiana_64\" "
 	exit 1
 fi
 

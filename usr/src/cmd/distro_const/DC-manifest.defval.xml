@@ -119,25 +119,25 @@ changes, there may be new items requiring validation or defaults.
 	<default nodepath=
 	    "img_params/pkg_repo_default_authority/main/url"
 	    from="value" type="attribute" missing_parent="create" skip_if_no_exist="img_params">
-		http://pkg.opensolaris.org/release
+		http://pkg.openindiana.org/stable
 	</default>
 
 	<default nodepath=
 	    "img_params/pkg_repo_default_authority/main/authname"
 	    from="value" type="attribute" missing_parent="create" skip_if_no_exist="img_params">
-		opensolaris.org
+		openindiana.org
 	</default>
 
 	<default nodepath=
 	    "img_params/post_install_repo_default_authority/main/url"
 	    from="value" type="attribute" missing_parent="create" skip_if_no_exist="img_params">
-		http://pkg.opensolaris.org/release
+		http://pkg.openindiana.org/stable
 	</default>
 
 	<default nodepath=
 	    "img_params/post_install_repo_default_authority/main/authname"
 	    from="value" type="attribute" missing_parent="create" skip_if_no_exist="img_params">
-		opensolaris.org
+		openindiana.org
 	</default>
 
 	<default nodepath=
@@ -149,7 +149,7 @@ changes, there may be new items requiring validation or defaults.
 	<default nodepath=
 	    "img_params/rootpass"
 	    from="value" type="element" missing_parent="create" skip_if_no_exist="img_params">
-		solaris
+		openindiana
 	</default>
 
 	<default nodepath=
@@ -284,7 +284,7 @@ changes, there may be new items requiring validation or defaults.
 	
 	<default nodepath= "img_params/hostname"
 	    from="value" type="element" skip_if_no_exist="img_params">
-		solaris
+		openindiana
 	</default>
 
 	<default nodepath="img_params/grub_menu_modifications/min_mem64"

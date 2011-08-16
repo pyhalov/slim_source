@@ -273,7 +273,7 @@ requiring validation or defaults.
 			     started at boottime.  Note: Use one of
 			     /var/svc/profile/generic_limited_net.xml or
 			     /var/svc/profile/generic_open.xml which define the
-			     two configurations delivered with Solaris, or use
+			     two configurations delivered with OpenIndiana, or use
 			     your own. -->
 			<optional> <!-- generic_limited_net.xml if not spec -->
 				<element name="netservices_SMF_profile">

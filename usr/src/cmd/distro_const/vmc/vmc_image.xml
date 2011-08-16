@@ -23,7 +23,7 @@
     XML specification for building a Virtual Machine image 
 -->
 
-<distribution name="Solaris_VMC">
+<distribution name="OpenIndiana_VMC">
 	<distro_constr_params>
 		<!--
 		     Where to build. This can be a zfs dataset or a mountpoint.
@@ -107,12 +107,12 @@
 						"1536"
 						<!--
 						virtual machine type
-						valid values are opensolaris
+						valid values are openindiana
 						for a 32-bit vm or
-						opensolaris_64 for a 64-bit
+						openindiana_64 for a 64-bit
 						vm
 						-->
-						"opensolaris"
+						"openindiana"
 					</argslist>
 				</script>
 				<script name="/usr/share/distro_const/vmc/install_vm">

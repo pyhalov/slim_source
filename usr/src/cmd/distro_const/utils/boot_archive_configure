@@ -177,7 +177,7 @@ MKREPO=/usr/share/distro_const/mkrepo
 VOLSETID_FILENAME=.volsetid
 
 # hostname name for the image
-HOSTNAME="solaris"
+HOSTNAME="openindiana"
 
 print "Configuring boot archive..."
 
