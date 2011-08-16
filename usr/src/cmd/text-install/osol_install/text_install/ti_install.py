@@ -228,11 +228,11 @@ def cleanup_existing_install_target(install_profile, inst_device):
         logging.debug("Root pool %s does not exist", rootpool_name)
         return   # rpool doesn't exist, no need to clean up
 
-    # Check value of rpool's org.opensolaris.caiman:install property
+    # Check value of rpool's org.openindiana.caiman:install property
     # If it is busy, that means the pool is left over from an aborted install.
     # If the property doesn't exist or has another value, we assume
     # that the root pool contains valid Solaris instance.
-    cmd = "/usr/sbin/zfs get -H -o value org.opensolaris.caiman:install " + \
+    cmd = "/usr/sbin/zfs get -H -o value org.openindiana.caiman:install " + \
           rootpool_name
     logging.debug("Executing: %s", cmd)
     (status, pool_status) = commands.getstatusoutput(cmd)

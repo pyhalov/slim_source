@@ -23,7 +23,7 @@
 #
 
 '''
-Text / (n)Curses based UI for installing Oracle Solaris
+Text / (n)Curses based UI for installing OpenIndiana
 '''
 
 import curses

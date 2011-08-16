@@ -44,7 +44,7 @@ fi
 
 # Define the menu of commands and prompts
 menu_items=( \
-    (menu_str=`gettext "Install Oracle Solaris"`			 \
+    (menu_str=`gettext "Install OpenIndiana"`			 \
 	cmds=("/usr/bin/text-install")					 \
 	do_subprocess="true"						 \
 	msg_str="")							 \
@@ -172,7 +172,7 @@ for ((;;)) ; do
 	# Display the menu.
 	clear
 	printf \
-	    "`gettext 'Welcome to the Oracle Solaris %s installation menu'`" \
+	    "`gettext 'Welcome to the OpenIndiana %s installation menu'`" \
 	    "`uname -v`"
 	printf " \n\n"
 	for i in "${!menu_items[@]}"; do

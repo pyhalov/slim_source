@@ -48,6 +48,6 @@ LOG_FORMAT = ("%(asctime)s - %(levelname)-8s: "
               "%(filename)s:%(lineno)d %(message)s")
 LOG_LEVEL_INPUT = 5
 LOG_NAME_INPUT = "INPUT"
-RELEASE = {"release" : _("Oracle Solaris")}
+RELEASE = {"release" : _("OpenIndiana")}
 
 environ.setdefault("ESCDELAY", "200")
