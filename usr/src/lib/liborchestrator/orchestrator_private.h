@@ -129,7 +129,7 @@ extern "C" {
 /*
  * Initial BE name
  */
-#define	INIT_BE_NAME		"solaris"
+#define	INIT_BE_NAME		"openindiana"
 
 /*
  * Default file systems
