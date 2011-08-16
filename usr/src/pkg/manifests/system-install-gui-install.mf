@@ -82,7 +82,7 @@ file path=usr/share/gui-install/installmessages/install-04.png group=sys
 file path=usr/share/gui-install/installmessages/install-05.png group=sys
 file path=usr/share/gui-install/installmessages/install-06.png group=sys
 file path=usr/share/gui-install/magnifier.png group=sys
-file path=usr/share/gui-install/solaris_logo.png group=sys
+file path=usr/share/gui-install/openindiana_logo.png group=sys
 file path=usr/share/gui-install/sun_curve_hacky2.png group=sys
 file path=usr/share/gui-install/sun_logo.png group=sys
 file path=usr/share/gui-install/users.glade group=sys
