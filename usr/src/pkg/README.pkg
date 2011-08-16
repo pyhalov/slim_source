@@ -200,7 +200,7 @@ serve the generated repositories to multiple test machines.
 
 	Configure your test system.
 	    pkg set-publisher -P -g http://<your server host>:<port> on-nightly
-	    pkg set-publisher --non-sticky opensolaris.org
+	    pkg set-publisher --non-sticky openindiana.org
 	    pkg uninstall entire
 
 	pkg image-update your test system.
@@ -377,7 +377,7 @@ of no longer delivered content.
 
 Package removals have impact on the rest of the system.  Before marking
 a package as obsolete, search in the development
-repository (http://pkg.opensolaris.org/dev or http://ipkg.sfbay/dev)
+repository (http://pkg.openindiana.org/dev)
 to find out if any other packages depend on the software you intend
 to EOF.  If any packages do, you need to coordinate with those
 consolidations.
