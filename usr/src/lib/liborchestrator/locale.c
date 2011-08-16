@@ -1634,7 +1634,7 @@ is_valid_locale(char *locale)
 	if (strstr(locale, UTF) == NULL)
 		return (B_FALSE);
 
-	(void) snprintf(path, sizeof (path), "%s/%s/locale_map",
+	(void) snprintf(path, sizeof (path), "%s/%s/LC_COLLATE/LCL_DATA",
 	    NLS_PATH, locale);
 	if ((stat(path, &stat_buf) == 0) &&
 	    ((stat_buf.st_mode & S_IFMT) == S_IFREG)) {
