@@ -187,12 +187,12 @@
 		<!--
 		     The preferred authority to install packages into the
 		     pkg_image area from.
-		     The default url is: http://pkg.openindiana.org/stable
+		     The default url is: http://pkg.openindiana.org/release
 		     The default authname is openindiana.org
 		-->
 		<pkg_repo_default_authority>
 			<main
-				url="http://pkg.openindiana.org/stable"
+				url="http://pkg.openindiana.org/dev"
 				authname="openindiana.org"/>
 			<!--
 			     If you want to use one or more  mirrors that are
@@ -222,14 +222,14 @@
 		<!--
 		     The default preferred authority to be used by the system
 		     after it has been installed.
-		     The default url is: http://pkg.openindiana.org/stable
+		     The default url is: http://pkg.openindiana.org/release
 		     The default authname is openindiana.org
 		     If you want to use one or more  mirrors that are
 		     setup for the authority, specify the urls here.
 		-->
 		<post_install_repo_default_authority>
 			<main
-				url="http://pkg.openindiana.org/stable"
+				url="http://pkg.openindiana.org/dev"
 				authname="openindiana.org"/>
 			<!--
 			     Uncomment before using.
@@ -243,15 +243,15 @@
 		     If you want to use one or more  mirrors that are
 		     setup for the authority, specify the urls here.
 		-->
-		<!--
-		    Uncomment before using.
 		<post_install_repo_addl_authority>
 			<main
-				url=""
-				authname=""/>
+				url="http://pkg.openindiana.org/legacy"
+				authname="opensolaris.org"/>
+			<!--
+			     Uncomment before using.
 			<mirror url="" />
+			-->
 		</post_install_repo_addl_authority>
-		-->
 		<!--
 		     list of packages used to form the installed image
 		-->
