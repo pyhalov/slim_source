@@ -435,7 +435,7 @@ zfm_create_pool(nvlist_t *attrs)
 	 *
 	 * [2] mark created pool as 'busy' - ZFS user property
 	 * is set for root dataset 'rpool':
-	 *	org.opensolaris.caiman:install=busy
+	 *	org.openindiana.caiman:install=busy
 	 * After installer finishes its job, the property value is
 	 * changed to 'ready' indicating successful installation
 	 */

@@ -87,7 +87,7 @@ typedef enum {
  * installed. It is used for determining, if existing ZFS
  * pool was fully or partially populated by the installer
  */
-#define	TI_RPOOL_PROPERTY_STATE		"org.opensolaris.caiman:install"
+#define	TI_RPOOL_PROPERTY_STATE		"org.openindiana.caiman:install"
 #define	TI_RPOOL_BUSY			"busy"
 #define	TI_RPOOL_READY			"ready"
 
