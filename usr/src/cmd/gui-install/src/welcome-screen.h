@@ -37,7 +37,7 @@ extern "C" {
 
 /* In future this will be provided via an API */
 #define	RELEASENOTESURL \
-    "http://docs.sun.com/doc/821-1479"
+    "http://wiki.openindiana.org/oi/OpenIndiana+Releases"
 
 typedef struct _WelcomeWindowXML {
 	GladeXML *welcomewindowxml;
