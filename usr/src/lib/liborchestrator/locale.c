@@ -102,7 +102,7 @@ static void	build_ll_list(char **list, int lang_total,
 		    lang_info_t **, int *total);
 static	char	*copy_up_to(char *start, char *t);
 static int	create_lang_entry(char *lang, char *locale, char *region,
-    lang_info_t **, boolean_t is_default);
+    lang_info_t **, boolean_t locale_app_locale, boolean_t locale_in_installer_lang);
 static void	end_of_comp(char **t, char **start);
 static char 	**get_actual_languages(char **list, int *);
 static lang_info_t *get_lang_entry(char *, lang_info_t *search_list);
@@ -110,6 +110,7 @@ static char 	*get_locale_component(char **t, char **start);
 static char 	*get_locale_description(char *lang, char *region);
 static int 	handle_chinese_language(char *region, char **lang);
 static boolean_t is_locale_in_installer_lang(char *locale_name);
+static boolean_t is_locale_app_locale(char *locale_name);
 static boolean_t is_valid_locale(char *locale);
 static int 	list_cmp(const void *p1, const void *p2);
 static int 	lang_init(char *path, char **list, int *total, int *init_var);
@@ -636,7 +637,7 @@ lang_init(char *path, char **list, int *total, int *init_var)
  */
 static int
 create_lang_entry(char *lang, char *locale, char *region,
-    lang_info_t **return_list, boolean_t is_default)
+    lang_info_t **return_list, boolean_t locale_app_locale, boolean_t locale_in_installer_lang)
 {
 	lang_info_t	*tmp, *last, *new;
 	locale_info_t	*lp = NULL;
@@ -691,7 +692,7 @@ create_lang_entry(char *lang, char *locale, char *region,
 		goto error;
 	}
 
-	new->def_lang = is_default;
+	new->def_lang = locale_in_installer_lang;
 
 	if (locale != NULL) {
 		lp = (locale_info_t *)malloc(sizeof (locale_info_t));
@@ -710,7 +711,7 @@ create_lang_entry(char *lang, char *locale, char *region,
 		desc = get_locale_description(new->lang_name, region);
 		lp->locale_desc = desc;
 		new->locale_info = lp;
-		new->locale_info->def_locale = is_default;
+		new->locale_info->def_locale = locale_app_locale;
 		new->n_locales++;
 	}
 	if (list != NULL) {
@@ -859,7 +860,6 @@ add_locale_entry_to_lang(lang_info_t *langp, char *locale_name, char *region,
 
 	locp->next = langp->locale_info;
 	langp->locale_info = locp;
-	langp->def_lang = is_default;
 	langp->n_locales++;
 }
 
@@ -939,7 +939,7 @@ build_install_ll_list(char *nlspath, char **install_list, int lang_total,
 			continue;
 		} else {
 			ret = create_lang_entry(install_list[i],
-			    install_list[i], region, return_list, is_default);
+			    install_list[i], region, return_list, is_default, is_default);
 			if (!ret)
 				num_entries++;
 		}
@@ -1067,7 +1067,8 @@ build_ll_list(char **list, int lang_total, lang_info_t **return_list,
 	lang_info_t	*lp = NULL;
 	char		*orig, *start = NULL;
 	char		*t = NULL;
-	boolean_t	is_default = B_FALSE;
+	boolean_t	locale_app_locale = B_FALSE;
+	boolean_t	locale_in_installer_lang = B_FALSE;
 
 	*total = 0;
 
@@ -1162,7 +1163,9 @@ build_ll_list(char **list, int lang_total, lang_info_t **return_list,
 		 * anything we are interested in, so skip.
 		 */
 		if (locale != NULL)  {
-			is_default = is_locale_in_installer_lang(locale);
+			locale_in_installer_lang = is_locale_in_installer_lang(locale);
+			locale_app_locale = is_locale_app_locale(locale);
+			
 			om_debug_print(OM_DBGLVL_INFO, "Adding locale: "
 			    "locale=%s,lang=%s,region=%s\n", locale,
 			    lang == NULL ? "#" : lang,
@@ -1170,10 +1173,10 @@ build_ll_list(char **list, int lang_total, lang_info_t **return_list,
 
 			if ((lp = get_lang_entry(lang, *return_list)) != NULL) {
 				add_locale_entry_to_lang(lp, locale, region,
-				    is_default);
+				    locale_app_locale);
 			} else {
 				ret = create_lang_entry(lang, locale, region,
-				    return_list, is_default);
+				    return_list, locale_app_locale, locale_in_installer_lang);
 				if (!ret) {
 					num_langs++;
 					om_debug_print(OM_DBGLVL_INFO,
@@ -1769,6 +1772,9 @@ copy_up_to(char *start, char *end)
 	return (sub);
 }
 
+/* This method checks to see if the locale passed in as an argument
+ * is in the same language as the application.
+ */
 static boolean_t
 is_locale_in_installer_lang(char *locale_name)
 {
@@ -1809,6 +1815,29 @@ is_locale_in_installer_lang(char *locale_name)
 
 	return (B_FALSE);
 }
+
+/*
+ * This method checks to see if the currently used locale is the same
+ * as the locale passed as an argument. We do this by comparing
+ * app_locale to locale_name.
+ */
+static boolean_t
+is_locale_app_locale(char *locale_name)
+{
+	if (app_locale == NULL) {
+		app_locale = strdup(setlocale(LC_MESSAGES, NULL));
+	}
+
+	if (app_locale != NULL) {
+		if (strcmp(locale_name, app_locale) == 0) {
+			/* locale name is same */
+			return (B_TRUE);
+		} 
+	}
+
+	return (B_FALSE);
+}
+
 void
 om_save_locale(char *locale, boolean_t install_only)
 {
