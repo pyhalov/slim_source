@@ -290,6 +290,6 @@ if __name__ == "__main__":
         # write an abbreviated traceback for the user to report
         sys.stderr.write(_("%s:\n"
                            "\tPlease report this as a bug at "
-                           "http://defect.opensolaris.org:\n"
+                           "http://bugs.openindiana.org:\n"
                            "\tUnhandled error encountered:\n") % prog)
         traceback.print_exc(limit=2, file=sys.stderr)

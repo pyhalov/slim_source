@@ -23,8 +23,8 @@
 #
 
 set name=pkg.fmri value=pkg:/system/install/gui-install@$(PKGVERS)
-set name=pkg.description value="Solaris Installation GUI"
-set name=pkg.summary value="Solaris Installation GUI"
+set name=pkg.description value="OpenIndiana Installation GUI"
+set name=pkg.summary value="OpenIndiana Installation GUI"
 set name=info.classification value="org.opensolaris.category.2008:System Administration and Configuration"
 set name=variant.arch value=$(ARCH)
 set name=variant.opensolaris.zone value=global
@@ -80,7 +80,6 @@ file path=usr/share/gui-install/installmessages/install-02.png group=sys
 file path=usr/share/gui-install/installmessages/install-03.png group=sys
 file path=usr/share/gui-install/installmessages/install-04.png group=sys
 file path=usr/share/gui-install/installmessages/install-05.png group=sys
-file path=usr/share/gui-install/installmessages/install-06.png group=sys
 file path=usr/share/gui-install/magnifier.png group=sys
 file path=usr/share/gui-install/openindiana_logo.png group=sys
 file path=usr/share/gui-install/sun_curve_hacky2.png group=sys

@@ -63,6 +63,10 @@ gboolean	on_expose_event(GtkWidget *window,
 void		on_users_entry_changed(GtkEditable *editable,
 				gpointer user_data);
 
+gboolean	on_rootpassword_focus_out_event(GtkWidget *widget,
+				GdkEventFocus *event,
+				gpointer user_data);
+
 gboolean	on_userentry_focus_in_event(GtkWidget *widget,
 				GdkEventFocus *event,
 				gpointer user_data);

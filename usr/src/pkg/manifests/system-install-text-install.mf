@@ -24,7 +24,7 @@
 
 set name=pkg.fmri value=pkg:/system/install/text-install@$(PKGVERS)
 set name=pkg.description value="Text Installer libraries, commands, and data files"
-set name=pkg.summary value="Solaris Text Installer"
+set name=pkg.summary value="OpenIndiana Text Installer"
 set name=info.classification value="org.opensolaris.category.2008:System/Administration and Configuration"
 set name=variant.arch value=$(ARCH)
 set name=variant.opensolaris.zone value=global

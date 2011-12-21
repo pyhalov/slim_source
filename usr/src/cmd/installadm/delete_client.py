@@ -98,7 +98,7 @@ if __name__ == "__main__":
     except:
         sys.stderr.write(_("%s:\n"
                            "\tPlease report this as a bug at "
-                           "http://defect.opensolaris.org:\n"
+                           "http://bugs.openindiana.org:\n"
                            "\tUnhandled error encountered:\n") %
                         (prog))
         # write an abbreviated traceback for the user to report

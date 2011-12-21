@@ -44,8 +44,7 @@ PNGFILES= \
 	install-02.png \
 	install-03.png \
 	install-04.png \
-	install-05.png \
-	install-06.png
+	install-05.png
 
 SCHEMAFILES= solaris-gui-install.schemas
 

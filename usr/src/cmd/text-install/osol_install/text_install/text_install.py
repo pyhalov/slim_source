@@ -273,6 +273,6 @@ if __name__ == '__main__':
         else:
             print "\t%s" % EXC_TYPE.__name__
         print _("Full traceback data is in the installation log")
-        print _("Please file a bug at http://defect.opensolaris.org")
+        print _("Please file a bug at http://bugs.openindiana.org")
         ERRCODE = 1
     exit_text_installer(OPTIONS.logname, ERRCODE)

@@ -19,7 +19,7 @@
  * CDDL HEADER END
  */
 /*
- * Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
+ * Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
  * Use is subject to license terms.
  */
 
@@ -39,6 +39,11 @@ extern "C" {
 
 typedef struct _UsersWindowXML {
 	GtkWidget *userstoplevel;
+	GtkWidget *rootpassword1entry;
+	GtkWidget *rootpassword2entry;
+	GtkWidget *rootpasswordinfo;
+	GtkWidget *rootpasswordinfoimage;
+	GtkWidget *rootpasswordinfolabel;
 	GtkWidget *usernameentry;
 	GtkWidget *loginnameentry;
 	GtkWidget *loginnameinfo;
@@ -65,6 +70,9 @@ gboolean	users_validate(void);
 
 void		users_clear_info_warning_labels(void);
 
+gboolean	users_validate_root_passwords(GtkWidget *widget,
+				gboolean check_changed);
+
 gboolean	users_validate_login_name(gboolean check_changed);
 
 gboolean	users_validate_user_passwords(GtkWidget *widget,
@@ -74,7 +82,7 @@ gboolean	users_validate_host_name(gboolean check_changed);
 
 gboolean	user_account_entered(void);
 
-gboolean	user_password_entered(void);
+gboolean	root_password_entered(void);
 
 void		users_store_data(void);
 

@@ -78,7 +78,7 @@ class DiskScreen(BaseScreen):
     NO_TARGETS = _("%(release)s cannot be installed on any disk") % RELEASE
     TGT_ERROR = _("An error occurred while searching for installation"
                   " targets. Please check the install log and file a bug"
-                  " at defect.opensolaris.org.")
+                  " at bugs.openindiana.org.")
     
     DISK_HEADERS = [(8, _("Type")),
                     (10, _("Size(GB)")),
