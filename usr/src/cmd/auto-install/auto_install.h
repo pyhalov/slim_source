@@ -211,7 +211,7 @@ extern "C" {
  */
 #define	AIM_IPS_PUBLISHER_URL	\
 	"auto_install/ai_instance/software/source/publisher/origin/name"
-#define	AIM_FALLBACK_PUBLISHER_URL	"http://pkg.openindiana.org/stable"
+#define	AIM_FALLBACK_PUBLISHER_URL	"http://pkg.openindiana.org/dev"
 #define	AIM_FALLBACK_PUBLISHER_NAME	"openindiana.org"
 
 /*

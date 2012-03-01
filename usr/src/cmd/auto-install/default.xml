@@ -28,7 +28,7 @@
     <software>
       <source>
         <publisher name="openindiana.org">
-          <origin name="http://pkg.openindiana.org/stable"/>
+          <origin name="http://pkg.openindiana.org/dev"/>
         </publisher>
       </source>
       <!--

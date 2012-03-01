@@ -166,7 +166,7 @@ ADDITIONAL MANIFEST FIELDS
     manifest, include the following editable fields.
 
  <pkg_repo_default_authority>
-      <main url="http://pkg.openindiana.org/stable"
+      <main url="http://pkg.openindiana.org/dev"
         authname="openindiana.org"/>
  </pkg_repo_default_authority>
 
