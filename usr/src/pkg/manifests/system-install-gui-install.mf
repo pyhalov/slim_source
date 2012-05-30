@@ -25,7 +25,7 @@
 set name=pkg.fmri value=pkg:/system/install/gui-install@$(PKGVERS)
 set name=pkg.description value="OpenIndiana Installation GUI"
 set name=pkg.summary value="OpenIndiana Installation GUI"
-set name=info.classification value="org.opensolaris.category.2008:System Administration and Configuration"
+set name=info.classification value="org.opensolaris.category.2008:System/Administration and Configuration"
 set name=variant.arch value=$(ARCH)
 set name=variant.opensolaris.zone value=global
 dir path=etc group=sys
