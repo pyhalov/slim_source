@@ -77,7 +77,7 @@ create_sym_links()
 		#
                 dir=$(dirname "$pi_file")
                 if [ ! -d $dir ]; then
-                        $MKDIR -p $dir
+                        mkdir -p $dir
                         echo $dir >> ${BOOT_ARCHIVE_FILELIST}
                 fi
 
