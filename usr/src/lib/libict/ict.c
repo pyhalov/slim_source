@@ -42,6 +42,8 @@ static int ict_safe_system(char *, boolean_t);
  * Global
  */
 
+ict_status_t ict_errno = ICT_SUCCESS;
+
 /*
  * Function:	ict_escape()
  *

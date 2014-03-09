@@ -81,7 +81,7 @@ typedef enum {
 	ICT_MARK_RPOOL_FAIL
 } ict_status_t;
 
-extern	ict_status_t		ict_errno = ICT_SUCCESS;
+extern	ict_status_t		ict_errno;
 
 /*
  * Return Code Text Strings
