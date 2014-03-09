@@ -52,7 +52,7 @@ INCLUDE =	-I. -I../ -I/usr/include/python2.6
 
 
 DEPLIBS		= ../pics/$(ARCH)/liberrsvc.so.1
-LDLIBS +=	-L/lib -L../pics/$(ARCH) -R ../pics/$(ARCH) -lerrsvc -lpython2.6 -Bdynamic
+LDLIBS +=	-L/lib -L../pics/$(ARCH) -R ../pics/$(ARCH) -lerrsvc -lpython2.6 -Wl,-Bdynamic
 
 CPPFLAGS +=	-D_LARGEFILE64_SOURCE=1 -D_REENTRANT ${INCLUDE}
 CFLAGS +=	-g -DDEBUG

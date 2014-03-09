@@ -80,9 +80,9 @@ tdmgtst:	dynamic tdmgtst.o
 tdmgtst_static:	static tdmgtst.o
 	$(LINK.c) -o tdmgtst_static tdmgtst.o \
 		-L$(ROOTADMINLIB) -Lobjs/$(ARCH) \
-		-Bstatic \
+		-Wl,-Bstatic \
 		-ltd -llogsvc \
-		-Bdynamic \
+		-Wl,-Bdynamic \
 		-ldiskmgt -lfstyp -lnvpair -ldevinfo -ladm \
 		-linstzones -lzonecfg -lcontract -lgen -lima
 
@@ -97,9 +97,9 @@ test_td:	dynamic test_td.o
 test_td_static:	static test_td.o
 	$(LINK.c) -o test_td_static test_td.o \
 		-L$(ROOTADMINLIB) -Lobjs/$(ARCH) \
-		-Bstatic \
+		-Wl,-Bstatic \
 		-ltd -llogsvc \
-		-Bdynamic \
+		-Wl,-Bdynamic \
 		-ldiskmgt -lfstyp -lnvpair -ldevinfo -ladm \
 		-linstzones -lzonecfg -lcontract -lgen -lima
 

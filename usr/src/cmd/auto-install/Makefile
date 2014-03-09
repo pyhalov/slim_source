@@ -77,7 +77,7 @@ LINTFLAGS  = -umx ${CPPFLAGS}
 
 LDFLAGS  +=	$(DEBUG_CFLAGS) \
 		-R$(ROOTADMINLIB:$(ROOT)%=%) $(LIBDIRS)
-LDLIBS  +=	-Bdynamic -ltd -ltransfer -lti -lorchestrator \
+LDLIBS  +=	-Wl,-Bdynamic -ltd -ltransfer -lti -lorchestrator \
 		 -lbe -lspmicommon -lnvpair -llogsvc -lelf -lpython2.6
 
 MSG_DOMAIN = SUNW_INSTALL_AUTOINSTALL

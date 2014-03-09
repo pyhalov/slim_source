@@ -84,7 +84,7 @@ LINTFLAGS  = -umx ${CPPFLAGS}
 
 LDFLAGS  +=	$(DEBUG_CFLAGS) \
 		-R$(ROOTADMINLIB:$(ROOT)%=%) $(LIBDIRS)
-APPLIBS  +=	-Bdynamic -lsocket -lnsl -lelf
+APPLIBS  +=	-Wl,-Bdynamic -lsocket -lnsl -lelf
 
 LDLIBS   =	-lscf -laiscf ${APPLIBS}
 

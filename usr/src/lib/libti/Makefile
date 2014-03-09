@@ -76,9 +76,9 @@ test_ti:	dynamic test_ti.o
 test_ti_static:	static test_ti.o
 	$(LINK.c) -o test_ti_static test_ti.o \
 		-L$(ROOTADMINLIB) -L$(ROOTUSRLIB) -Lobjs/$(ARCH) \
-		-Bstatic \
+		-Wl,-Bstatic \
 		-lti -llogsvc \
-		-Bdynamic \
+		-Wl,-Bdynamic \
 		-ladm -lbe -lnvpair -lgen -lzfs -lpython2.6 -luuid \
 		-linstzones -lzonecfg -lcontract -lefi
 
