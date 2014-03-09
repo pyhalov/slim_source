@@ -112,7 +112,7 @@ CCDEPMODE = depmode=none
 CFLAGS = 
 CPP = ${CC} -E
 #CPP = /ws/onnv-tools/SUNWspro/SS11/bin/cc -E
-CPPFLAGS = -I${SRC}/lib/liborchestrator -I${SRC}/lib/liblogsvc -std=c99
+CPPFLAGS = -I${SRC}/lib/liborchestrator -I${SRC}/lib/liblogsvc -std=c99 -D__EXTENSIONS__
 CYGPATH_W = echo
 DATADIRNAME = share
 DEFS = -DHAVE_CONFIG_H

@@ -27,6 +27,7 @@
 #include <libnvpair.h>
 #include <libgen.h>
 #include <stdarg.h>
+#include <string.h>
 #include <unistd.h>
 #include <wait.h>
 #include <errno.h>

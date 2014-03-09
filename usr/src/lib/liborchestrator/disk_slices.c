@@ -40,7 +40,7 @@
 #define	SLICE_END(i) \
 	(sorted_slices[(i)].slice_offset + sorted_slices[(i)].slice_size)
 
-static struct free_region {
+struct free_region {
 	uint64_t free_offset;
 	uint64_t free_size;
 };

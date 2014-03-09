@@ -606,7 +606,7 @@ orchestrator_om_upgrade_instance_get_slicenum(upgrade_info_t *uinfo)
 	if (uinfo && uinfo->instance_type == OM_INSTANCE_UFS)
 		return (uinfo->instance.uinfo.slice);
 	else
-		return (NULL);
+		return 0;
 }
 
 upgrade_info_t *
@@ -750,7 +750,7 @@ gint
 orchestrator_om_language_get_locale_count(lang_info_t *language)
 {
 	if (!language)
-		return (NULL);
+		return 0;
 	else
 		return (language->n_locales);
 }

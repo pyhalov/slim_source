@@ -1569,11 +1569,11 @@ parse_property(char *str, char *keyword, char *value)
 	char	*eol;
 
 	if (str == NULL) {
-		return (NULL);
+		return 0;
 	}
 
 	if (*str == '#') {
-		return (NULL);
+		return 0;
 	}
 	strcpy(value, "[not found]"); /* assume failure to parse value */
 

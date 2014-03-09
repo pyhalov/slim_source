@@ -48,7 +48,7 @@
 	(sorted_parts[(i)].partition_offset_sec + \
 	sorted_parts[(i)].partition_size_sec)
 
-static struct free_region {
+struct free_region {
 	uint64_t free_offset;
 	uint64_t free_size;
 };
