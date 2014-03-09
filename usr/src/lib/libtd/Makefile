@@ -54,7 +54,7 @@ INCLUDE		 = -I. \
 		   -I../liblogsvc \
 		   -I$(ROOTINCADMIN)
 
-CPPFLAGS	+= $(INCLUDE) -D$(ARCH)
+CPPFLAGS	+= $(INCLUDE) -D$(ARCH) -Wno-pointer-to-int-cast
 CFLAGS		+= $(DEBUG_CFLAGS)  $(CPPFLAGS)
 LDFLAGS		+=
 SOFLAGS		+= -L$(ROOTADMINLIB) -R$(ROOTADMINLIB:$(ROOT)%=%) \
