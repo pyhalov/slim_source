@@ -47,7 +47,7 @@ include ../Makefile.lib
 INCLUDE		+=
 
 CPPFLAGS	+= $(INCLUDE) $(CPPFLAGS.master)
-CFLAGS		+= $(DEBUG_CFLAGS) -Xa $(CPPFLAGS)
+CFLAGS		+= $(DEBUG_CFLAGS)  $(CPPFLAGS)
 SOFLAGS		+= -L$(ROOTADMINLIB) -R$(ROOTADMINLIB:$(ROOT)%=%)
 
 static:		$(LIBS)

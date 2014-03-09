@@ -56,7 +56,7 @@ INCLUDE		 = -I. \
 		   -I../libti
 
 CPPFLAGS	+= ${INCLUDE} -D${ARCH}
-CFLAGS		+= $(DEBUG_CFLAGS) -Xa ${CPPFLAGS}
+CFLAGS		+= $(DEBUG_CFLAGS)  ${CPPFLAGS}
 LDFLAGS		+=
 SOFLAGS		+= -L$(ROOTADMINLIB) -R$(ROOTADMINLIB:$(ROOT)%=%) \
 		-ltd -lnvpair -ladmutil -ladmldb -lict \

@@ -29,6 +29,7 @@
 extern "C" {
 #endif
 
+#include <sys/types.h>
 #include <sys/dktp/fdisk.h>
 #include <sys/vtoc.h>
 #include <libnvpair.h>

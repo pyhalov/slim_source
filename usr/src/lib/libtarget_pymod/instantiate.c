@@ -392,7 +392,7 @@ create_vtoc_target(PyObject *self, TgtDisk *disk, PyObject *create_swap_slice)
 		tag = slice_1_tag(snum, s_num, s_size, s_tag);
 		switch (tag) {
 		case V_SWAP:
-		case NULL:
+		case 0:
 			if (nvlist_add_boolean_value(attrs,
 			    TI_ATTR_CREATE_SWAP_SLICE, B_TRUE) != 0) {
 				nvlist_free(attrs);

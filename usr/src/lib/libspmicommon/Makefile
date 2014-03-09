@@ -60,7 +60,7 @@ HDRS		= $(EXPHDRS) $(PRIVHDRS)
 include ../Makefile.lib
 
 CPPFLAGS	+= -D${ARCH}
-CFLAGS		+= $(DEBUG_CFLAGS) -Xa ${CPPFLAGS}
+CFLAGS		+= $(DEBUG_CFLAGS)  ${CPPFLAGS}
 LDFLAGS		+=
 SOFLAGS		+= -ldl -lwanboot
 

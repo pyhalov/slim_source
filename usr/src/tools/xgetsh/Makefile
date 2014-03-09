@@ -31,7 +31,7 @@ SRCS= xgetsh.c nhash.c ncmsg.c
 
 HDRS= nhash.h xgetsh.h
 
-CFLAGS += $(DEBUG_CFLAGS) -Xa
+CFLAGS += $(DEBUG_CFLAGS)
 
 OBJS=${SRCS:%.c=%.o}
 

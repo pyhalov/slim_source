@@ -46,7 +46,7 @@ include ../Makefile.lib
 INCLUDE		= -I/usr/include/python2.6
 
 CPPFLAGS	+= ${INCLUDE} $(CPPFLAGS.master)
-CFLAGS		+= $(DEBUG_CFLAGS) -Xa ${CPPFLAGS} -DNDEBUG
+CFLAGS		+= $(DEBUG_CFLAGS)  ${CPPFLAGS} -DNDEBUG
 SOFLAGS		+= -L$(ROOTADMINLIB) -R$(ROOTADMINLIB:$(ROOT)%=%) -L/lib \
 		-lpython2.6 -lc -zdefs
 

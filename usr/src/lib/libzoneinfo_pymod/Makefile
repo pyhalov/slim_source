@@ -37,7 +37,7 @@ include ../Makefile.lib
 INCLUDE		= -I/usr/include/python2.6 -I/usr/include/libzoneinfo
 
 CPPFLAGS	+= ${INCLUDE} $(CPPFLAGS.master) -D_FILE_OFFSET_BITS=64
-CFLAGS		+= $(DEBUG_CFLAGS) -Xa ${CPPFLAGS} 
+CFLAGS		+= $(DEBUG_CFLAGS)  ${CPPFLAGS}
 SOFLAGS		+= -L$(ROOTADMINLIB) -R$(ROOTADMINLIB:$(ROOT)%=%) \
 		-lzoneinfo -lpython2.6
 

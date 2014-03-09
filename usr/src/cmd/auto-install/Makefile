@@ -72,7 +72,7 @@ LIBDIRS = -L${LIBDIR} -L$(SFWLIBDIR) -R$(SFWLIBRDIR) -L$(ROOTUSRLIB)
 INCLUDEDIR = -I. -I${SRC}/lib/liborchestrator -I${SRC}/lib/libtd -I${SRC}/lib/libti -I${SRC}/lib/liblogsvc -I${SRC}/lib/libtransfer -I$(ROOTINCADMIN) -I/usr/include/python2.6
 
 CPPFLAGS  += $(INCLUDEDIR)
-CFLAGS	  += $(DEBUG_CFLAGS) -Xa
+CFLAGS	  += $(DEBUG_CFLAGS)
 LINTFLAGS  = -umx ${CPPFLAGS}
 
 LDFLAGS  +=	$(DEBUG_CFLAGS) \

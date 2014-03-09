@@ -36,7 +36,7 @@ include ../Makefile.lib
 
 INCLUDE		 = -I. 
 CPPFLAGS	+= ${INCLUDE} -D${ARCH}
-CFLAGS		+= $(DEBUG_CFLAGS) -Xa ${CPPFLAGS}
+CFLAGS		+= $(DEBUG_CFLAGS)  ${CPPFLAGS}
 SOFLAGS		+= -L$(ROOTADMINLIB) -R$(ROOTADMINLIB:$(ROOT)%=%) \
 			-lgen -lnvpair
 

@@ -112,21 +112,21 @@ cscope:
 
 # Compiler version reporting; used by nightly.
 cc-version:
-	@if $(CC) -flags >/dev/null 2>/dev/null; then	\
+	@if $(CC) -v >/dev/null 2>/dev/null; then	\
 		$(ECHO) 32-bit compiler;		\
 		which $(CC);				\
-		$(CC) -V 2>&1 | head -1;		\
+		$(CC) -v 2>&1 | head -1;		\
 	else						\
 		$(ECHO) No 32-bit compiler found;	\
 		exit 1;					\
 	fi
 
 cc64-version:
-	@__VERSION=`$(CC) -m64 -E /dev/null 2>&1 >/dev/null`; \
+	@__VERSION=`$(CC) -m64 -xc -E /dev/null 2>&1 >/dev/null`; \
 	if [ -z "$$__VERSION" ]; then			\
 		$(ECHO) 64-bit compiler;		\
 		which $(CC);				\
-		$(CC) -V 2>&1 | head -1;		\
+		$(CC) -v 2>&1 | head -1;		\
 	else						\
 		$(ECHO) No 64-bit compiler found;	\
 		exit 1;					\

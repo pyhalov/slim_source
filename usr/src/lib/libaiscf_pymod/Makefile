@@ -50,7 +50,7 @@ include ../Makefile.lib
 INCLUDE		= -I/usr/include/python2.6
 
 CPPFLAGS	+= ${INCLUDE} $(CPPFLAGS.master) -D_FILE_OFFSET_BITS=64
-CFLAGS		+= $(DEBUG_CFLAGS) -Xa ${CPPFLAGS} -xc99
+CFLAGS		+= $(DEBUG_CFLAGS)  ${CPPFLAGS} -std=c99
 SOFLAGS		+= -L$(ROOTUSRLIB) -R$(ROOTUSRLIB:$(ROOT)%=%) -laiscf -lscf
 
 static:	 $(OBJECTS)
