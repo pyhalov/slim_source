@@ -22,7 +22,7 @@
 # Copyright (c) 2010, Oracle and/or its affiliates. All rights reserved.
 #
 
-set name=pkg.fmri value=pkg:/SUNWslim-utils@0.5.11,5.11-0.144
+set name=pkg.fmri value=pkg:/SUNWslim-utils@$(PKGVERS)
 set name=pkg.renamed value=true
 set name=variant.arch value=$(ARCH)
 set name=variant.opensolaris.zone value=global
