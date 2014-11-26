@@ -71,7 +71,6 @@ static cmd_t	cmds[] = {
 	{ "create-service",		do_create_service,
 	    "\tcreate-service\t[-b <property>=<value>,...] \n"
 	    "\t\t\t[-f <bootfile>] [-n <svcname>]\n"
-	    "\t\t\t[-i <dhcp_ip_start>] [-c <count_of_ipaddr>]\n"
 	    "\t\t\t[-s <srcimage>] <targetdir>",
 	    "create-service",
 	    PRIV_REQD							},
@@ -508,7 +507,6 @@ do_create_service(
 	int		opt;
 	boolean_t	named_service = B_FALSE;
 	boolean_t	named_boot_file = B_FALSE;
-	boolean_t	dhcp_setup_needed = B_FALSE;
 	boolean_t	create_netimage = B_FALSE;
 	boolean_t	create_service = B_FALSE;
 	boolean_t	have_sparc = B_FALSE;
@@ -516,7 +514,6 @@ do_create_service(
 	char		*bootargs = NULL;
 	char		*boot_file = NULL;
 	char		*ip_start = NULL;
-	short		ip_count = 0;
 	char		*service_name = NULL;
 	char		*source_path = NULL;
 	char		*target_directory = NULL;
@@ -560,23 +557,6 @@ do_create_service(
 			service_name = optarg;
 			break;
 		/*
-		 * The starting IP address is supplied.
-		 */
-		case 'i':
-			dhcp_setup_needed = B_TRUE;
-			ip_start = optarg;
-			break;
-		/*
-		 * Number of IP addresses to be setup
-		 */
-		case 'c':
-			ip_count = atoi(optarg);
-			if (ip_count < 1)  {
-				(void) fprintf(stderr, "%s\n", gettext(use));
-				return (INSTALLADM_FAILURE);
-			}
-			break;
-		/*
 		 * Source image is supplied.
 		 */
 		case 's':
@@ -608,17 +588,6 @@ do_create_service(
 	    CHECK_SETUP_SCRIPT, ((ip_start != NULL) ? ip_start : ""));
 	if (installadm_system(cmd) != 0) {
 		(void) fprintf(stderr, MSG_BAD_SERVER_SETUP);
-		return (INSTALLADM_FAILURE);
-	}
-
-	/*
-	 * The options -i and -c should either both be set or
-	 * neither argument should be set.
-	 */
-	if (((ip_count != 0) && (ip_start == NULL)) ||
-	    ((ip_count == 0) && (ip_start != NULL))) {
-		(void) fprintf(stderr, MSG_MISSING_OPTIONS, argv[0]);
-		(void) fprintf(stderr, "%s\n", gettext(use));
 		return (INSTALLADM_FAILURE);
 	}
 
@@ -846,19 +815,6 @@ do_create_service(
 		return (INSTALLADM_FAILURE);
 	}
 
-	/*
-	 * Setup dhcp
-	 */
-	if (dhcp_setup_needed && create_netimage) {
-		snprintf(cmd, sizeof (cmd), "%s %s %s %d",
-		    SETUP_DHCP_SCRIPT, DHCP_SERVER, ip_start, ip_count);
-		if (installadm_system(cmd) != 0) {
-			(void) fprintf(stderr,
-			    MSG_CREATE_DHCP_SERVER_ERR);
-			return (INSTALLADM_FAILURE);
-		}
-	}
-
 	if (create_netimage) {
 		char	dhcpbfile[MAXPATHLEN];
 		char	dhcprpath[MAXPATHLEN];
@@ -890,16 +846,6 @@ do_create_service(
 		 * return value.
 		 */
 		installadm_system(cmd);
-	}
-
-	if (dhcp_setup_needed && create_netimage) {
-		snprintf(cmd, sizeof (cmd), "%s %s %s %d %s",
-		    SETUP_DHCP_SCRIPT, DHCP_ASSIGN,
-		    ip_start, ip_count, dhcp_macro);
-		if (installadm_system(cmd) != 0) {
-			(void) fprintf(stderr,
-			    MSG_ASSIGN_DHCP_MACRO_ERR);
-		}
 	}
 
 	/*

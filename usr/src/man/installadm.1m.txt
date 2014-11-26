@@ -156,14 +156,6 @@ SUBCOMMANDS AND OPTIONS
             <targetdir> contains a valid net image, then a 
             new install service is created with the 
             existing net image.
-          - If the -i option and the -c option are used, 
-            and a DHCP server is not yet configured, a DHCP 
-            server is configured. 
-          - If an already-configured DHCP server exists, 
-            that DHCP server is updated.
-          - If DHCP is running on a remote system, updates 
-            can happen through secure shell. User must 
-            provide authentication.
 
      -b   <property>=<value>,...
           For x86 clients only, sets a property value
@@ -192,17 +184,6 @@ SUBCOMMANDS AND OPTIONS
           the -n option was not used to provide a custom 
           name for the install service, then the install 
           service name will be "_install_service_46510." 
-
-     -i   <dhcp_ip_start>
-          Sets up a new DHCP server. The IP addresses, 
-          starting from dhcp_address_start, are set up.
-
-     -c   <count_of_ipaddr>
-          Sets up a total number of IP addresses in the 
-          DHCP table equal to the value of the 
-          count_of_ipaddr. The first IP address is the 
-          value of dhcp_ip_start that is provided by the 
-          -i option.  
 
      -s   <srcimage>
           Specifies location of AI ISO image to use for 
@@ -371,7 +352,6 @@ SUBCOMMANDS AND OPTIONS
           user to specify a non-default service name and 
           image path for a client:
           - Specifies installation service for that client.
-          - Sets up DHCP macro, if it doesn't exist.
     
      -b   <property>=<value>,...
           For x86 clients only, sets a property value 
@@ -564,12 +544,6 @@ EXAMPLES
      set up a Sun DHCP server and client IP addresses 
      need to be assigned.  See the pntadm(1M) manpage for 
      more information.
-
-     On systems which support graphic interfaces, the 
-     DHCP Manager may be used instead of the dhtadm or 
-     pntadm commands. See the dhcpmgr(1M) manpage for more 
-     information.
-
      
      Example 3: Use the following sample command to replace
      the default manifest for an existing install service,
@@ -689,7 +663,7 @@ ATTRIBUTES
 
 
 SEE ALSO
-     pntadm(1M), dhcpmgr(1M), attributes(5)
+     pntadm(1M), attributes(5)
 
      OpenIndiana Automated Installer Guide in the Handbook
      http://wiki.openindiana.org/oi/OpenIndiana+Handbook
