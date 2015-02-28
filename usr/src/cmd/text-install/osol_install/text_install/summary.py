@@ -29,6 +29,7 @@ import curses
 import logging
 
 from osol_install.profile.disk_info import SliceInfo
+from osol_install.profile.disk_info import PartitionInfo
 from osol_install.profile.network_info import NetworkInfo
 from osol_install.text_install import _, RELEASE
 from osol_install.text_install.action import Action
@@ -155,9 +156,12 @@ class SummaryScreen(BaseScreen):
         if isinstance(solaris_data, SliceInfo):
             slice_data = solaris_data
             part_data = None
-        else:
+        elif isinstance(solaris_data, PartitionInfo):
             part_data = solaris_data
             slice_data = part_data.get_solaris_data()
+	else:
+            part_data = None
+            slice_data = None
         
         format_dict = {}
         disk_string = [_("Disk: %(disk-size).1fGB %(disk-type)s")]
@@ -168,13 +172,14 @@ class SummaryScreen(BaseScreen):
             disk_string.append(_("Partition: %(part-size).1fGB %(part-type)s"))
             format_dict['part-size'] = part_data.size.size_as("gb")
             format_dict['part-type'] = part_data.get_description()
-        
-        if part_data is None or not part_data.use_whole_segment:
-            disk_string.append(_("Slice %(slice-num)i: %(slice-size).1fGB"
-                                 " %(pool)s"))
-            format_dict['slice-num'] = slice_data.number
-            format_dict['slice-size'] = slice_data.size.size_as("gb")
-            format_dict['pool'] = slice_data.type[1]
+
+        if not slice_data is None:
+	        if part_data is None or not part_data.use_whole_segment:
+	            disk_string.append(_("Slice %(slice-num)i: %(slice-size).1fGB"
+	                                 " %(pool)s"))
+	            format_dict['slice-num'] = slice_data.number
+	            format_dict['slice-size'] = slice_data.size.size_as("gb")
+	            format_dict['pool'] = slice_data.type[1]
         
         return "\n".join(disk_string) % format_dict
     

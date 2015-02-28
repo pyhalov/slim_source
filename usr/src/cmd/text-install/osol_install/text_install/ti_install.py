@@ -44,6 +44,7 @@ from osol_install.profile.disk_info import PartitionInfo
 from osol_install.profile.network_info import NetworkInfo
 from osol_install.text_install import RELEASE
 import osol_install.text_install.ti_install_utils as ti_utils 
+from osol_install.ict import correct_rdsk
 
 #
 # RTC command to run
@@ -305,6 +306,11 @@ def do_ti(install_profile, swap_dump):
         for ds in reversed(ZFS_SHARED_FS): # must traverse it in reversed order
             zd = tgt.ZFSDataset(mountpoint=ds)
             zfs_datasets += (zd,)
+            logging.debug("Adding dataset ZFSDataset(%s %s %s %s %s %s %s)",
+		zd.name, zd.mountpoint, zd.be_name, zd.zfs_swap, zd.swap_size,
+		zd.zfs_dump, zd.dump_size)
+	logging.debug("rootpol_name %s, init_be_name %s, INSTALLED_ROOT_DIR %s",
+		rootpool_name,INIT_BE_NAME,  INSTALLED_ROOT_DIR)
         tgt.create_be_target(rootpool_name, INIT_BE_NAME, INSTALLED_ROOT_DIR,
                              zfs_datasets)
 
@@ -596,7 +602,8 @@ def run_ICTs(install_profile, hostname, ict_mesg, inst_device, locale,
         is_logical = "1"
     
     try:
-        exec_cmd([ICT_PROG, "ict_installboot", INSTALLED_ROOT_DIR, inst_device,
+        exec_cmd([ICT_PROG, "ict_installboot", INSTALLED_ROOT_DIR,
+                  correct_rdsk(inst_device),
                   is_logical], "execute ict_installboot() ICT")
     except ti_utils.InstallationError:
         failed_icts += 1

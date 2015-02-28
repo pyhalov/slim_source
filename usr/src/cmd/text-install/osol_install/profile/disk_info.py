@@ -152,8 +152,10 @@ class DiskInfo(object):
             self.slices = []
             if tgt_disk.children:
                 if isinstance(tgt_disk.children[0], tgt.Slice):
-                    for child in tgt_disk.children:
-                        self.slices.append(SliceInfo(tgt_slice=child))
+                    # On x86 disk itself can't have slices
+                    if platform.processor() == "sparc":
+                        for child in tgt_disk.children:
+                            self.slices.append(SliceInfo(tgt_slice=child))
                 else:
                     for child in tgt_disk.children:
                         self.partitions.append(PartitionInfo(tgt_part=child))
@@ -191,7 +193,7 @@ class DiskInfo(object):
             self.serialno = serialno
             self.size = size
             self.vendor = vendor
-        self.use_whole_segment = False
+        self.use_whole_segment = True
         
         if platform.processor() == "i386":
             self.was_blank = not bool(self.partitions)
@@ -355,8 +357,9 @@ class DiskInfo(object):
             numbers.remove(SliceInfo.BACKUP_SLICE)
             start_pt = 0
         else:
-            raise ValueError("Cannot determine if this disk has partitions"
-                             " or slices")
+            self._unused_parts_added = True
+            return
+
         backup_part = None
         if not use_partitions:
             for part in parts:
@@ -562,13 +565,9 @@ class DiskInfo(object):
         return tgt_disk
     
     def create_default_layout(self):
-        '''Create a reasonable default layout consisting of a single slice
-        or partition that consumes the whole disk. In the slice case, also
-        add the traditional backup slice.
+        '''Create a reasonable default layout
         
         '''
-        # do not allow size to exceed MAX_VTOC
-        maxsz = min(self.get_size(), SliceInfo.MAX_VTOC)
         
         if platform.processor() == "sparc":
             whole_part = SliceInfo(slice_num=0, size=self.size,
@@ -578,24 +577,49 @@ class DiskInfo(object):
             self.slices = [whole_part, backup_part]
             self.label.add(DiskInfo.VTOC)
         else:
-            whole_part = PartitionInfo(part_num=1, size=maxsz,
-                                       partition_id=PartitionInfo.SOLARIS)
-            whole_part.create_default_layout()
-            self.partitions = [whole_part]
-            self.label.add(DiskInfo.FDISK)
+	#   whole_part = PartitionInfo(part_num=1, size=maxsz,
+	#                               partition_id=PartitionInfo.SOLARIS)
+	#   whole_part.create_default_layout()
+            self.partitions = []
+            self.label.add(DiskInfo.GPT)
     
+    def create_partitioned_layout(self):
+        '''Create a reasonable layout using partitions
+
+        '''
+        # do not allow size to exceed MAX_VTOC
+        maxsz = min(self.get_size(), SliceInfo.MAX_VTOC)
+
+        if platform.processor() == "sparc":
+            whole_part = SliceInfo(slice_num=0, size=self.size,
+                                   slice_type=SliceInfo.ROOT_POOL)
+            backup_part = SliceInfo(slice_num=SliceInfo.BACKUP_SLICE,
+                                    size=self.size)
+            self.slices = [whole_part, backup_part]
+            self.label.add(DiskInfo.VTOC)
+        else:
+	   whole_part = PartitionInfo(part_num=1, size=maxsz,
+	                               partition_id=PartitionInfo.SOLARIS)
+	   whole_part.create_default_layout()
+           self.partitions = [whole_part]
+           self.label.add(DiskInfo.FDISK)
+
     def get_install_dev_name_and_size(self):
         '''Returns the installation device name string and the size of the
         install device in MB.
         
         '''
-        install_target = self.get_install_target()
-        if install_target is None:
-            logging.error("Failed to find device to install onto")
-            raise InstallationError
-        name = self.name + "s" + str(install_target.number)
-        size = (int)(install_target.size.size_as("mb"))
-        return (name, size)
+	if self.partitions or self.slices:
+	        install_target = self.get_install_target()
+	        if install_target is None:
+	            logging.error("Failed to find device to install onto")
+	            raise InstallationError
+	        name = self.name + "s" + str(install_target.number)
+	        size = (int)(install_target.size.size_as("mb"))
+	else:
+		name=self.name
+		size=(int)(self.get_size().size_as("mb"))
+	return (name, size)
     
     def get_install_device_size(self):
         '''Returns the size of the install device in MB. '''
@@ -623,7 +647,6 @@ class DiskInfo(object):
         ''' Returns name of the pool to be used for installation '''
         install_slice = self.get_install_target()
         if install_slice is None:
-            logging.error("Failed to find device to install onto")
-            raise InstallationError
+		return str(SliceInfo.DEFAULT_POOL)
         slice_type = install_slice.get_type()
         return (str(slice_type[1]))

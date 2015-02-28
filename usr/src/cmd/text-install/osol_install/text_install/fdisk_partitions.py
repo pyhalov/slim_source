@@ -59,10 +59,10 @@ class FDiskPart(BaseScreen):
     FOUND_SLICE = _("The following slices were found on the disk.")
     PROPOSED_SLICE = _("A VTOC label was not found. The following is "
                        "proposed.")
-    USE_WHOLE_DISK = _("Use the whole disk")
+    USE_WHOLE_DISK = _("Use the whole disk (EFI)")
     USE_WHOLE_PARTITION = _("Use the whole partition")
     USE_SLICE_IN_PART = _("Use a slice in the partition")
-    USE_PART_IN_DISK = _("Use a partition of the disk")
+    USE_PART_IN_DISK = _("Use a partition of the disk (MBR)")
     USE_SLICE_IN_DISK = _("Use a slice on the disk")
     
     def __init__(self, main_win, x86_slice_mode=False):
@@ -112,9 +112,9 @@ class FDiskPart(BaseScreen):
             disk = self.install_profile.disk
             self.disk_info = disk.get_solaris_data()
             if self.disk_info is None:
-                err_msg = "Critical error - no Solaris partition found"
-                logging.error(err_msg)
-                raise ValueError(err_msg)
+                # No partitions selected - it's whole disk EFI install
+                logging.error("No partitions were selected. Continuing.")
+                raise SkipException
             logging.debug("bool(self.disk_info.slices)=%s",
                           bool(self.disk_info.slices))
             logging.debug("self.disk_info.modified()=%s",
@@ -206,5 +206,7 @@ class FDiskPart(BaseScreen):
             # or partition, set the do_revert flag so that the following
             # screen will know to reset the disk (reverting the call
             # to create_default_layout, above)
-            self.disk_info.do_revert = self.disk_info.use_whole_segment
+            # self.disk_info.do_revert = self.disk_info.use_whole_segment
             self.disk_info.use_whole_segment = False
+            if self.is_x86 and not self.x86_slice_mode and not self.disk_info.partitions:
+                self.disk_info.create_partitioned_layout()

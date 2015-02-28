@@ -160,8 +160,8 @@ class DiskWindow(InnerWindow):
             self.has_partition_data = True
         elif disk_info.slices:
             self.has_partition_data = False
-        else:
-            return
+#        else:
+#            return
         
         if self.has_partition_data:
             if self.editable:
@@ -173,7 +173,7 @@ class DiskWindow(InnerWindow):
                                             self.headers[0][0])
             else:
                 self.headers = DiskWindow.STATIC_PARTITION_HEADERS
-        else:
+        elif disk_info.slices:
             if self.editable:
                 self.headers = DiskWindow.EDIT_SLICE_HEADERS
                 self.list_area = WindowArea(1, self.headers[0][0] +

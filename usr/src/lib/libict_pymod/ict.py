@@ -346,6 +346,18 @@ def _delete_temporary_file(filename):
     except StandardError:
         pass # ignore failure to delete temp file
 
+def correct_rdsk(devname):
+    '''
+    appends s0 to devname if it ends with dX
+    '''
+    n = len(devname)-1
+    while (n>0 and devname[n].isdigit()):
+        n -= 1
+    if n>=0 and devname[n] == "d":
+        result = devname + "s0"
+    else:
+        result = devname
+    return result
 
 class ICT(object):
     '''main class to support ICT
@@ -835,7 +847,7 @@ class ICT(object):
         returns 0 if command succeeded, error code otherwise
         '''
         _register_task(inspect.currentframe())
-        cmd = 'bootadm update-menu -R %s -Z -o %s 2>&1' % (self.basedir, rdsk)
+        cmd = 'bootadm update-menu -R %s -Z -o %s 2>&1' % (self.basedir, correct_rdsk(rdsk))
         info_msg('update GRUB boot menu on device ' + rdsk)
         _dbg_msg('editing GRUB menu: ' + cmd)
         status, cmdout = _cmd_out(cmd)

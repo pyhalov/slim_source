@@ -92,8 +92,7 @@ class DiskScreen(BaseScreen):
     DISK_WARNING_TOOBIG = _("Only the first %.1fTB can be used.")
     DISK_WARNING_GPT = _("You have chosen a GPT labeled disk. Installing "
                          "onto a GPT labeled disk will cause the loss "
-                         "of all existing data and the disk will be "
-                         "relabeled as SMI.")
+                         "of all existing data. ")
 
     CANCEL_BUTTON = _("Cancel")
     CONTINUE_BUTTON = _("Continue")
@@ -387,8 +386,8 @@ class DiskScreen(BaseScreen):
         warning_txt = []
         if DiskInfo.GPT in disk.label:
             warning_txt.append(DiskScreen.DISK_WARNING_GPT)
-        if disk.size > SliceInfo.MAX_VTOC:
-            warning_txt.append(self.disk_warning_too_big)
+#        elif disk.size > SliceInfo.MAX_VTOC:
+#            warning_txt.append(self.disk_warning_too_big)
         warning_txt = " ".join(warning_txt)
         
         if warning_txt:
