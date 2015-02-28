@@ -306,10 +306,10 @@ class DiskScreen(BaseScreen):
             if disk_size < self.minimum_size:
                 note_field = self.too_small_text
                 selectable = False
-            elif DiskInfo.GPT in disk.label:
-                note_field = DiskScreen.GPT_LABELED
-            elif disk_size > SliceInfo.MAX_VTOC.size_as("gb"):
-                note_field = self.too_big_warn
+#            elif DiskInfo.GPT in disk.label:
+#                note_field = DiskScreen.GPT_LABELED
+#            elif disk_size > SliceInfo.MAX_VTOC.size_as("gb"):
+#                self.elf = true
             else:
                 note_field = ""
             disk_text_fields.append(note_field)
