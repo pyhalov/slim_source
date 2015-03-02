@@ -385,10 +385,10 @@ class DiskScreen(BaseScreen):
         disk = self.disk_detail.disk_info
         
         warning_txt = []
-        if DiskInfo.GPT in disk.label:
-            warning_txt.append(DiskScreen.DISK_WARNING_GPT)
-        if disk.size > SliceInfo.MAX_VTOC:
-            warning_txt.append(self.disk_warning_too_big)
+#        if DiskInfo.GPT in disk.label:
+#            warning_txt.append(DiskScreen.DISK_WARNING_GPT)
+#        if disk.size > SliceInfo.MAX_VTOC:
+#            warning_txt.append(self.disk_warning_too_big)
         warning_txt = " ".join(warning_txt)
         
         if warning_txt:
