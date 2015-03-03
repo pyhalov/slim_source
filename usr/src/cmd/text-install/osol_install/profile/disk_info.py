@@ -152,8 +152,10 @@ class DiskInfo(object):
             self.slices = []
             if tgt_disk.children:
                 if isinstance(tgt_disk.children[0], tgt.Slice):
-                    for child in tgt_disk.children:
-                        self.slices.append(SliceInfo(tgt_slice=child))
+                    # On x86 disk itself can't have slices
+                    if platform.processor() == "sparc":
+                        for child in tgt_disk.children:
+                            self.slices.append(SliceInfo(tgt_slice=child))
                 else:
                     for child in tgt_disk.children:
                         self.partitions.append(PartitionInfo(tgt_part=child))
@@ -355,8 +357,9 @@ class DiskInfo(object):
             numbers.remove(SliceInfo.BACKUP_SLICE)
             start_pt = 0
         else:
-            raise ValueError("Cannot determine if this disk has partitions"
-                             " or slices")
+            self._unused_parts_added = True
+            return
+
         backup_part = None
         if not use_partitions:
             for part in parts:
