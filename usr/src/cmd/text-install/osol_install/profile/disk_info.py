@@ -583,6 +583,27 @@ class DiskInfo(object):
             self.partitions = []
             self.label.add(DiskInfo.GPT)
     
+    def create_partitioned_layout(self):
+        '''Create a reasonable layout using partitions
+
+        '''
+        # do not allow size to exceed MAX_VTOC
+        maxsz = min(self.get_size(), SliceInfo.MAX_VTOC)
+
+        if platform.processor() == "sparc":
+            whole_part = SliceInfo(slice_num=0, size=self.size,
+                                   slice_type=SliceInfo.ROOT_POOL)
+            backup_part = SliceInfo(slice_num=SliceInfo.BACKUP_SLICE,
+                                    size=self.size)
+            self.slices = [whole_part, backup_part]
+            self.label.add(DiskInfo.VTOC)
+        else:
+	   whole_part = PartitionInfo(part_num=1, size=maxsz,
+	                               partition_id=PartitionInfo.SOLARIS)
+	   whole_part.create_default_layout()
+           self.partitions = [whole_part]
+           self.label.add(DiskInfo.FDISK)
+
     def get_install_dev_name_and_size(self):
         '''Returns the installation device name string and the size of the
         install device in MB.
@@ -593,7 +614,7 @@ class DiskInfo(object):
 	        if install_target is None:
 	            logging.error("Failed to find device to install onto")
 	            raise InstallationError
-	            name = self.name + "s" + str(install_target.number)
+	        name = self.name + "s" + str(install_target.number)
 	        size = (int)(install_target.size.size_as("mb"))
 	else:
 		name=self.name

@@ -112,9 +112,9 @@ class FDiskPart(BaseScreen):
             disk = self.install_profile.disk
             self.disk_info = disk.get_solaris_data()
             if self.disk_info is None:
-                err_msg = "Critical error - no Solaris partition found"
-                logging.error(err_msg)
-                raise ValueError(err_msg)
+                # No partitions selected - it's whole disk EFI install
+                logging.error("No partitions were selected. Continuing.")
+                raise SkipException
             logging.debug("bool(self.disk_info.slices)=%s",
                           bool(self.disk_info.slices))
             logging.debug("self.disk_info.modified()=%s",
@@ -206,5 +206,7 @@ class FDiskPart(BaseScreen):
             # or partition, set the do_revert flag so that the following
             # screen will know to reset the disk (reverting the call
             # to create_default_layout, above)
-            self.disk_info.do_revert = self.disk_info.use_whole_segment
+            # self.disk_info.do_revert = self.disk_info.use_whole_segment
             self.disk_info.use_whole_segment = False
+            if self.is_x86 and not self.x86_slice_mode:
+                self.disk_info.create_partitioned_layout()

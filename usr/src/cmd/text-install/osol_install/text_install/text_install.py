@@ -134,10 +134,8 @@ def make_screen_list(main_win):
     result.append(FDiskPart(main_win))
     result.append(PartEditScreen(main_win))
     if platform.processor() == "i386":
-	# Temporary disallow to create slices on x86 - just to check that's everything
-	# else is working
-        result.append(FDiskPart(main_win))
-        result.append(PartEditScreen(main_win))
+        result.append(FDiskPart(main_win, x86_slice_mode=True))
+        result.append(PartEditScreen(main_win, x86_slice_mode=True))
     result.append(NetworkTypeScreen(main_win))
     result.append(NICSelect(main_win))
     result.append(NICConfigure(main_win))
