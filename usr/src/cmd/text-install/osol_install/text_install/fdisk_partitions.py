@@ -208,5 +208,5 @@ class FDiskPart(BaseScreen):
             # to create_default_layout, above)
             # self.disk_info.do_revert = self.disk_info.use_whole_segment
             self.disk_info.use_whole_segment = False
-            if self.is_x86 and not self.x86_slice_mode:
+            if self.is_x86 and not self.x86_slice_mode and not self.disk_info.partitions:
                 self.disk_info.create_partitioned_layout()
