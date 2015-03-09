@@ -59,10 +59,10 @@ class FDiskPart(BaseScreen):
     FOUND_SLICE = _("The following slices were found on the disk.")
     PROPOSED_SLICE = _("A VTOC label was not found. The following is "
                        "proposed.")
-    USE_WHOLE_DISK = _("Use the whole disk")
+    USE_WHOLE_DISK = _("Use the whole disk (EFI)")
     USE_WHOLE_PARTITION = _("Use the whole partition")
     USE_SLICE_IN_PART = _("Use a slice in the partition")
-    USE_PART_IN_DISK = _("Use a partition of the disk")
+    USE_PART_IN_DISK = _("Use a partition of the disk (MBR)")
     USE_SLICE_IN_DISK = _("Use a slice on the disk")
     
     def __init__(self, main_win, x86_slice_mode=False):
