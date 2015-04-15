@@ -27,6 +27,3 @@ Choose from the following alternatives:
 
 			/a/var/sadm/system/logs/install_log
 			/a/var/sadm/system/logs/upgrade_log
-			/a/var/sadm/system/logs/sysidtool.log 
-
-

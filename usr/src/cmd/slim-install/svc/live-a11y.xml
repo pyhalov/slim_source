@@ -43,7 +43,7 @@
 
 	<instance name='live-media' enabled='true'>
 		<!--
-		  We depend on sysidtool so that /jack and /root have been 
+		  We depend on sysidtool:live-media so that /jack and /root have been
 		  mounted and are available for us to write to.
 		--> 
 		<dependency

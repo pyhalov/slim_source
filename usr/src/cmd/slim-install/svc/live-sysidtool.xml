@@ -26,18 +26,12 @@
 -->
 
 <!--
-    This bundle delivers two service instances: sysidtool:net and
-    sysidtool:live-media.  These take care of running the system identity
-    tools.  The sysconfig milestone is dependent upon these services.
-    A slightly unusual situation arises here because
-    of the cross-consolidation boundary.  While needed quite early in
-    boot, this is *not* part of the seed repository.  On first boot after
-    install, the system may block for a while, while the import-manifests
-    method is running.  Once this manifest is acquired, console-login's
-    dependency can be satisfied by running these services:
+    This bundle delivers one service instance: sysidtool:live-media.
+    It take care of creating necessary file systems.
+    Dependency can be satisfied by running these services:
 
 	*network* -> identity ->
-		sysidtool:net -> sysidtool:system -> sysconfig -> console-login
+		sysidtool:net -> sysidtool:live-media -> sysconfig -> console-login
 
 -->
 <service_bundle type='manifest' name='SUNWadmr:sysidtool'>
@@ -70,61 +64,6 @@
 			value='transient' />
 	</property_group>
 
-	<instance name='net' enabled='true'>
-
-		<dependency name='single-user'
-			grouping='require_all'
-			restart_on='none'
-			type='service'>
-			<service_fmri
-				value='svc:/milestone/single-user:default'/>
-		</dependency>
-
-		<dependency name='filesystem_local'
-			grouping='require_all'
-			restart_on='none'
-			type='service'>
-			<service_fmri
-				value='svc:/system/filesystem/local'/>
-		</dependency>
-
-		<dependent
-			name='sysidtoolnet_sysconfig'
-			grouping='optional_all'
-			restart_on='none'>
-			<service_fmri value='svc:/milestone/sysconfig' />
-		</dependent>
-
-		<exec_method
-			type='method'
-			name='start'
-			exec='/lib/svc/method/sysidtool-net'
-			timeout_seconds='0' />
-
-		<exec_method
-                        type='method'
-                        name='stop'
-                        exec=':true'
-                        timeout_seconds='0' />
-	</instance>
-
-	<instance name='system' enabled='false'>
-<!--
-		The "start" and "stop" methods here are never executed.
-		They are specified so SMF template validation can succeed.
--->
-		<exec_method
-			type='method'
-			name='start'
-			exec=':true'
-			timeout_seconds='0' />
-		<exec_method
-			type='method'
-			name='stop'
-			exec=':true'
-			timeout_seconds='0' />
-	</instance>
-
 	<instance name='live-media' enabled='true'>
 
 		<dependency name='single-user'
@@ -142,14 +81,6 @@
 			<service_fmri
 				value='svc:/system/filesystem/local'/>
 		</dependency>
-
-                <dependency name='sysidnet'
-                    grouping='require_all'
-                    restart_on='none'
-                    type='service'>
-                        <service_fmri
-                            value='svc:/system/sysidtool:net'/>
-                </dependency>
 
                 <dependency name='rpcbind'
                     grouping='optional_all'
