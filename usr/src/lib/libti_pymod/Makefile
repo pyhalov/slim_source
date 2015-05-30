@@ -46,7 +46,7 @@ python:
 
 include ../Makefile.lib
 
-INCLUDE		= -I/usr/include/python2.6 -I../libti
+INCLUDE		= -I/usr/include/python2.7 -I../libti
 
 CPPFLAGS	+= ${INCLUDE} $(CPPFLAGS.master) -D_FILE_OFFSET_BITS=64
 CFLAGS		+= $(DEBUG_CFLAGS)  ${CPPFLAGS}

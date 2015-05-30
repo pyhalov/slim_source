@@ -1,4 +1,4 @@
-#!/bin/python2.6
+#!/bin/python2.7
 #
 # CDDL HEADER START
 #

@@ -1,4 +1,4 @@
-#!/usr/bin/python2.6
+#!/usr/bin/python2.7
 #
 # CDDL HEADER START
 #
@@ -689,7 +689,7 @@ def kill_processes(service):
     try:
         procsToKill.append({
                            "proc": "ai-webserver",
-                           "searchStr": "/usr/bin/python2.6 "+
+                           "searchStr": "/usr/bin/python2.7 "+
                                         "/usr/lib/installadm/webserver -p " +
                                         # port number (as txt_record is
                                         # serverName:port (we want the second

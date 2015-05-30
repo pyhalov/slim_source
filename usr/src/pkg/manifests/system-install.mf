@@ -41,9 +41,9 @@ dir path=usr/bin
 dir path=usr/include
 dir path=usr/include/admin
 dir path=usr/lib
-dir path=usr/lib/python2.6
-dir path=usr/lib/python2.6/vendor-packages
-dir path=usr/lib/python2.6/vendor-packages/osol_install
+dir path=usr/lib/python2.7
+dir path=usr/lib/python2.7/vendor-packages
+dir path=usr/lib/python2.7/vendor-packages/osol_install
 dir path=usr/sbin
 dir path=usr/share group=sys
 dir path=usr/share/install group=sys
@@ -60,39 +60,39 @@ file path=usr/bin/ManifestRead mode=0555
 file path=usr/bin/ManifestServ mode=0555
 file path=usr/include/admin/ti_api.h
 file path=usr/include/admin/transfermod.h
-file path=usr/lib/python2.6/vendor-packages/osol_install/__init__.py mode=0444
-file path=usr/lib/python2.6/vendor-packages/osol_install/__init__.pyc mode=0444
-file path=usr/lib/python2.6/vendor-packages/osol_install/DefValProc.py
-file path=usr/lib/python2.6/vendor-packages/osol_install/DefValProc.pyc
-file path=usr/lib/python2.6/vendor-packages/osol_install/ENParser.py
-file path=usr/lib/python2.6/vendor-packages/osol_install/ENParser.pyc
-file path=usr/lib/python2.6/vendor-packages/osol_install/finalizer.py
-file path=usr/lib/python2.6/vendor-packages/osol_install/finalizer.pyc
-file path=usr/lib/python2.6/vendor-packages/osol_install/ict.py mode=0755
-file path=usr/lib/python2.6/vendor-packages/osol_install/ict.pyc
-file path=usr/lib/python2.6/vendor-packages/osol_install/install_utils.py
-file path=usr/lib/python2.6/vendor-packages/osol_install/install_utils.pyc
-file path=usr/lib/python2.6/vendor-packages/osol_install/liblogsvc.so
-file path=usr/lib/python2.6/vendor-packages/osol_install/libti.so
-link path=usr/lib/python2.6/vendor-packages/osol_install/libtransfer.so target=../../../../snadm/lib/libtransfer.so
-file path=usr/lib/python2.6/vendor-packages/osol_install/libzoneinfo.so
-file path=usr/lib/python2.6/vendor-packages/osol_install/ManifestRead.py
-file path=usr/lib/python2.6/vendor-packages/osol_install/ManifestRead.pyc
-file path=usr/lib/python2.6/vendor-packages/osol_install/ManifestServ.py
-file path=usr/lib/python2.6/vendor-packages/osol_install/ManifestServ.pyc
-file path=usr/lib/python2.6/vendor-packages/osol_install/SocketServProtocol.py
-file path=usr/lib/python2.6/vendor-packages/osol_install/SocketServProtocol.pyc
-file path=usr/lib/python2.6/vendor-packages/osol_install/tgt.so
-file path=usr/lib/python2.6/vendor-packages/osol_install/tgt_utils.py
-file path=usr/lib/python2.6/vendor-packages/osol_install/tgt_utils.pyc
-file path=usr/lib/python2.6/vendor-packages/osol_install/ti_defs.py
-file path=usr/lib/python2.6/vendor-packages/osol_install/ti_defs.pyc
-file path=usr/lib/python2.6/vendor-packages/osol_install/transfer_defs.py
-file path=usr/lib/python2.6/vendor-packages/osol_install/transfer_defs.pyc
-file path=usr/lib/python2.6/vendor-packages/osol_install/transfer_mod.py
-file path=usr/lib/python2.6/vendor-packages/osol_install/transfer_mod.pyc
-file path=usr/lib/python2.6/vendor-packages/osol_install/TreeAcc.py
-file path=usr/lib/python2.6/vendor-packages/osol_install/TreeAcc.pyc
+file path=usr/lib/python2.7/vendor-packages/osol_install/__init__.py mode=0444
+file path=usr/lib/python2.7/vendor-packages/osol_install/__init__.pyc mode=0444
+file path=usr/lib/python2.7/vendor-packages/osol_install/DefValProc.py
+file path=usr/lib/python2.7/vendor-packages/osol_install/DefValProc.pyc
+file path=usr/lib/python2.7/vendor-packages/osol_install/ENParser.py
+file path=usr/lib/python2.7/vendor-packages/osol_install/ENParser.pyc
+file path=usr/lib/python2.7/vendor-packages/osol_install/finalizer.py
+file path=usr/lib/python2.7/vendor-packages/osol_install/finalizer.pyc
+file path=usr/lib/python2.7/vendor-packages/osol_install/ict.py mode=0755
+file path=usr/lib/python2.7/vendor-packages/osol_install/ict.pyc
+file path=usr/lib/python2.7/vendor-packages/osol_install/install_utils.py
+file path=usr/lib/python2.7/vendor-packages/osol_install/install_utils.pyc
+file path=usr/lib/python2.7/vendor-packages/osol_install/liblogsvc.so
+file path=usr/lib/python2.7/vendor-packages/osol_install/libti.so
+link path=usr/lib/python2.7/vendor-packages/osol_install/libtransfer.so target=../../../../snadm/lib/libtransfer.so
+file path=usr/lib/python2.7/vendor-packages/osol_install/libzoneinfo.so
+file path=usr/lib/python2.7/vendor-packages/osol_install/ManifestRead.py
+file path=usr/lib/python2.7/vendor-packages/osol_install/ManifestRead.pyc
+file path=usr/lib/python2.7/vendor-packages/osol_install/ManifestServ.py
+file path=usr/lib/python2.7/vendor-packages/osol_install/ManifestServ.pyc
+file path=usr/lib/python2.7/vendor-packages/osol_install/SocketServProtocol.py
+file path=usr/lib/python2.7/vendor-packages/osol_install/SocketServProtocol.pyc
+file path=usr/lib/python2.7/vendor-packages/osol_install/tgt.so
+file path=usr/lib/python2.7/vendor-packages/osol_install/tgt_utils.py
+file path=usr/lib/python2.7/vendor-packages/osol_install/tgt_utils.pyc
+file path=usr/lib/python2.7/vendor-packages/osol_install/ti_defs.py
+file path=usr/lib/python2.7/vendor-packages/osol_install/ti_defs.pyc
+file path=usr/lib/python2.7/vendor-packages/osol_install/transfer_defs.py
+file path=usr/lib/python2.7/vendor-packages/osol_install/transfer_defs.pyc
+file path=usr/lib/python2.7/vendor-packages/osol_install/transfer_mod.py
+file path=usr/lib/python2.7/vendor-packages/osol_install/transfer_mod.pyc
+file path=usr/lib/python2.7/vendor-packages/osol_install/TreeAcc.py
+file path=usr/lib/python2.7/vendor-packages/osol_install/TreeAcc.pyc
 file path=usr/share/install/sc_template.xml mode=0444 group=sys
 file path=usr/share/lib/xml/rng/defval-manifest.rng group=sys
 file path=usr/snadm/lib/libict.so.1

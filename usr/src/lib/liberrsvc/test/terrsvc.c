@@ -6,12 +6,12 @@
  *     - 'make install' in usr/src/lib/liberrsvc_pymod
  *     - 'make install' in usr/src/lib/install_utils
  *       (this is needed to create the file:
- * proto/root_i386/usr/lib/python2.6/vendor-packages/osol_install/__init__.py)
+ * proto/root_i386/usr/lib/python2.7/vendor-packages/osol_install/__init__.py)
  *
  *
  * and then:
  * - export \
- * PYTHONPATH=../../../../../proto/root_i386/usr/lib/python2.6/vendor-packages
+ * PYTHONPATH=../../../../../proto/root_i386/usr/lib/python2.7/vendor-packages
  *   (adjust "i386" for SPARC)
  * - ./terrsvc
  */

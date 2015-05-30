@@ -69,7 +69,7 @@ ROOTSCPROFILES= $(SC_PROFILE_FILES:%=$(ROOTAUTOINSTSCPROFILES)/%)
 LIBDIR  = $(ROOTADMINLIB)
 LIBDIRS = -L${LIBDIR} -L$(SFWLIBDIR) -R$(SFWLIBRDIR) -L$(ROOTUSRLIB)
 
-INCLUDEDIR = -I. -I${SRC}/lib/liborchestrator -I${SRC}/lib/libtd -I${SRC}/lib/libti -I${SRC}/lib/liblogsvc -I${SRC}/lib/libtransfer -I$(ROOTINCADMIN) -I/usr/include/python2.6
+INCLUDEDIR = -I. -I${SRC}/lib/liborchestrator -I${SRC}/lib/libtd -I${SRC}/lib/libti -I${SRC}/lib/liblogsvc -I${SRC}/lib/libtransfer -I$(ROOTINCADMIN) -I/usr/include/python2.7
 
 CPPFLAGS  += $(INCLUDEDIR)
 CFLAGS	  += $(DEBUG_CFLAGS)
@@ -78,7 +78,7 @@ LINTFLAGS  = -umx ${CPPFLAGS}
 LDFLAGS  +=	$(DEBUG_CFLAGS) \
 		-R$(ROOTADMINLIB:$(ROOT)%=%) $(LIBDIRS)
 LDLIBS  +=	-Wl,-Bdynamic -ltd -ltransfer -lti -lorchestrator \
-		 -lbe -lspmicommon -lnvpair -llogsvc -lelf -lpython2.6
+		 -lbe -lspmicommon -lnvpair -llogsvc -lelf -lpython2.7
 
 MSG_DOMAIN = SUNW_INSTALL_AUTOINSTALL
 
