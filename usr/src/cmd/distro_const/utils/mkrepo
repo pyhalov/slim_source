@@ -37,13 +37,11 @@ SVCCFG_REPOSITORY=${ROOTDIR}/etc/svc/repository.db
 export SVCCFG_DTD SVCCFG_REPOSITORY
 
 PKG_IMG_PATH=$2
-SVCCFG_CMD=$PKG_IMG_PATH/usr/sbin/svccfg
-if [ ! -x $PKG_IMG_PATH/usr/sbin/svccfg ] ; then
-	echo "$PKG_IMG_PATH/usr/sbin/svccfg is not executable" >& 2
+SVCCFG_CMD=/usr/sbin/svccfg
+if [ ! -x /usr/sbin/svccfg ] ; then
+	echo "/usr/sbin/svccfg is not executable" >& 2
 	exit 1
 fi
-LD_LIBRARY_PATH=$PKG_IMG_PATH/lib:$PKG_IMG_PATH/usr/lib:$LD_LIBRARY_PATH
-export LD_LIBRARY_PATH
 
 [ -f /lib/svc/share/smf_include.sh ] || exit 1
 
@@ -64,8 +62,8 @@ import_manifests_pre_emi () {
 	nonsite_dirs=`/usr/bin/find ${ROOTDIR}/var/svc/manifest/* -name site -prune \
 	    -o -type d -print -prune`
 
-	nonsite_manifests=`${ROOTDIR}/lib/svc/bin/mfstscan $nonsite_dirs`
-	site_manifests=`${ROOTDIR}/lib/svc/bin/mfstscan ${ROOTDIR}/var/svc/manifest/site`
+	nonsite_manifests=`/lib/svc/bin/mfstscan $nonsite_dirs`
+	site_manifests=`/lib/svc/bin/mfstscan ${ROOTDIR}/var/svc/manifest/site`
 
 	manifests="$nonsite_manifests $site_manifests"
 
