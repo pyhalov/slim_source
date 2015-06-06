@@ -24,7 +24,7 @@
 
 #
 # This file is installed into
-# usr/lib/python2.6/vendor-packages/osol_install/auto_install/ directory
+# usr/lib/python2.7/vendor-packages/osol_install/auto_install/ directory
 # and lets the Python interpreter know that this directory contains valid
 # Python modules which can be imported using following command:
 # from osol_install.auto_install.<module_name> import <object>

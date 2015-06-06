@@ -1,4 +1,4 @@
-#!/usr/bin/python2.6
+#!/usr/bin/python2.7
 #
 # CDDL HEADER START
 #
@@ -26,11 +26,11 @@
 To run these tests:
 
 1) nightly -n developer.sh # build the gate
-2) export PYTHONPATH=${WS}/proto/root_i386/usr/snadm/lib:${WS}/proto/root_i386/usr/lib/python2.6/vendor-packages
-3) pfexec python2.6 test_disk_select.py
+2) export PYTHONPATH=${WS}/proto/root_i386/usr/snadm/lib:${WS}/proto/root_i386/usr/lib/python2.7/vendor-packages
+3) pfexec python2.7 test_disk_select.py
 
 A single test may be run by specifying the test as an argument to step 3, e.g.:
-pfexec python2.6 test_disk_select.py OnActivateTest.test_on_activate_default
+pfexec python2.7 test_disk_select.py OnActivateTest.test_on_activate_default
 
 Since the proto area is used for the PYTHONPATH, the gate must be rebuilt for
 these tests to pick up any changes in the tested code.

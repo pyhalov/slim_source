@@ -43,12 +43,12 @@ HDRS		= $(EXPHDRS) $(PRIVHDRS)
 
 include ../Makefile.lib
 
-INCLUDE		= -I/usr/include/python2.6
+INCLUDE		= -I/usr/include/python2.7
 
 CPPFLAGS	+= ${INCLUDE} $(CPPFLAGS.master)
 CFLAGS		+= $(DEBUG_CFLAGS)  ${CPPFLAGS} -DNDEBUG
 SOFLAGS		+= -L$(ROOTADMINLIB) -R$(ROOTADMINLIB:$(ROOT)%=%) -L/lib \
-		-lpython2.6 -lc -zdefs
+		-lpython2.7 -lc -zdefs
 
 static:		$(LIBS)
 

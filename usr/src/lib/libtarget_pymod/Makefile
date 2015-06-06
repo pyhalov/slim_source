@@ -46,7 +46,7 @@ HDRS		= $(EXPHDRS) $(PRIVHDRS)
 
 include ../Makefile.lib
 
-PYVERSION=python2.6
+PYVERSION=python2.7
 PYINCLUDE=-I/usr/include/$(PYVERSION) -I../libtd -I../libti
 
 INCLUDE		 = -I. \

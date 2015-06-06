@@ -30,18 +30,18 @@ set name=variant.arch value=$(ARCH)
 set name=variant.opensolaris.zone value=global value=nonglobal
 dir path=usr group=sys
 dir path=usr/lib
-dir path=usr/lib/python2.6
-dir path=usr/lib/python2.6/vendor-packages
-dir path=usr/lib/python2.6/vendor-packages/osol_install
+dir path=usr/lib/python2.7
+dir path=usr/lib/python2.7/vendor-packages
+dir path=usr/lib/python2.7/vendor-packages/osol_install
 dir path=usr/snadm
 dir path=usr/snadm/lib
 file path=usr/lib/libaiscf.so.1
 file path=usr/lib/liberrsvc.so.1
-file path=usr/lib/python2.6/vendor-packages/osol_install/_liberrsvc.so
-file path=usr/lib/python2.6/vendor-packages/osol_install/errsvc.py
-file path=usr/lib/python2.6/vendor-packages/osol_install/errsvc.pyc
-file path=usr/lib/python2.6/vendor-packages/osol_install/liberrsvc.py
-file path=usr/lib/python2.6/vendor-packages/osol_install/liberrsvc.pyc
+file path=usr/lib/python2.7/vendor-packages/osol_install/_liberrsvc.so
+file path=usr/lib/python2.7/vendor-packages/osol_install/errsvc.py
+file path=usr/lib/python2.7/vendor-packages/osol_install/errsvc.pyc
+file path=usr/lib/python2.7/vendor-packages/osol_install/liberrsvc.py
+file path=usr/lib/python2.7/vendor-packages/osol_install/liberrsvc.pyc
 file path=usr/snadm/lib/libspmicommon.so.1
 license cr_Sun license=cr_Sun
 link path=usr/lib/libaiscf.so target=libaiscf.so.1
