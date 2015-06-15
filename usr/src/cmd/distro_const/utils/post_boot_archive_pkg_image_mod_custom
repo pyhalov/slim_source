@@ -84,12 +84,13 @@ initial_cwd=`pwd`
 if [ -d ${PKG_IMG_PATH}/platform ] ; then
     cd ${PKG_IMG_PATH}/platform
     if [ `$UNAME -p` == "sparc" ] ; then
-	$FIND . -type f -a ! -name wanboot -a ! -name boot_archive | \
-	    $XARGS $RM -f
+	$FIND . -type f -a ! -name wanboot -a ! -name boot_archive \
+	    -a ! -name boot_archive.hash | $XARGS $RM -f
         cd ${PKG_IMG_PATH}
 	${LN} -s ../platform boot/platform
     else
-        $FIND . -type f -a ! -name unix -a ! -name boot_archive | $XARGS $RM -f
+        $FIND . -type f -a ! -name unix -a ! -name boot_archive \
+	    -a ! -name boot_archive.hash | $XARGS $RM -f
         # GRUB does not understand symlinks, so make copies
         cd ${PKG_IMG_PATH}
         ${CP} -r ${PKG_IMG_PATH}/platform ${PKG_IMG_PATH}/boot
