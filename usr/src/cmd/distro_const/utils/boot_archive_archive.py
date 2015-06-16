@@ -57,6 +57,7 @@ from osol_install.ti_defs import TI_ATTR_TARGET_TYPE, \
 # A few commands
 AWK = "/usr/bin/awk"
 CD = "cd"               # Built into the shell
+DIGEST = "/usr/bin/digest"
 CMD7ZA = "/usr/bin/7za"
 CPIO = "/usr/bin/cpio"
 FIND = "/usr/bin/find"
@@ -505,6 +506,14 @@ if not IS_SPARC:
         print "Skipping compression..."
     else:
         print "Doing compression..."
+
+	CMD = DIGEST + " -a sha1 " + BA_ARCHFILE + " > " + BA_ARCHFILE + ".hash"
+        STATUS = os.system(CMD)
+        if (STATUS != 0):
+            raise Exception, (sys.argv[0] +
+                ": digest error on boot archive: " +
+                "digest command returns: " + os.strerror(STATUS >> 8))
+	os.chmod(BA_ARCHFILE + ".hash", 0644)
 
         # archive file using 7zip command and gzip compression
         CMD = CMD7ZA + " a "
