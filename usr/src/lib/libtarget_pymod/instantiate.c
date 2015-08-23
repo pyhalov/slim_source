@@ -43,10 +43,10 @@ static int create_fdisk_target(PyObject *self, TgtDisk *disk);
 static int create_vtoc_target(PyObject *self, TgtDisk *disk,
     PyObject *create_swap_slice);
 
-#define	ZFS_FS_NUM		1
+#define	ZFS_FS_NUM		2
 #define	TGT_NUMPART		(FD_NUMPART + MAX_EXT_PARTS)
 
-static char *zfs_fs_names[ZFS_FS_NUM] = {"/"};
+static char *zfs_fs_names[ZFS_FS_NUM] = {"/", "/var"};
 
 #if defined(i386)
 /*
