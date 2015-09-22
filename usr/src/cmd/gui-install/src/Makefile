@@ -109,7 +109,7 @@ CATALOGS =
 CATOBJEXT = .gmo
 #commented to allow inheritance CC = /ws/onnv-tools/SUNWspro/SS11/bin/cc
 CCDEPMODE = depmode=none
-CFLAGS = 
+CFLAGS = -Wno-deprecated-declarations
 CPP = ${CC} -E
 #CPP = /ws/onnv-tools/SUNWspro/SS11/bin/cc -E
 CPPFLAGS = -I${SRC}/lib/liborchestrator -I${SRC}/lib/liblogsvc -std=c99 -D__EXTENSIONS__
