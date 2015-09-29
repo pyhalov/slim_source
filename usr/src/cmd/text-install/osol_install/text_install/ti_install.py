@@ -44,7 +44,6 @@ from osol_install.profile.disk_info import PartitionInfo
 from osol_install.profile.network_info import NetworkInfo
 from osol_install.text_install import RELEASE
 import osol_install.text_install.ti_install_utils as ti_utils 
-from osol_install.ict import correct_rdsk
 
 #
 # RTC command to run
@@ -596,15 +595,9 @@ def run_ICTs(install_profile, hostname, ict_mesg, inst_device, locale,
     except ti_utils.InstallationError:
         failed_icts += 1
     
-    is_logical = "0"
-    part_info = install_profile.disk.get_solaris_data()
-    if isinstance(part_info, PartitionInfo) and part_info.is_logical():
-        is_logical = "1"
-    
     try:
-        exec_cmd([ICT_PROG, "ict_installboot", INSTALLED_ROOT_DIR,
-                  correct_rdsk(inst_device),
-                  is_logical], "execute ict_installboot() ICT")
+        exec_cmd(["/usr/sbin/bootadm", "install-bootloader", "-f", "-R", INSTALLED_ROOT_DIR,
+                  "-P", rootpool_name], "execute bootadm install-bootloader")
     except ti_utils.InstallationError:
         failed_icts += 1
 
