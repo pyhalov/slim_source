@@ -29,7 +29,7 @@
 
 include $(SRC)/Makefile.master
 
-SUBDIRS= auto-install gui-install gui-aux installadm rbac slim-install \
+SUBDIRS= auto-install installadm rbac slim-install \
     system-config
 PYTHONSUBDIRS= ai-webserver distro_const text-install
 TOOLSSUBDIRS= install-tools

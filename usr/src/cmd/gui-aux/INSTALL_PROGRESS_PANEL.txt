@@ -1,7 +1,0 @@
-Installing
-
-
-A progress bar displays during the installation of the OpenIndiana OS.
-
-
-CAUTION: Do not interrupt an installation in progress.

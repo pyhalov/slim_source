@@ -23,8 +23,4 @@
 #
 
 set name=pkg.fmri value=pkg:/SUNWgui-install@$(PKGVERS)
-set name=pkg.renamed value=true
-set name=variant.arch value=$(ARCH)
-set name=variant.opensolaris.zone value=global
-depend fmri=pkg:/system/install/gui-install@0.5.11,5.11-0.144 type=require
-
+set name=pkg.obsolete value=true
