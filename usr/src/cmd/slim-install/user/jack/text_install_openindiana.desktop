@@ -1,0 +1,13 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Install OpenIndiana using text installer
+Name[ru]=Установить OpenIndiana с помощью текстового инсталлятора
+Type=Application
+Terminal=true
+Exec=/usr/bin/sudo /usr/bin/text-install
+StartupNotify=true
+Icon=system-software-install
+GenericName=Install OpenIndiana to disk using text installer
+GenericName[ru]=Установить OpenIndiana на диск с помощью текстового инсталлятора
+Comment=
+Categories=Applications;System

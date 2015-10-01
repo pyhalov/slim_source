@@ -25,7 +25,8 @@
 JACKCONFIGAUTOFILESRC = iotrace.desktop ddu_silent.desktop
 JACKFILESRC644 = xorg.conf.vesa
 JACKDESKTOPFILESRC = 	install_openindiana.desktop ddu.desktop \
-			.os-icons-installed gparted.desktop
+			.os-icons-installed gparted.desktop \
+			text_install_openindiana.desktop
 JACKDOTFILESRC = Xclients bashrc profile xscreensaver dmrc
 
 include $(SRC)/cmd/slim-install/Makefile.slim
