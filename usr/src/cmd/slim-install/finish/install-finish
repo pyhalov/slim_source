@@ -179,7 +179,6 @@ if autoinstall_exists():
         SA.append(ICTO.setup_dev_namespace())
         SA.append(ICTO.create_sparc_boot_menu())
         SA.append(ICTO.copy_sparc_bootlst())
-        SA.append(ICTO.add_sysidtool_sys_unconfig())
         SA.append(ICTO.configure_nwam())
         SA.append(ICTO.set_flush_content_cache_false())
         SA.append(ICTO.apply_sysconfig_profile())
@@ -202,7 +201,6 @@ if autoinstall_exists():
         SA.append(ICTO.enable_happy_face_boot())
         SA.append(ICTO.setup_dev_namespace())
         SA.append(ICTO.copy_splash_xpm())
-        SA.append(ICTO.add_sysidtool_sys_unconfig())
         SA.append(ICTO.configure_nwam())
         SA.append(ICTO.set_flush_content_cache_false())
         SA.append(ICTO.copy_capability_file())
@@ -243,7 +241,6 @@ else:
     if not IS_SPARC:
         SA.append(ICTO.copy_splash_xpm())
     SA.append(ICTO.smf_correct_sys_profile())
-    SA.append(ICTO.add_sysidtool_sys_unconfig())
     if textinstall_exists():
         PKG_REMOVE_LIST = ['pkg:/system/install/media/internal',
                            'pkg:/system/install/text-install']
