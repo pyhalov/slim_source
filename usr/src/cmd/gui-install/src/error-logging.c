@@ -160,7 +160,7 @@ print_from_parts(gboolean header_only,
 		g_debug("");
 		g_debug(" %8s : %3s : %7s : %7s : %7s : %7s",
 		    "PartType", "Idx", "Size MB", "Size GB", "SpinVal", "Avail");
-		g_debug(" %8s : %3s : %7s : %7s : %7s : %7s : %7s",
+		g_debug(" %8s : %3s : %7s : %7s : %7s : %7s",
 		    "========", "===", "=======", "=======", "=======", "========");
 	} else {
 		spinvalue = gtk_spin_button_get_value(spinner);
