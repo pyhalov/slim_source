@@ -60,7 +60,7 @@ CFLAGS		+= $(DEBUG_CFLAGS)  ${CPPFLAGS}
 LDFLAGS		+=
 SOFLAGS		+= -L$(ROOTADMINLIB) -R$(ROOTADMINLIB:$(ROOT)%=%) \
 		-ltd -lnvpair -lict \
-		-llogsvc -ltransfer -lti
+		-llogsvc -ltransfer -lti -lzoneinfo
 
 LINTERR		= lint_errors
 LINTFILES	= ${SRCS:%.c=${ARCH}/%.ln}
