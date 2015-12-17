@@ -25,6 +25,7 @@
 
 #include <dlfcn.h>
 #include <fcntl.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -44,7 +45,20 @@ om_set_time_zone(char *timezone)
 {
 	int		status;
 	static char	env_tz[256];
+	char	command[MAXPATHLEN]="";
 
+	
+	/* 
+	 * We have to set RTC in installer's environment.
+	 * Later /etc/rtc_config will be transfered to the new image.
+	 */
+	(void) snprintf(command, MAXPATHLEN, "/usr/sbin/rtc -z %s", timezone);
+	if ((status = system(command)) != 0 || system("/usr/sbin/rtc -c") != 0) {
+		om_log_print("Could not set TZ: %s in live image: %d\n",
+		    timezone, status);
+		om_set_error(OM_TIMEZONE_NOT_SET);
+		return (OM_FAILURE);
+	}
 	(void) snprintf(env_tz, sizeof (env_tz), "TZ=%s", timezone);
 	om_log_print("Timezone setting will be %s\n", env_tz);
 	if ((status = putenv(env_tz)) != 0) {
