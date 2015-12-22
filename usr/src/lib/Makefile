@@ -42,13 +42,8 @@ SUBDIRS=	install_utils \
 		libtransfer_pymod \
 		libzoneinfo_pymod
 
-HDRSUBDIRS=	libadmldb libadmutil
-
 COMSUBDIRS=	liberrsvc_pymod \
 		liberrsvc \
-
-ADMINLIBRARIES=	libadmldb.so libadmutil.so
-ROOTADMINLIBLINKS=	$(ADMINLIBRARIES:%=$(ROOTADMINLIB)/%)
 
 .PARALLEL:	$(SUBDIRS)
 
@@ -67,11 +62,11 @@ lint:=		TARGET= lint
 
 all check clean clobber lint: $(COMSUBDIRS) $(SUBDIRS)
 
-install: $(ROOTADMINLIBLINKS) .WAIT $(COMSUBDIRS) $(SUBDIRS)
+install: .WAIT $(COMSUBDIRS) $(SUBDIRS)
 
 headers: install_h
 
-install_h:	$(ROOTINCADMIN) $(HDRSUBDIRS) $(COMSUBDIRS) $(SUBDIRS)
+install_h:	$(COMSUBDIRS) $(SUBDIRS)
 
 # library dependencies
 libaiscf_pymod:		libaiscf
@@ -87,13 +82,7 @@ libict_pymod:		liblogsvc
 libtarget_pymod:	libtd libti
 
 
-$(ROOTADMINLIBLINKS):
-	$(RM) $@; $(SYMLINK) $(ADMINLIB)/$(@F) $@
-
-$(ROOTINCADMIN):
-	$(INS.dir)
-
-$(COMSUBDIRS) $(SUBDIRS) $(HDRSUBDIRS): FRC
+$(COMSUBDIRS) $(SUBDIRS): FRC
 	cd $@; pwd; $(MAKE) $(TARGET)
 
 FRC:

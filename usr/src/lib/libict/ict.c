@@ -24,13 +24,13 @@
 
 #include <errno.h>
 #include <stdarg.h>
+#include <strings.h>
 #include <sys/param.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <wait.h>
 #include <sys/utsname.h>
-#include "admldb.h"
 #include "ict_api.h"
 #include "ict_private.h"
 #include "ti_api.h"

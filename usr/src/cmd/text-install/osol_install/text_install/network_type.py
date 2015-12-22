@@ -140,22 +140,15 @@ class NetworkTypeScreen(BaseScreen):
                                  NetworkTypeScreen.ITEM_DESC_OFFSET,
                                  self.menu_item_desc_max)
         
-        # Until availability of api to allow configuration of
-        # static ip, manual configuration is not available for actual
-        # installations.
-        # If the installer is run with a '-n' flag (for "no install mode"),
-        # the manual network screens are shown (this is for debugging and
-        # testing purposes)
-        if self.install_profile.no_install_mode:
-            y_loc += 2
-            item_area.y_loc = y_loc
-            self.manual = ListItem(item_area, window=self.center_win,
-                                   text=NetworkTypeScreen.MANUAL_TEXT)
-            self.manual.item_key = NetworkInfo.MANUAL
-            self.net_type_dict[self.manual.item_key] = self.manual
-            self.center_win.add_text(NetworkTypeScreen.MANUAL_DETAIL, y_loc,
-                                     NetworkTypeScreen.ITEM_DESC_OFFSET,
-                                     self.menu_item_desc_max)
+        y_loc += 2
+        item_area.y_loc = y_loc
+        self.manual = ListItem(item_area, window=self.center_win,
+                               text=NetworkTypeScreen.MANUAL_TEXT)
+        self.manual.item_key = NetworkInfo.MANUAL
+        self.net_type_dict[self.manual.item_key] = self.manual
+        self.center_win.add_text(NetworkTypeScreen.MANUAL_DETAIL, y_loc,
+                                 NetworkTypeScreen.ITEM_DESC_OFFSET,
+                                 self.menu_item_desc_max)
         
         y_loc += 2
         item_area.y_loc = y_loc

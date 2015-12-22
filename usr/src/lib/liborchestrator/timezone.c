@@ -19,13 +19,14 @@
  * CDDL HEADER END
  */
 /*
- * Copyright 2010 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
+ * Copyright (c) 2007, 2011, Oracle and/or its affiliates. All rights reserved.
  */
 
 
 #include <dlfcn.h>
 #include <fcntl.h>
+#include <limits.h>
+#include <libzoneinfo.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -38,8 +39,6 @@
 #include <crypt.h>
 #include <unistd.h>
 
-#include "admutil.h"
-
 #include "orchestrator_private.h"
 
 int
@@ -47,24 +46,27 @@ om_set_time_zone(char *timezone)
 {
 	int		status;
 	static char	env_tz[256];
+	char	command[MAXPATHLEN]="";
 
-	status = set_timezone(timezone, "/");
-	if (status != 0) {
-		/*
-		 * A status of -1 indicates a bad timezone specification.
-		 * We don't want to put this value in to the environment
-		 * so we return with a failure here. Other errors indicate
-		 * rtc errors which are not fatal. We log them and go
-		 * on.
-		 */
-
-		if (status == -1) {
-			om_log_print("Invalid timezone: %s\n", timezone);
-			om_set_error(OM_INVALID_TIMEZONE);
-			return (OM_FAILURE);
-		}
-		om_log_print("Failure to set rtc value for %s\n",
-		    timezone);
+	
+	/* 
+	 * We have to set RTC and system timezone in installer's environment.
+	 * Later /etc/rtc_config and /etc/default/init will be transfered
+	 * to the new image.
+	 */
+	if ((status = set_system_tz(timezone,"/")) != 0) {
+		om_log_print("Could not set system TZ: %s in live image: %d\n",
+                    timezone, status);
+		om_set_error(OM_TIMEZONE_NOT_SET);
+		return (OM_FAILURE);
+	}
+	(void) snprintf(command, MAXPATHLEN, "/usr/sbin/rtc -z %s", timezone);
+	if ((status = system(command)) != 0 || 
+	    system("/usr/sbin/rtc -c") != 0) {
+		om_log_print("Could not set RTC TZ: %s in live image: %d\n",
+		    timezone, status);
+		om_set_error(OM_TIMEZONE_NOT_SET);
+		return (OM_FAILURE);
 	}
 	(void) snprintf(env_tz, sizeof (env_tz), "TZ=%s", timezone);
 	om_log_print("Timezone setting will be %s\n", env_tz);

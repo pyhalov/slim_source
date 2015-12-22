@@ -163,7 +163,7 @@ DEVFSADM=/usr/sbin/devfsadm
 ED=/usr/bin/ed
 FIND=/usr/bin/find
 GREP=/usr/xpg4/bin/grep
-MAKEUUID=/usr/bin/makeuuid
+UUIDGEN=/usr/bin/uuidgen
 TOUCH=/usr/bin/touch
 TR=/usr/bin/tr
 SED=/usr/bin/sed
@@ -326,7 +326,7 @@ mkdir mnt/pkg
 chmod 0755 mnt/pkg
 
 # create volume set id file
-VOLSETID=$($MAKEUUID)
+VOLSETID=$($UUIDGEN)
 
 echo $VOLSETID > $VOLSETID_FILENAME
 chmod 0444 $VOLSETID_FILENAME

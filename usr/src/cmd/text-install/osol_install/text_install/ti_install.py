@@ -136,41 +136,6 @@ class InstallStatus(object):
         self.previous_overall_progress = overall_progress
 
 
-SYSID_FILE = "/etc/.sysIDtool.state"
-SYSID_FILE_UMASK = 022
-SYSID_FILE_CONTENT = [["1", "# System previously configured?"],
-              ["1", "# Bootparams succeeded?"],
-              ["1", "# System is on a network?"],
-              ["1", "# Extended network information gathered?"],
-              ["1", "# Autobinder succeeded?"],
-              ["1", "# Network has subnets?"],
-              ["1", "# root password prompted for?"],
-              ["1", "# locale and term prompted for?"],
-              ["1", "# security policy in place"],
-              ["1", "# NFSv4 domain configured"],
-              # term type must be the last entry
-              ["sun", ""]]
-
-
-def create_sysid_file():
-    '''Create the /etc/.sysIDtool.state file'''
-    try:
-        with open(SYSID_FILE, "w") as sysid_file:
-            for entry in SYSID_FILE_CONTENT:
-                sysid_file.write(entry[0] + "\t" + entry[1] + "\n")
-  
-        # set the umask on the file
-        os.chmod(SYSID_FILE, SYSID_FILE_UMASK)
-    except IOError, ioe:
-        logging.error("Unable to write to %s", SYSID_FILE)
-        logging.exception(ioe)
-        raise ti_utils.InstallationError
-    except OSError, ose:
-        logging.error("Unable to create %s", SYSID_FILE)
-        logging.exception(ose)
-        raise ti_utils.InstallationError
-
-
 def transfer_mod_callback(percent, message):
     '''Callback for transfer module to indicate percentage complete.'''
     logging.debug("tm callback: %s: %s", percent, message)
@@ -482,13 +447,6 @@ def do_ti_install(install_profile, screen, update_status_func, quit_event,
     logging.debug("Swap device: %s", swap_device)
     ti_utils.setup_etc_vfstab_for_swap(swap_device, INSTALLED_ROOT_DIR)
 
-    #
-    # The /etc/.sysIDtool.state file needs to be written before calling
-    # the ICTs, because it gets copied over by the ICTs into the installed
-    # system.
-    #
-    create_sysid_file()
-    
     try:
         run_ICTs(install_profile, hostname, ict_mesg, inst_device,
                  locale, root_pass, ulogin, upass, ureal_name,
@@ -526,6 +484,9 @@ def post_install_cleanup(install_profile, rootpool_name):
     logging.debug("Copying %s to %s", install_profile.log_location,
                   final_log_loc)
     try:
+        dirname=os.path.dirname(final_log_loc)
+        if (not os.path.isdir(dirname)):
+            os.makedirs(dirname,0755) 
         shutil.copyfile(install_profile.log_location, final_log_loc)
     except (IOError, OSError), err: 
         logging.error("Failed to copy %s to %s", install_profile.log_location,
@@ -609,6 +570,10 @@ def run_ICTs(install_profile, hostname, ict_mesg, inst_device, locale,
            "-U", ICT_USER_UID]
     if (install_profile.nic.type == NetworkInfo.NONE):
         cmd.append("-N")
+    elif(install_profile.nic.type == NetworkInfo.MANUAL and install_profile.nic != ""):
+        nic=install_profile.nic
+        cmd.extend(["-F", nic.nic_name, "-I", nic.ip_address, "-M", nic.netmask,
+                    "-W", nic.gateway, "-D", nic.dns_address, "-O", nic.domain])
     
     try:
         exec_cmd(cmd, "execute INSTALL_FINISH_PROG")

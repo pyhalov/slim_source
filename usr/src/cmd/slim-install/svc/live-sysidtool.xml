@@ -98,7 +98,7 @@
 		<exec_method
 			type='method'
 			name='start'
-			exec='/lib/svc/method/sysidtool-net'
+			exec=':true'
 			timeout_seconds='0' />
 
 		<exec_method
