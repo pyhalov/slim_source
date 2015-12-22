@@ -320,6 +320,14 @@ def _cmd_status(cmd):
     _dbg_msg('_cmd_status: return exitstatus=' + str(exitstatus))
     return exitstatus
 
+def get_net_size(netmask):
+     binary_str = ''
+     na = netmask.split(".")
+     for octet in na:
+         binary_str += bin(int(octet))[2:].zfill(8)
+     return str(len(binary_str.rstrip('0')))
+
+
 
 def info_msg(msg):
     '''
@@ -1521,6 +1529,68 @@ class ICT(object):
             for ln in oa:
                 prerror(ln)
 
+            prerror('Failure. Returning: ICT_SVCCFG_FAILURE')
+            return (ICT_SVCCFG_FAILURE)
+
+        return return_status
+
+    def configure_network(self, ifname, ip, netmask, gw, dns, domain):
+        '''ICT - Configure network manually.  NWAM will be disabled.
+        Net physical default will be enabled.
+        SVCCFG_DTD=basedir + '/usr/share/lib/xml/dtd/service_bundle.dtd.1'
+        SVCCFG_REPOSITORY=basedir + '/etc/svc/repository.db'
+        svccfg -s network/physical:default setprop general/enabled = true
+        svccfg -s network/physical:nwam setprop general/enabled = false
+
+        return 0, otherwise error status
+        '''
+        _register_task(inspect.currentframe())
+
+        return_status = 0
+
+        os.putenv('SVCCFG_DTD', self.basedir +
+                  '/usr/share/lib/xml/dtd/service_bundle.dtd.1')
+        os.putenv('SVCCFG_REPOSITORY', self.basedir + '/etc/svc/repository.db')
+        cmd = '/usr/sbin/svccfg -s network/physical:default setprop ' + \
+              'general/enabled = true 2>&1'
+        status, oa = _cmd_out(cmd)
+        if status != 0:
+            prerror('Command to disable network/physical:default failed. ' + \
+                    'exit status=' + str(status))
+            prerror('Command to disable network/physical:default was: ' + cmd)
+            for ln in oa:
+                prerror(ln)
+            prerror('Failure. Returning: ICT_SVCCFG_FAILURE')
+            return(ICT_SVCCFG_FAILURE)
+
+        cmd = '/usr/sbin/svccfg -s network/physical:nwam setprop ' + \
+              'general/enabled = false 2>&1'
+        status, oa = _cmd_out(cmd)
+        if status != 0:
+            prerror('Command to disable nwam failed. exit status=' + \
+                    str(status))
+            prerror('Command to disable nwam was: ' + cmd)
+            for ln in oa:
+                prerror(ln)
+
+            prerror('Failure. Returning: ICT_SVCCFG_FAILURE')
+            return (ICT_SVCCFG_FAILURE)
+
+        sysding_cf="" + self.basedir + "/etc/sysding.conf"
+	try:
+            fp = open(sysding_cf,"w")
+            if(ifname != ""):
+                if(netmask !="" and ip !=""):
+                    if (ip != "dhcp"):
+                        fp.write("setup_interface %s v4 %s/%s\n" % (ifname,ip,get_net_size(netmask)))
+                    else:
+                        fp.write("setup_interface %s v4 dhcp\n" % (ifname))
+                    if(gw != ""):
+                        fp.write("setup_route default %s\n" % (gw))
+            if(dns != ""):
+                fp.write("setup_ns_dns \"%s\" \"%s\" \"%s\"\n" % (domain,"",dns))
+            fp.close()
+        except IOError:
             prerror('Failure. Returning: ICT_SVCCFG_FAILURE')
             return (ICT_SVCCFG_FAILURE)
 

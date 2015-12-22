@@ -612,6 +612,10 @@ def run_ICTs(install_profile, hostname, ict_mesg, inst_device, locale,
            "-U", ICT_USER_UID]
     if (install_profile.nic.type == NetworkInfo.NONE):
         cmd.append("-N")
+    elif(install_profile.nic.type == NetworkInfo.MANUAL and install_profile.nic != ""):
+        nic=install_profile.nic
+        cmd.extend(["-F", nic.nic_name, "-I", nic.ip_address, "-M", nic.netmask,
+                    "-W", nic.gateway, "-D", nic.dns_address, "-O", nic.domain])
     
     try:
         exec_cmd(cmd, "execute INSTALL_FINISH_PROG")

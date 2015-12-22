@@ -88,10 +88,17 @@ NU_PW = ""             # argument p
 NU_GID = "101"         # argument G
 NU_UID = "10"          # argument U
 NO_NETWORK = False     # argument N
+IF_NAME = ""           # argument F
+IP_ADDRESS = ""        # argument I
+IP_NETMASK = ""        # argument M
+GW_ADDRESS = ""        # argument W
+DNS_SERVER = ""        # argument D
+DNS_DOMAIN = ""        # argument O
+
 
 #parse command line arguments
 try:
-    OPTS, ARGS = getopt.getopt(sys.argv[1:],'B:d:R:n:l:p:G:U:N')
+    OPTS, ARGS = getopt.getopt(sys.argv[1:],'B:d:R:n:l:p:G:U:NF:I:M:D:O:W:')
 
 except getopt.GetoptError, err:
     prerror('Parsing command line arguments failed. (%s)' % str(err))
@@ -128,6 +135,18 @@ for o, a in OPTS:
         NU_UID = a
     if o in '-N':
         NO_NETWORK = True
+    if o in '-F':
+        IF_NAME = a
+    if o in '-I':
+        IP_ADDRESS = a
+    if o in '-M':
+        IP_NETMASK = a
+    if o in '-W':
+        GW_ADDRESS = a
+    if o in '-D':
+        DNS_SERVER = a
+    if o in '-O':
+        DNS_DOMAIN = a
 
 #perform ICT initialization, specifying root target path, debugging level
 
@@ -252,6 +271,8 @@ else:
 			   'pkg:/system/install/locale']
     if NO_NETWORK:
         SA.append(ICTO.do_not_configure_network())
+    elif IP_ADDRESS !="":
+        SA.append(ICTO.configure_network(IF_NAME,IP_ADDRESS,IP_NETMASK,GW_ADDRESS,DNS_SERVER,DNS_DOMAIN))
     else:
         SA.append(ICTO.enable_nwam())
 
