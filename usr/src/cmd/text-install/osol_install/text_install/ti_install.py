@@ -526,6 +526,9 @@ def post_install_cleanup(install_profile, rootpool_name):
     logging.debug("Copying %s to %s", install_profile.log_location,
                   final_log_loc)
     try:
+        dirname=os.path.dirname(final_log_loc)
+        if (not os.path.isdir(dirname)):
+            os.makedirs(dirname,0755) 
         shutil.copyfile(install_profile.log_location, final_log_loc)
     except (IOError, OSError), err: 
         logging.error("Failed to copy %s to %s", install_profile.log_location,

@@ -34,6 +34,7 @@
  *		users
  */
 
+#include <errno.h>
 #include <libgen.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -103,6 +104,17 @@ _setup_install_log(void)
 	char	*old_logpath = "/var/sadm/install_data/upgrade_log";
 	FILE	*tmpf;
 	static char	new_path[MAXPATHLEN] = "";
+	char dirname[MAXPATHLEN] = "";
+	struct stat st;
+
+        sprintf(dirname,"%s/%s",get_rootdir(),"/var/sadm/system/logs");
+
+	if (stat(dirname,&st)<0 && errno==ENOENT){
+		char cmd[MAXPATHLEN+10]="";
+		sprintf(cmd,"mkdir -p %s",dirname);
+		system(dirname);
+	}
+
 
 	if (get_install_type() == CMNUpgrade) {
 		(void) sprintf(new_path, "%s%s/upgrade_log",
