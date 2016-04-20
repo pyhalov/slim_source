@@ -112,7 +112,7 @@ _setup_install_log(void)
 	if (stat(dirname,&st)<0 && errno==ENOENT){
 		char cmd[MAXPATHLEN+10]="";
 		sprintf(cmd,"mkdir -p %s",dirname);
-		system(dirname);
+		system(cmd);
 	}
 
 
