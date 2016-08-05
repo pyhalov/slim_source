@@ -44,6 +44,12 @@ then
 	mountfs -O /jack tmpfs - swap || exit $SMF_EXIT_ERR_FATAL
 	cd /.cdrom/jack
 	find . -print | cpio -pmud /jack
+	
+	# Switch to Mate by default if it's present
+	if [ -x /usr/bin/mate-session ]; then
+		echo '[Desktop]' > /jack/.dmrc
+		echo 'Session=mate' >> /jack/.dmrc
+	fi
 
 	#
 	# Setup ICE-unix
