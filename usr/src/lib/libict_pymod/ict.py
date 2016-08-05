@@ -2517,19 +2517,20 @@ class ICT(object):
         temp_file = '/var/run/sudoers'
 
         try:
-            with open(self.sudoers, 'r') as fp:
-                sudoers_lines = fp.readlines()
-            with open(temp_file, 'w') as fp_tmp:
-                for l in sudoers_lines:
-                    if not l.startswith("jack"):
-                        fp_tmp.write(l)
-                if login:
-                    fp_tmp.write(login + ' ALL=(ALL) ALL\n')
-
-            os.remove(self.sudoers)
-            shutil.move(temp_file, self.sudoers)
-            os.chmod(self.sudoers, S_IREAD | S_IRGRP)
-            os.chown(self.sudoers, 0, 0) # chown root:root
+            if os.path.isfile(self.sudoers):
+                with open(self.sudoers, 'r') as fp:
+                    sudoers_lines = fp.readlines()
+                with open(temp_file, 'w') as fp_tmp:
+                    for l in sudoers_lines:
+                        if not l.startswith("jack"):
+                            fp_tmp.write(l)
+                    if login:
+                        fp_tmp.write(login + ' ALL=(ALL) ALL\n')
+    
+                os.remove(self.sudoers)
+                shutil.move(temp_file, self.sudoers)
+                os.chmod(self.sudoers, S_IREAD | S_IRGRP)
+                os.chown(self.sudoers, 0, 0) # chown root:root
         except IOError, (errno, strerror):
             prerror('Failure to edit sudoers file')
             prerror(traceback.format_exc())
