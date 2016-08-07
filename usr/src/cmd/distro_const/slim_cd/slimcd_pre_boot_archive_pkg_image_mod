@@ -177,6 +177,7 @@ $CHROOT $PKG_IMG_PATH $SH /lib/svc/method/input-method-cache start
 $CHROOT $PKG_IMG_PATH $SH /lib/svc/method/mime-types-cache start
 $CHROOT $PKG_IMG_PATH $SH /lib/svc/method/pixbuf-loaders-installer start
 $CHROOT $PKG_IMG_PATH $SH /lib/svc/method/icon-cache start
+$CHROOT $PKG_IMG_PATH $SH /lib/svc/method/gio-module-cache start
 
 # We disabled gnome-netstatus-applet for the liveCD but we want it
 # to be active when the default user logs in after installation.
