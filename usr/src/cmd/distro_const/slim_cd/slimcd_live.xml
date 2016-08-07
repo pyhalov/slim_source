@@ -122,6 +122,10 @@
     <instance name='default' enabled='false' />
   </service>
 
+  <service name='application/desktop-cache/gio-module-cache' version='1' type='service'>
+    <instance name='default' enabled='false' />
+  </service>
+
   <service name='application/desktop-cache/icon-cache' version='1' type='service'>
     <instance name='default' enabled='false' />
   </service>
