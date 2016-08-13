@@ -85,21 +85,32 @@ SED=/usr/bin/sed
 
 print "Making slim_cd specific boot archive configurations..."
 
-# Note: the following replaces /etc/gdm/custom.conf and /etc/user_attr
-# It's OK that symbolic links have been created to these files already, as
-# the files can change without affecting the links to them.
+if [ -d ${BA_BUILD}/etc/gdm ] ; then
+	# Note: the following replaces /etc/gdm/custom.conf
+	# It's OK that symbolic links have been created to these files already, as
+	# the files can change without affecting the links to them.
 
-# Enable auto-login in gdm, and save original to replace after installation
-$MKDIR -p ${PKG_IMG_PATH}/save/etc/gdm
-$CP -p ${BA_BUILD}/etc/gdm/custom.conf ${PKG_IMG_PATH}/save/etc/gdm
-$NAWK '/^\[daemon\]/ { print $0;
-    print "AutomaticLoginEnable=true";
-    print "AutomaticLogin=jack";
-    print "GdmXserverTimeout=30";
-    continue }  { print $0 }' ${BA_BUILD}/etc/gdm/custom.conf \
-    > ${TMP_DIR}/custom.conf
-$CP ${TMP_DIR}/custom.conf ${BA_BUILD}/etc/gdm
-$RM ${TMP_DIR}/custom.conf
+	# Enable auto-login in gdm, and save original to replace after installation
+	$MKDIR -p ${PKG_IMG_PATH}/save/etc/gdm
+	$CP -p ${BA_BUILD}/etc/gdm/custom.conf ${PKG_IMG_PATH}/save/etc/gdm
+	$NAWK '/^\[daemon\]/ { print $0;
+	    print "AutomaticLoginEnable=true";
+	    print "AutomaticLogin=jack";
+	    print "GdmXserverTimeout=30";
+	    continue }  { print $0 }' ${BA_BUILD}/etc/gdm/custom.conf \
+	    > ${TMP_DIR}/custom.conf
+	$CP ${TMP_DIR}/custom.conf ${BA_BUILD}/etc/gdm
+	$RM ${TMP_DIR}/custom.conf
+fi
+
+if [ -d ${BA_BUILD}/etc/lightdm ] ; then
+	# Note: the following modifies /etc/lightdm/lightdm.conf
+
+	# Enable auto-login in lightdm, and save original to replace after installation
+	$MKDIR -p ${PKG_IMG_PATH}/save/etc/lightdm
+	$CP -p ${BA_BUILD}/etc/lightdm/lightdm.conf ${PKG_IMG_PATH}/save/etc/lightdm
+	printf "[SeatDefaults]\nautologin-user=jack\n" >> ${BA_BUILD}/etc/lightdm/lightdm.conf
+fi
 
 # Set the default X cursor theme
 if [ -f ${BA_BUILD}/etc/X11/Xdefaults ] ; then
