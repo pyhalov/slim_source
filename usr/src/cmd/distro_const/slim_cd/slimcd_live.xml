@@ -171,6 +171,19 @@
   </service>
 
   <!--
+      Enable lightdm services.
+  -->
+  <service name='application/graphical-login/lightdm' version='1' type='service'>
+    <instance name='default' enabled='true'>
+       <exec_method
+                type='method'
+                name='start'
+		exec='/lib/svc/method/svc-lightdm start'
+                timeout_seconds='120'/>
+    </instance>
+  </service>
+
+  <!--
       Enable X11 services
   -->
   <service name='application/opengl/ogl-select' version='1' type='service'>
