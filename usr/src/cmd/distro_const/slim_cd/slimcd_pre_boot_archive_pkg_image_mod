@@ -112,20 +112,22 @@ $CP -p ${PKG_IMG_PATH}/usr/share/gnome/autostart/vp-sysmon.desktop \
     ${SAVE_PATH}/usr/share/gnome/autostart
 $RM ${PKG_IMG_PATH}/usr/share/gnome/autostart/vp-sysmon.desktop
 
-# Reconfigure panel to:
-# - remove Gnome netstatus-applet
-# - use theme background rather than image
-# on live CD and restore after installation
-$MKDIR -p ${SAVE_PATH}/etc/gconf/schemas
-$CP -p ${PKG_IMG_PATH}/etc/gconf/schemas/panel-default-setup.entries \
-    ${SAVE_PATH}/etc/gconf/schemas
-$SED -e '/.*<string>netstatus_applet<\/string>/{$!N;N;d;}' \
-    -e '/.*<string>image<\/string>/s:image:gtk:' \
-    ${PKG_IMG_PATH}/etc/gconf/schemas/panel-default-setup.entries \
-    > ${TMP_DIR}/panel-default-setup.entries
-$CP ${TMP_DIR}/panel-default-setup.entries \
-    ${PKG_IMG_PATH}/etc/gconf/schemas/panel-default-setup.entries
-$RM ${TMP_DIR}/panel-default-setup.entries
+if [ -f ${PKG_IMG_PATH}/etc/gconf/schemas/panel-default-setup.entries ]; then
+   # Reconfigure panel to:
+   # - remove Gnome netstatus-applet
+   # - use theme background rather than image
+   # on live CD and restore after installation
+   $MKDIR -p ${SAVE_PATH}/etc/gconf/schemas
+   $CP -p ${PKG_IMG_PATH}/etc/gconf/schemas/panel-default-setup.entries \
+       ${SAVE_PATH}/etc/gconf/schemas
+   $SED -e '/.*<string>netstatus_applet<\/string>/{$!N;N;d;}' \
+       -e '/.*<string>image<\/string>/s:image:gtk:' \
+       ${PKG_IMG_PATH}/etc/gconf/schemas/panel-default-setup.entries \
+       > ${TMP_DIR}/panel-default-setup.entries
+   $CP ${TMP_DIR}/panel-default-setup.entries \
+       ${PKG_IMG_PATH}/etc/gconf/schemas/panel-default-setup.entries
+   $RM ${TMP_DIR}/panel-default-setup.entries
+fi
 
 # Modify /etc/system to make ZFS less mem hungry
 $MKDIR -p ${SAVE_PATH}/etc
@@ -179,13 +181,15 @@ $CHROOT $PKG_IMG_PATH $SH /lib/svc/method/pixbuf-loaders-installer start
 $CHROOT $PKG_IMG_PATH $SH /lib/svc/method/icon-cache start
 $CHROOT $PKG_IMG_PATH $SH /lib/svc/method/gio-module-cache start
 
-# We disabled gnome-netstatus-applet for the liveCD but we want it
-# to be active when the default user logs in after installation.
-# By giving the saved copy of panel-default-setup.entries a later
-# timestamp than the global gconf cache we'll end up enabling the
-# applet on first reboot when the desktop-cache/gconf-cache service
-# starts.
-$TOUCH ${SAVE_PATH}/etc/gconf/schemas/panel-default-setup.entries
+if [ -f ${PKG_IMG_PATH}/etc/gconf/schemas/panel-default-setup.entries ]; then
+	# We disabled gnome-netstatus-applet for the liveCD but we want it
+	# to be active when the default user logs in after installation.
+	# By giving the saved copy of panel-default-setup.entries a later
+	# timestamp than the global gconf cache we'll end up enabling the
+	# applet on first reboot when the desktop-cache/gconf-cache service
+	# starts.
+	$TOUCH ${SAVE_PATH}/etc/gconf/schemas/panel-default-setup.entries
+fi
 
 #Remove the temp /dev/null
 $RM ${PKG_IMG_PATH}/dev/null
