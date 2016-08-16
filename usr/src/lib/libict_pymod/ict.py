@@ -985,6 +985,7 @@ class ICT(object):
         Configured parameters:
           * keyboard layout - profile will configure keymap/layout SMF property
             of svc:/system/keymap:default SMF service.
+          * enabled display manager - either lightdm or gdm (if lightdm doesn't exist)
         
         Following approach is taken:
          * Take template profile
@@ -995,6 +996,7 @@ class ICT(object):
 
         return 0 for success, ICT_GENERATE_SC_PROFILE_FAILED in case of failure
         '''
+        display_manager='gdm'
 
         _register_task(inspect.currentframe())
 
@@ -1018,8 +1020,13 @@ class ICT(object):
             return 0
 
         info_msg('Detected ' + self.keyboard_layout + ' keyboard layout')
-        status = _cmd_status('/usr/bin/sed s/US-English/' + \
+
+        if os.path.isfile(self.basedir + '/usr/sbin/lightdm'):
+            display_manager='lightdm' 
+            
+        status = _cmd_status('/usr/bin/sed -e s/US-English/' + \
                              self.keyboard_layout + '/ ' + \
+	                     ' -e s/gdm/' + display_manager + '/ ' + \
                              sc_profile_src + ' > ' + sc_profile_dst)
         if status != 0:
             try:
@@ -2517,19 +2524,20 @@ class ICT(object):
         temp_file = '/var/run/sudoers'
 
         try:
-            with open(self.sudoers, 'r') as fp:
-                sudoers_lines = fp.readlines()
-            with open(temp_file, 'w') as fp_tmp:
-                for l in sudoers_lines:
-                    if not l.startswith("jack"):
-                        fp_tmp.write(l)
-                if login:
-                    fp_tmp.write(login + ' ALL=(ALL) ALL\n')
-
-            os.remove(self.sudoers)
-            shutil.move(temp_file, self.sudoers)
-            os.chmod(self.sudoers, S_IREAD | S_IRGRP)
-            os.chown(self.sudoers, 0, 0) # chown root:root
+            if os.path.isfile(self.sudoers):
+                with open(self.sudoers, 'r') as fp:
+                    sudoers_lines = fp.readlines()
+                with open(temp_file, 'w') as fp_tmp:
+                    for l in sudoers_lines:
+                        if not l.startswith("jack"):
+                            fp_tmp.write(l)
+                    if login:
+                        fp_tmp.write(login + ' ALL=(ALL) ALL\n')
+    
+                os.remove(self.sudoers)
+                shutil.move(temp_file, self.sudoers)
+                os.chmod(self.sudoers, S_IREAD | S_IRGRP)
+                os.chown(self.sudoers, 0, 0) # chown root:root
         except IOError, (errno, strerror):
             prerror('Failure to edit sudoers file')
             prerror(traceback.format_exc())

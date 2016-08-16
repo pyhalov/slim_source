@@ -122,6 +122,10 @@
     <instance name='default' enabled='false' />
   </service>
 
+  <service name='application/desktop-cache/gio-module-cache' version='1' type='service'>
+    <instance name='default' enabled='false' />
+  </service>
+
   <service name='application/desktop-cache/icon-cache' version='1' type='service'>
     <instance name='default' enabled='false' />
   </service>
@@ -162,6 +166,19 @@
                 type='method'
                 name='start'
 		exec='/lib/svc/method/svc-gdm start'
+                timeout_seconds='120'/>
+    </instance>
+  </service>
+
+  <!--
+      Enable lightdm services.
+  -->
+  <service name='application/graphical-login/lightdm' version='1' type='service'>
+    <instance name='default' enabled='true'>
+       <exec_method
+                type='method'
+                name='start'
+		exec='/lib/svc/method/svc-lightdm start'
                 timeout_seconds='120'/>
     </instance>
   </service>
