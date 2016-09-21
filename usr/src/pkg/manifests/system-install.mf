@@ -29,7 +29,6 @@ set name=variant.arch value=$(ARCH)
 set name=variant.opensolaris.zone value=global value=nonglobal
 depend fmri=compress/gzip type=require
 depend fmri=install/beadm type=require
-depend fmri=library/python-2/python-extra-26 type=require
 dir path=lib
 dir path=lib/svc
 dir path=lib/svc/manifest group=sys
