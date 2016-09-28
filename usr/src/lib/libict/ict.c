@@ -593,25 +593,12 @@ ict_set_host_node_name(char *target, char *hostname)
 /*
  * Function:	ict_installboot()
  *
- * This function prepares a bootloader or bootblock on the specified device.
- *
- * For x86 platforms this involves the installation of the GRand Unified
- * Bootloader GRUB stage 1 and stage 2 files on the boot area of the
- * specified device using installboot(1M).
- *
- * For SPARC platforms this involves the installation of bootblocks in
- * a disk partition using installboot(1M).
- *
+ * This function prepares a bootloader or bootblock on the specified pool.
  *
  * Input:
  *    target - The installation transfer target. A directory used by the
  *             installer as a staging area, historically /a
- *    device - The device to install bootloader
- *    install_partition_is_logical_fdisk - If the partition target
- *             for the installation is an fdisk logical partition, i.e., within
- *             the extended partition, pass B_TRUE, else B_FALSE.
- *             See om_install_partition_is_logical() for further details.
- *    onto.
+ *    poolname - Root pool name
  *
  * Return:
  *    ICT_SUCCESS   - Successful Completion
@@ -619,68 +606,30 @@ ict_set_host_node_name(char *target, char *hostname)
  *
  */
 ict_status_t
-ict_installboot(char *target, char *device,
-    boolean_t install_partition_is_logical_fdisk)
+ict_installboot(char *target, char *poolname)
 {
 	char *_this_func_ = "ict_installboot";
 	char	cmd[MAXPATHLEN];
 	int	ict_status = 0;
-#ifdef __sparc
-	struct utsname name;
-#endif
 
 	ict_log_print(CURRENT_ICT, _this_func_);
 
-	ict_debug_print(ICT_DBGLVL_INFO, "target:%s device:%s\n",
-	    target, device);
+	ict_debug_print(ICT_DBGLVL_INFO, "target:%s poolname:%s\n",
+	    target, poolname);
 
 	/*
 	 * Confirm input arguments
 	 */
-	if (((device == NULL) || (strlen(device) == 0)) ||
+	if (((poolname == NULL) || (strlen(poolname) == 0)) ||
 	    ((target == NULL) || (strlen(target) == 0))) {
 		ict_log_print(INVALID_ARG, _this_func_);
 		return (set_error(ICT_INVALID_ARG));
 	}
 
-#ifdef __sparc
-	if (uname(&name) < 0) {
-		ict_debug_print(ICT_DBGLVL_ERR, INSTALLBOOT_UNAME_ERROR,
-		    _this_func_);
-		return (set_error(ICT_INST_BOOT_FAIL));
-	}
-	ict_debug_print(ICT_DBGLVL_INFO, "karch:%s\n", name.machine);
+	(void) snprintf(cmd, sizeof (cmd),
+	    "/usr/sbin/bootadm install-bootloader -f -R %s -P %s",
+	    target, poolname);
 
-	(void) snprintf(cmd, sizeof (cmd),
-	    "/usr/bin/env -i PATH=/usr/bin /usr/sbin/installboot -F zfs "
-	    "%s/platform/%s/lib/fs/zfs/bootblk /dev/rdsk/%s",
-	    target, name.machine, device);
-#else
-	/*
-	 * Install GRUB in a disk partition using installgrub(1m)
-	 *
-	 * According to installgrub man page, if Solaris is installed
-	 * in a logical partition, GRUB must be installed in the MBR
-	 * which is specified by the -m option,
-	 * option -f supresses normal interaction when -m is used
-	 *
-	 * The installgrub, stage1, and stage2 binaries are all taken
-	 * from the GRUB directory on the target so that they are
-	 * all synchronized
-	 *
-	 * For primary/extended partitions, the command should be:
-	 *	/a/sbin/installgrub /a/boot/grub/stage1
-	 *		/a/boot/grub/stage2 /dev/rdsk/cNtNdNsN
-	 * For logical partitions:
-	 *	/a/sbin/installgrub -mf /a/boot/grub/stage1
-	 *		/a/boot/grub/stage2 /dev/rdsk/cNtNdNsN
-	 */
-	(void) snprintf(cmd, sizeof (cmd),
-	    "%s/sbin/installgrub %s%s/boot/grub/stage1 %s/boot/grub/stage2 "
-	    "/dev/rdsk/%s", target,
-	    install_partition_is_logical_fdisk ? "-mf ":"", /* MBR */
-	    target, target, device);
-#endif
 	ict_debug_print(ICT_DBGLVL_INFO, INSTALLBOOT_MSG, _this_func_);
 	ict_debug_print(ICT_DBGLVL_INFO, ICT_SAFE_SYSTEM_CMD, _this_func_, cmd);
 

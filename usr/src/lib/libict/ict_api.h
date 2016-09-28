@@ -146,8 +146,7 @@ ict_status_t ict_set_user_profile(char *target, char *login);
 ict_status_t ict_set_lang_locale(char *target, char *localep,
     int transfer_mode);
 ict_status_t ict_set_host_node_name(char *target, char *hostname);
-ict_status_t ict_installboot(char *target, char *device,
-    boolean_t install_partition_is_logical_fdisk);
+ict_status_t ict_installboot(char *target, char *poolname);
 ict_status_t ict_snapshot(char *pool, char *snapshot);
 ict_status_t ict_transfer_logs(char *src, char *dst, int transfer_mode);
 ict_status_t ict_mark_root_pool_ready(char *pool_name);
