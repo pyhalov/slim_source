@@ -1,0 +1,9 @@
+\
+\ Set chainloader menu entry.
+
+\ currdev is always set.
+s" currdev" getenv s" cd0:" compare 0= [if]
+	set chain_disk="disk0:"
+[else]
+	set chain_disk="disk1:"
+[then]

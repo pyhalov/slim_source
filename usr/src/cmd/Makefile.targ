@@ -117,8 +117,14 @@ $(ROOTDC):
 $(ROOTDC)/%: %
 	$(INS.file)
 
+$(ROOTDC_LOADER):
+	$(INS.dir)
+
 $(ROOTDC_SLIM):
 	$(INS.dir)
+
+$(ROOTDC_LOADER)/%: %
+	$(INS.file)
 
 $(ROOTDC_SLIM)/%: %
 	$(INS.file)
