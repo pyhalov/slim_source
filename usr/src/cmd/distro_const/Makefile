@@ -30,7 +30,7 @@ clean:=		TARGET=	clean
 clobber:=	TARGET=	clobber
 install:=	TARGET=	install
 
-SUBDIRS=	utils slim_cd auto_install text_install vmc
+SUBDIRS=	utils slim_cd auto_install text_install vmc loader
 
 PROGS=		distro_const
 

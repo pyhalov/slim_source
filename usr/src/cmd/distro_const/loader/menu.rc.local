@@ -1,0 +1,260 @@
+\
+\ This file and its contents are supplied under the terms of the
+\ Common Development and Distribution License ("CDDL"), version 1.0.
+\ You may only use this file in accordance with the terms of version
+\ 1.0 of the CDDL.
+\
+\ A full copy of the text of the CDDL should have accompanied this
+\ source.  A copy of the CDDL is also available via the Internet at
+\ http://www.illumos.org/license/CDDL.
+
+\ Copyright 2016 Toomas Soome <tsoome@me.com>
+
+\ OI Live media extra menu
+\ Implements menu for following kernel options:
+\ 
+\ Vesa driver  -B livemode=vesa
+\ Text console -B livemode=text
+\ Enable ssh 	-B livessh=enable
+\ Enable magnifier -B assistive-tech=magnifier
+\ Enable screen reader -B assistive-tech=reader
+
+also menu-namespace also menu-command-helpers
+
+\ Search string from boot-args
+: extras_enabled? { addr1 len1 | addr2 len2 -- flag }
+	s" boot-args" getenv dup -1 = if
+		drop 0 exit
+	then
+	to len2 to addr2
+	addr2 len2 addr1 len1 search
+	>r 2drop r>
+;
+
+\ Remove string from boot-args
+: extras_disable { a1 u1 | a2 u2 a3 u3 -- }
+	\ First the trivial case
+	s" boot-args" getenv dup -1 = if
+		drop exit
+	then
+	to u2 to a2	\ save boot-args
+	a2 u2 a1 u1 search if
+		to u3 to a3
+		u3 u1 = if
+			u2 u3 - to u2
+		else
+			a3 1+ u1 + a3 u3 u1 1- - move
+			u2 1- u1 - to u2
+		then
+		a3 1- c@ [char] , = if	\ remove trailing comma
+			u2 1- to u2
+		then
+		a2 u2 s" -B " compare 0= if
+			s" boot-args" unsetenv
+		else
+			a2 u2 s" boot-args" setenv
+		then
+	then
+;
+
+\ Allocate l1 + l2, then copy a1 to a3 and concatenate a2 to a3.
+: stradd { a1 l1 a2 l2 -- a3 l3 }
+	l1 l2 + allocate if ENOMEM throw then
+	dup a1 swap l1 move
+	dup l1 + a2 swap l2 move
+	l1 l2 +
+;
+
+\ Add string to boot-args
+: extras_enable ( c-addr u -- )
+	\ First the trivial case
+	s" boot-args" getenv dup -1 = if
+		drop
+		>r >r s" -B " r> r> stradd
+	else
+		\ And we can assume the boot-args only has "-B something", so
+		\ just concatenate the strings
+		s" ," stradd
+		over >r		\ save address
+		2swap stradd
+		r> free if EFREE throw then
+	then
+	over >r		\ save address
+	s" boot-args" setenv
+	r> free if EFREE throw then
+;
+
+\ Search and remove string from boot-args
+: extras_disable? ( c-addr len -- flag )
+	2dup extras_enabled? if
+		extras_disable
+		-1
+	else
+		2drop
+		0
+	then
+;
+
+: init_vesa
+	s" livemode=vesa" extras_enabled? if
+		toggle_menuitem ( n -- n )
+	then
+;
+
+: toggle_vesa
+	s" livemode=vesa" 2dup extras_enabled? if
+		extras_disable
+	else
+		s" livemode=text" extras_disable? if
+			[char] 3 toggle_menuitem drop
+		then
+		extras_enable
+	then
+	toggle_menuitem ( n -- n )
+	menu-redraw
+	TRUE
+;
+
+: init_text
+	s" livemode=text" extras_enabled? if
+		toggle_menuitem ( n -- n )
+	then
+;
+
+: toggle_text
+	s" livemode=text" 2dup extras_enabled? if
+		extras_disable
+	else
+		s" livemode=vesa" extras_disable? if
+			[char] 2 toggle_menuitem drop
+		then
+ 		s" assistive-tech=magnifier" extras_disable? if
+ 			[char] 5 toggle_menuitem drop
+ 		then
+ 		s" assistive-tech=reader" extras_disable? if
+ 			[char] 6 toggle_menuitem drop
+ 		then
+		extras_enable
+	then
+	toggle_menuitem ( n -- n )
+	menu-redraw
+	TRUE
+;
+
+: init_ssh
+	s" livessh=enable" extras_enabled? if
+		toggle_menuitem ( n -- n )
+	then
+;
+
+: toggle_ssh
+	s" livessh=enable" 2dup extras_enabled? if
+		extras_disable
+	else
+		extras_enable
+	then
+	toggle_menuitem ( n -- n )
+	menu-redraw
+	TRUE
+;
+
+: init_magnifier
+	s" assistive-tech=magnifier" extras_enabled? if
+		toggle_menuitem ( n -- n )
+	then
+;
+
+: toggle_magnifier
+	s" assistive-tech=magnifier" 2dup extras_enabled? if
+		extras_disable
+	else
+		s" livemode=text" extras_disable? if
+			[char] 3 toggle_menuitem drop
+		then
+		s" assistive-tech=reader" extras_disable? if
+			[char] 6 toggle_menuitem drop
+		then
+		extras_enable
+	then
+	toggle_menuitem ( n -- n )
+	menu-redraw
+	TRUE
+;
+
+: init_reader
+	s" assistive-tech=reader" extras_enabled? if
+		toggle_menuitem ( n -- n )
+	then
+;
+
+: toggle_reader
+	s" assistive-tech=reader" 2dup extras_enabled? if
+		extras_disable
+	else
+		s" livemode=text" extras_disable? if
+			[char] 3 toggle_menuitem drop
+		then
+		s" assistive-tech=magnifier" extras_disable? if
+			[char] 5 toggle_menuitem drop
+		then
+		extras_enable
+	then
+	toggle_menuitem ( n -- n )
+	menu-redraw
+	TRUE
+;
+
+set menuset_name4="extras"
+
+set mainmenu_caption[7]="Select OI E[x]tras..."
+set mainmenu_command[7]="4 goto_menu"
+set mainmenu_keycode[7]=120
+set mainansi_caption[7]="Select OI E^[1mx^[mtras..."
+
+set extrasmenu_caption[1]="Back to Main Menu [Backspace]"
+set extrasmenu_command[1]="1 goto_menu"
+set extrasmenu_keycode[1]=8
+set extrasansi_caption[1]="Back to Main Menu ^[1m[Backspace]^[m"
+
+set extrasmenu_options=2
+set extrasmenu_optionstext="Extra Options:"
+
+set extrasmenu_init[2]="init_vesa"
+set extrasmenu_caption[2]="[V]esa driver.......... Off"
+set extrastoggled_text[2]="[V]esa driver.......... On"
+set extrasmenu_command[2]="toggle_vesa"
+set extrasmenu_keycode[2]=118
+set extrasansi_caption[2]="^[1mV^[mesa driver.......... ^[34;1mOff^[m"
+set extrastoggled_ansi[2]="^[1mV^[mesa driver.......... ^[32;7mOn^[m"
+
+set extrasmenu_init[3]="init_text"
+set extrasmenu_caption[3]="[T]ext console......... Off"
+set extrastoggled_text[3]="[T]ext console......... On"
+set extrasmenu_command[3]="toggle_text"
+set extrasmenu_keycode[3]=116
+set extrasansi_caption[3]="^[1mT^[mext console......... ^[34;1mOff^[m"
+set extrastoggled_ansi[3]="^[1mT^[mext console......... ^[32;7mOn^[m"
+
+set extrasmenu_init[4]="init_ssh"
+set extrasmenu_caption[4]="Enable [s]sh........... Off"
+set extrastoggled_text[4]="Enable [s]sh........... On"
+set extrasmenu_command[4]="toggle_ssh"
+set extrasmenu_keycode[4]=115
+set extrasansi_caption[4]="Enable ^[1ms^[msh........... ^[34;1mOff^[m"
+set extrastoggled_ansi[4]="Enable ^[1ms^[msh........... ^[32;7mOn^[m"
+
+\ set extrasmenu_init[5]="init_magnifier"
+\ set extrasmenu_caption[5]="Enable [m]agnifier..... Off"
+\ set extrastoggled_text[5]="Enable [m]agnifier..... On"
+\ set extrasmenu_command[5]="toggle_magnifier"
+\ set extrasmenu_keycode[5]=109
+\ set extrasansi_caption[5]="Enable ^[1mm^[magnifier..... ^[34;1mOff^[m"
+\ set extrastoggled_ansi[5]="Enable ^[1mm^[magnifier..... ^[32;7mOn^[m"
+
+\ set extrasmenu_init[6]="init_reader"
+\ set extrasmenu_caption[6]="Enable screen [r]eader. Off"
+\ set extrastoggled_text[6]="Enable screen [r]eader. On"
+\ set extrasmenu_command[6]="toggle_reader"
+\ set extrasmenu_keycode[6]=114
+\ set extrasansi_caption[6]="Enable screen ^[1mr^[meader. ^[34;1mOff^[m"
+\ set extrastoggled_ansi[6]="Enable screen ^[1mr^[meader. ^[32;7mOn^[m"

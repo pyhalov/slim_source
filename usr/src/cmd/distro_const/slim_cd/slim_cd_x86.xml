@@ -121,10 +121,10 @@
 						name="slim-post-mod"
 						message="Slim CD post boot archive image area modification"/>
 				</script>
-				<script name="/usr/share/distro_const/grub_setup.py">
+				<script name="/usr/share/distro_const/loader_setup.py">
 					<checkpoint
-						name="grub-setup"
-						message="Grub menu setup"/>
+						name="loader-setup"
+						message="Loader menu setup"/>
 					<argslist>
 						"livecd"
 					</argslist>
@@ -303,47 +303,11 @@
 		-->
 		<live_img_compression type="lzma"/>
 		<!--
-		     Grub menu modifications. Will use menu.lst if not specified
+		     Loader menu modifications.
 		-->
-		<grub_menu_modifications>
-			<!--
-			    Specify a title for the grub menu.
-			    If a title for the grub menu is not specified,
-			    the first line of /etc/release will be used as
-			    the title for the grub menu
-			-->
-			<!--
-			     Uncomment before using
-			<title>Special Grub Title Text</title>
-			-->
-
-			<entry>
-				<title_suffix>Enable SSH</title_suffix>
-				<line>kernel$ /platform/i86pc/kernel/$ISADIR/unix -B livessh=enable</line>
-				<line>module$ /platform/i86pc/$ISADIR/boot_archive</line>
-			</entry>
-
-			<!--
-			     Add new GRUB menu options above here. The last
-			     entries should be:
-			     "with magnifier" and "with screen reader"
-			-->
-			<entry>
-				<title_suffix>with magnifier</title_suffix>
-				<line>kernel$ /platform/i86pc/kernel/$ISADIR/unix -B assistive_tech=magnifier</line>
-				<line>module$ /platform/i86pc/$ISADIR/boot_archive</line>
-			</entry>
-			<entry>
-				<title_suffix>with screen reader</title_suffix>
-				<line>kernel$ /platform/i86pc/kernel/$ISADIR/unix -B assistive_tech=reader</line>
-				<line>module$ /platform/i86pc/$ISADIR/boot_archive</line>
-			</entry>
-			<!--
-			     Do not add new GRUB menu options here. The last
-			     entries should be:
-			     "with magnifier" and "with screen reader"
-			-->
-		</grub_menu_modifications>
+		<loader_menu_modifications>
+			<timeout>10</timeout>
+		</loader_menu_modifications>
 		<!--
 		     Indicate whether the IPS index should be generated for
 		     pkg install and uninstall.  The default is to not

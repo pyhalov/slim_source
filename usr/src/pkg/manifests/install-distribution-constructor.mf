@@ -55,6 +55,7 @@ dir path=usr/lib/python2.7/vendor-packages/osol_install/distro_const
 dir path=usr/share group=sys
 dir path=usr/share/distro_const 
 dir path=usr/share/distro_const/auto_install 
+dir path=usr/share/distro_const/loader
 dir path=usr/share/distro_const/slim_cd 
 dir path=usr/share/distro_const/text_install 
 dir path=usr/share/distro_const/vmc 
@@ -100,6 +101,8 @@ file path=usr/share/distro_const/gen_cd_content mode=0555
 file path=usr/share/distro_const/generic_live.xml mode=0444 group=sys
 file path=usr/share/distro_const/grub_setup.py mode=0555
 file path=usr/share/distro_const/im_pop.py mode=0555
+file path=usr/share/distro_const/loader/loader.rc.local mode=0444 group=sys
+file path=usr/share/distro_const/loader/menu.rc.local mode=0444 group=sys
 file path=usr/share/distro_const/mkrepo mode=0555
 file path=usr/share/distro_const/plat_setup.py mode=0555
 file path=usr/share/distro_const/post_boot_archive_pkg_image_mod mode=0555

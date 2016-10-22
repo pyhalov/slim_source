@@ -1603,9 +1603,15 @@ class ICT(object):
 
     def remove_livecd_environment(self):
         '''ICT - Copy saved configuration files to remove vestiges of
-        live CD environment
+        live CD environment. Also remove unneeded loader files.
         return 0 for success, error code otherwise
         '''
+	loaderfile = self.basedir + '/boot/loader.rc.local'
+	if os.path.exists(loaderfile):
+	    os.unlink(loaderfile)
+	loaderfile = self.basedir + '/boot/menu.rc.local'
+	if os.path.exists(loaderfile):
+	    os.unlink(loaderfile)
         savedir = self.basedir + '/save'
         if not os.path.exists(savedir):
             info_msg('saved configuration files directory is missing')

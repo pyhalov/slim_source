@@ -113,6 +113,11 @@ POST_INSTALL_ADD_URL_TO_MIRROR_URL = \
     POST_INSTALL_ADD_AUTH_MAIN + "[url=\"%s\"]/../mirror/url"
 FINALIZER_SCRIPT_NAME_TO_ARGSLIST = FINALIZER_SCRIPT + "[name=\"%s\"]/argslist"
 
+# Loader menu stuff
+LOADER_DATA = IMG_PARAMS + "/loader_menu_modifications"
+LOADER_DEFAULT_TIMEOUT = LOADER_DATA + "/timeout"
+LOADER_MENU_FILES = "/usr/share/distro_const/loader"
+
 # Grub menu stuff
 GRUB_DATA = IMG_PARAMS + "/grub_menu_modifications"
 GRUB_DEFAULT_ENTRY_NUM = GRUB_DATA + "/default_entry"
