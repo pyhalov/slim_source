@@ -52,6 +52,7 @@ PYMODULES=	__init__.py \
 		list_item.py \
 		log_viewer.py \
 		main_window.py \
+		multi_list_item.py \
 		network_nic_configure.py \
 		network_nic_select.py \
 		network_type.py \

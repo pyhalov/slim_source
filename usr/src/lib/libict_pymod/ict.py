@@ -811,7 +811,7 @@ class ICT(object):
                     if len(zpool_iostat[i]) > 1 and zpool_iostat[i][0] == ' ':
                         la = zpool_iostat[i].split()
                         if len(la) > 1 and la[0] != 'mirror' and \
-                            la[0][0] != '-':
+                            not la[0].startswith('raidz') and la[0][0] != '-':
                             rootdevlist.append(dev_path + la[0])
                     i += 1
             i += 1

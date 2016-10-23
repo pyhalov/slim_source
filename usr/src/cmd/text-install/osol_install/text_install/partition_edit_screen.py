@@ -123,7 +123,10 @@ class PartEditScreen(BaseScreen):
     
     def _show(self):
         '''Display the explanatory paragraph and create the DiskWindow'''
-        part = self.install_profile.disk
+        if len(self.install_profile.disks) > 1:
+            logging.debug("Using multiple disks, skipping editing")
+            raise SkipException
+        part = self.install_profile.disks[0]
         if part.use_whole_segment:
             logging.debug("disk.use_whole_segment true, skipping editing")
             raise SkipException
@@ -137,16 +140,16 @@ class PartEditScreen(BaseScreen):
                 logging.debug("partition.use_whole_segment True:"
                               " skipping slice editing")
                 raise SkipException
-            _orig_disk = self.install_profile.original_disk
+            _orig_disk = self.install_profile.original_disks[0]
             self.orig_data = _orig_disk.get_solaris_data()
             if self.orig_data is None:
                 def_type = PartitionInfo.SOLARIS
-                def_size = self.install_profile.disk.size
+                def_size = self.install_profile.disks[0].size
                 self.orig_data = PartitionInfo(part_num=1,
                                                partition_id=def_type,
                                                size=def_size)
         else:
-            self.orig_data = self.install_profile.original_disk
+            self.orig_data = self.install_profile.original_disks[0]
         
         if self.x86_slice_mode:
             header = self.header_text
@@ -192,16 +195,16 @@ class PartEditScreen(BaseScreen):
     
     def on_continue(self):
         '''Get the modified partition/slice data from the DiskWindow, and
-        update install_profile.disk with it
+        update install_profile.disks[0] with it
         
         '''
         disk_info = self.disk_win.disk_info
         if self.x86_slice_mode:
-            solaris_part = self.install_profile.disk.get_solaris_data()
+            solaris_part = self.install_profile.disks[0].get_solaris_data()
             solaris_part.slices = disk_info.slices
         elif self.is_x86:
-            self.install_profile.disk.partitions = disk_info.partitions
-            solaris_part = self.install_profile.disk.get_solaris_data()
+            self.install_profile.disks[0].partitions = disk_info.partitions
+            solaris_part = self.install_profile.disks[0].get_solaris_data()
             # If the Solaris partition has changed in any way, the entire
             # partition is used as the install target.
             if solaris_part.modified():
@@ -213,7 +216,7 @@ class PartEditScreen(BaseScreen):
                               " slice data")
                 solaris_part.slices = solaris_part.orig_slices
         else:
-            self.install_profile.disk.slices = disk_info.slices
+            self.install_profile.disks[0].slices = disk_info.slices
     
     def validate(self):
         '''Ensure the Solaris partition or ZFS Root exists and is large

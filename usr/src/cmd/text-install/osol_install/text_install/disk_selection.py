@@ -43,7 +43,7 @@ from osol_install.text_install.disk_window import DiskWindow, \
 from osol_install.text_install.i18n import fit_text_truncate, \
                                            textwidth, \
                                            ljust_columns
-from osol_install.text_install.list_item import ListItem
+from osol_install.text_install.multi_list_item import MultiListItem
 from osol_install.text_install.scroll_window import ScrollWindow
 from osol_install.text_install.window_area import WindowArea
 from osol_install.text_install.ti_install_utils import get_zpool_list
@@ -80,12 +80,13 @@ class DiskScreen(BaseScreen):
                   " targets. Please check the install log and file a bug"
                   " at bugs.openindiana.org.")
     
-    DISK_HEADERS = [(8, _("Type")),
+    DISK_HEADERS = [(6, _("Use")),
+                    (8, _("Type")),
                     (10, _("Size(GB)")),
                     (6, _("Boot")),
                     (9, _("Device")),
                     (15, _("Manufacturer")),
-                    (22, _("Notes"))]
+                    (16, _("Notes"))]
     SPINNER = ["\\", "|", "/", "-"]
     
     DISK_WARNING_HEADER = _("Warning")
@@ -111,7 +112,7 @@ class DiskScreen(BaseScreen):
             header_str = fit_text_truncate(header[1], header[0]-1, just="left")
             disk_header_text.append(header_str)
         self.disk_header_text = " ".join(disk_header_text)
-        max_note_size = DiskScreen.DISK_HEADERS[5][0]
+        max_note_size = DiskScreen.DISK_HEADERS[6][0]
         self.too_small_text = DiskScreen.TOO_SMALL[:max_note_size]
         max_disk_size = SliceInfo.MAX_VTOC.size_as("tb")
         too_big_warn = DiskScreen.TOO_BIG_WARN % max_disk_size
@@ -119,6 +120,7 @@ class DiskScreen(BaseScreen):
         self.disk_warning_too_big = \
             DiskScreen.DISK_WARNING_TOOBIG % max_disk_size
         
+        self.one_disk_used = False
         self.disks = []
         self.existing_pools = []
         self.disk_win = None
@@ -129,7 +131,7 @@ class DiskScreen(BaseScreen):
         self.selected_disk = 0
         self._minimum_size = None
         self._recommended_size = None
-        self.do_copy = False # Flag indicating if install_profile.disk
+        self.do_copy = False # Flag indicating if install_profile.disks
                              # should be copied
     
     def determine_minimum(self):
@@ -274,13 +276,18 @@ class DiskScreen(BaseScreen):
         
         disk_item_area = WindowArea(1, disk_win_area.columns - 2, 0, 1)
         disk_index = 0
-        len_type = DiskScreen.DISK_HEADERS[0][0] - 1
-        len_size = DiskScreen.DISK_HEADERS[1][0] - 1
-        len_boot = DiskScreen.DISK_HEADERS[2][0] - 1
-        len_dev = DiskScreen.DISK_HEADERS[3][0] - 1
-        len_mftr = DiskScreen.DISK_HEADERS[4][0] - 1
+        len_use = DiskScreen.DISK_HEADERS[0][0] - 1
+        len_type = DiskScreen.DISK_HEADERS[1][0] - 1
+        len_size = DiskScreen.DISK_HEADERS[2][0] - 1
+        len_boot = DiskScreen.DISK_HEADERS[3][0] - 1
+        len_dev = DiskScreen.DISK_HEADERS[4][0] - 1
+        len_mftr = DiskScreen.DISK_HEADERS[5][0] - 1
         for disk in self.disks:
             disk_text_fields = []
+            # Use first disk if no disk were used yet
+            if disk.used is None and not self.one_disk_used:
+               disk.used = True
+               self.one_disk_used = True
             type_field = disk.type[:len_type]
             type_field = ljust_columns(type_field, len_type)
             disk_text_fields.append(type_field)
@@ -314,11 +321,15 @@ class DiskScreen(BaseScreen):
             disk_text_fields.append(note_field)
             disk_text = " ".join(disk_text_fields)
             disk_item_area.y_loc = disk_index
-            disk_list_item = ListItem(disk_item_area, window=self.disk_win,
-                                      text=disk_text, add_obj=selectable)
+            disk_list_item = MultiListItem(disk_item_area, window=self.disk_win,
+                                      text=disk_text, add_obj=selectable, used=disk.used)
             disk_list_item.on_make_active = on_activate
             disk_list_item.on_make_active_kwargs["disk_info"] = disk
             disk_list_item.on_make_active_kwargs["disk_select"] = self
+
+            disk_list_item.on_select = on_select
+            disk_list_item.on_select_kwargs["disk_info"] = disk
+            disk_list_item.on_select_kwargs["disk_select"] = self
             disk_index += 1
         self.disk_win.no_ut_refresh()
         
@@ -331,8 +342,8 @@ class DiskScreen(BaseScreen):
         self.center_win.activate_object(self.disk_win)
         self.disk_win.activate_object(self.selected_disk)
         # Set the flag so that the disk is not copied by on_change_screen,
-        # unless on_activate gets called as a result of the user changing
-        # the selected disk.
+        # unless on_select gets called as a result of the user changing
+        # the selected disks.
         self.do_copy = False
     
     def on_change_screen(self):
@@ -341,10 +352,12 @@ class DiskScreen(BaseScreen):
         
         '''
         if self.disk_detail is not None:
-            if self.do_copy or self.install_profile.disk is None:
-                disk = self.disk_detail.disk_info
-                self.install_profile.disk = deepcopy(disk)
-                self.install_profile.original_disk = disk
+            if self.do_copy or len(self.install_profile.disks) == 0:
+                self.install_profile.disks = []
+                for disk in self.disks:
+                  if disk.used:
+                    self.install_profile.disks.append(deepcopy(disk))
+                    self.install_profile.original_disks.append(disk)
             self.selected_disk = self.disk_win.active_object
     
     def start_discovery(self):
@@ -423,5 +436,11 @@ def on_activate(disk_info=None, disk_select=None):
         disk_select.center_win.add_paragraph(disk_select.found_text, 11, 1,
                                              max_x=max_x)
     disk_select.disk_detail.set_disk_info(disk_info)
-    # User selected a different disk; set the flag so that it gets copied later
-    disk_select.do_copy = True
+
+def on_select(disk_info=None, disk_select=None, disk_list_item=None):
+   if disk_info.used is None:
+       disk_info.used = True
+   else:
+       disk_info.used = not disk_info.used
+   # User selected a different disk; set the flag so that it gets copied later
+   disk_select.do_copy = True
