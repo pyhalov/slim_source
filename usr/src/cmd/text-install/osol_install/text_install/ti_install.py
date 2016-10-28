@@ -88,6 +88,9 @@ ZFS_SHARED_FS = ["/export/home", "/export"]
 #
 INSTALL_STATUS = None
 
+TI_RPOOL_PROPERTY_STATE = "org.openindiana.caiman:install"
+TI_RPOOL_BUSY = "busy"
+
 
 class InstallStatus(object):
     '''Stores information on the installation progress, and provides a
@@ -163,7 +166,7 @@ def exec_cmd(cmd, description):
         logging.error("Failed to %s", description)
         raise ti_utils.InstallationError
 
-def cleanup_existing_install_target(install_profile, inst_device):
+def cleanup_existing_install_target(install_profile):
     ''' If installer was restarted after the failure, it is necessary
         to destroy the pool previously created by the installer.
 
@@ -184,7 +187,7 @@ def cleanup_existing_install_target(install_profile, inst_device):
             sp.Popen(["/usr/sbin/umount", "-f", "/var/run/boot_archive"],
                      stdout=null_handle, stderr=null_handle)
 
-    rootpool_name = install_profile.disk.get_install_root_pool()
+    rootpool_name = install_profile.disks[0].get_install_root_pool()
 
     cmd = "/usr/sbin/zpool list " + rootpool_name
     logging.debug("Executing: %s", cmd)
@@ -209,7 +212,10 @@ def cleanup_existing_install_target(install_profile, inst_device):
         raise ti_utils.InstallationError
 
     try:
-        rpool = tgt.Zpool(rootpool_name, inst_device)
+        # We use rpool here only to do tgt.release_zfs_root_pool
+        # and it doesn't need device name, so we just insert some placeholder.
+        # Perhaps, we could just run dumpadm -d, swap -d, zpool destroy manually.
+        rpool = tgt.Zpool(rootpool_name, "/dev/_placeholder_device_name")
         tgt.release_zfs_root_pool(rpool)
         logging.debug("Completed release_zfs_root_pool")
     except TypeError, te:
@@ -221,33 +227,64 @@ def cleanup_existing_install_target(install_profile, inst_device):
     exec_cmd(["/usr/bin/rm", "-rf", INSTALLED_ROOT_DIR + "/*"],
              "clean up existing mount point")
 
+def create_root_pool(install_profile):
+    '''Use internal text installer method to create root pool
+       as libict doesn't know how to handle compex pool types
+    '''
+    rootpool_name = install_profile.disks[0].get_install_root_pool()
+
+    cmd = [ "/usr/sbin/zpool", "create", "-f", rootpool_name ]
+
+    zpool_type = install_profile.zpool_type
+    if zpool_type is None:
+        if len(install_profile.disks) > 1:
+            logging.error("Root pool type is not set, "
+                "but several disks are used for installtion. "
+                "Actually this shouldn't have happened.")
+            raise ti_utils.InstallationError
+    else:
+        cmd.append(zpool_type)
+    
+    for disk in install_profile.disks:
+        cmd.append(disk.get_install_device())
+       
+    exec_cmd( cmd,
+             "creating root pool")
+    # Create boot/grub directory for holding menu.lst file
+    exec_cmd(["/usr/bin/mkdir", "-p", "/%s/boot/grub" % (rootpool_name) ],
+             "creating grub menu directory")
+    # Mark created pool as 'busy' (org.openindiana.caiman:install=busy)
+    exec_cmd(["/usr/sbin/zfs", "set", "%s=%s" % (TI_RPOOL_PROPERTY_STATE,
+             TI_RPOOL_BUSY), rootpool_name ], "marking pool as busy")
+
 def do_ti(install_profile, swap_dump):
     '''Call the ti module to create the disk layout, create a zfs root
     pool, create zfs volumes for swap and dump, and to create a be.
 
     '''
-    diskname = install_profile.disk.name
-    logging.debug("Diskname: %s", diskname)
-    mesg = "Preparing disk for %(release)s installation" % RELEASE
+    for disk in install_profile.disks:
+        diskname = disk.name
+        logging.debug("Diskname: %s", diskname)
+    mesg = "Preparing disks for %(release)s installation" % RELEASE
     try:
-        (inst_device, inst_device_size) = \
-             install_profile.disk.get_install_dev_name_and_size()
+        inst_device_size = \
+              install_profile.estimate_pool_size()
 
         # The installation size we provide already included the required
         # swap size
         (swap_type, swap_size, dump_type, dump_size) = \
             swap_dump.calc_swap_dump_size(ti_utils.get_minimum_size(swap_dump),
                                           inst_device_size, swap_included=True)
-
-        tgt_disk = install_profile.disk.to_tgt()
-        tgt.create_disk_target(tgt_disk, False)
+        for disk in install_profile.disks:
+            tgt_disk = disk.to_tgt()
+            tgt.create_disk_target(tgt_disk, False)
+            logging.debug("Completed create_disk_target for disk %s", str(disk))
         logging.debug("Completed create_disk_target")
         INSTALL_STATUS.update(InstallStatus.TI, 20, mesg)
 
-        rootpool_name = install_profile.disk.get_install_root_pool()
-        rpool = tgt.Zpool(rootpool_name, inst_device)
-        tgt.create_zfs_root_pool(rpool)
-        logging.debug("Completed create_zfs_root_pool")
+        rootpool_name = install_profile.disks[0].get_install_root_pool()
+        create_root_pool(install_profile)
+        logging.debug("Completed create_root_pool")
         INSTALL_STATUS.update(InstallStatus.TI, 40, mesg)
 
         create_swap = False
@@ -367,19 +404,18 @@ def do_ti_install(install_profile, screen, update_status_func, quit_event,
         logging.debug("User login: %s", ulogin)
         logging.debug("User password: %s", upass)
 
-    (inst_device, inst_device_size) = \
-              install_profile.disk.get_install_dev_name_and_size()
-    logging.debug("Installation Device Name: %s", inst_device)
-    logging.debug("Installation Device Size: %sMB", inst_device_size)
+    inst_device_size = \
+              install_profile.estimate_pool_size()
+    logging.debug("Estimated root pool size: %sMB", inst_device_size)
 
     swap_dump = ti_utils.SwapDump()
 
     min_inst_size = ti_utils.get_minimum_size(swap_dump)
     logging.debug("Minimum required size: %sMB", min_inst_size)
     if (inst_device_size < min_inst_size):
-        logging.error("Size of device specified for installation "
+        logging.error("Size of root pool to be created for installation "
                       "is too small")
-        logging.error("Size of install device: %sMB", inst_device_size)
+        logging.error("Estimated root pool size: %sMB", inst_device_size)
         logging.error("Minimum required size: %sMB", min_inst_size)
         raise ti_utils.InstallationError
 
@@ -388,9 +424,9 @@ def do_ti_install(install_profile, screen, update_status_func, quit_event,
     if (inst_device_size < recommended_size):
         # Warn users that their install target size is not optimal
         # Just log the warning, but continue with the installation.
-        logging.warning("Size of device specified for installation is "
+        logging.warning("Size of root pool to be created for installation is "
                         "not optimal") 
-        logging.warning("Size of install device: %sMB", inst_device_size)
+        logging.warning("Estimated root pool size: %sMB", inst_device_size)
         logging.warning("Recommended size: %sMB", recommended_size)
 
     # Validate the value specified for timezone
@@ -428,9 +464,9 @@ def do_ti_install(install_profile, screen, update_status_func, quit_event,
     global INSTALL_STATUS
     INSTALL_STATUS = InstallStatus(screen, update_status_func, quit_event)
 
-    rootpool_name = install_profile.disk.get_install_root_pool()
+    rootpool_name = install_profile.disks[0].get_install_root_pool()
 
-    cleanup_existing_install_target(install_profile, inst_device)
+    cleanup_existing_install_target(install_profile)
 
     do_ti(install_profile, swap_dump)
 
@@ -448,7 +484,7 @@ def do_ti_install(install_profile, screen, update_status_func, quit_event,
     ti_utils.setup_etc_vfstab_for_swap(swap_device, INSTALLED_ROOT_DIR)
 
     try:
-        run_ICTs(install_profile, hostname, ict_mesg, inst_device,
+        run_ICTs(install_profile, hostname, ict_mesg,
                  locale, root_pass, ulogin, upass, ureal_name,
                  rootpool_name)
     finally:
@@ -500,7 +536,7 @@ def post_install_cleanup(install_profile, rootpool_name):
         raise ti_utils.InstallationError
 
 # pylint: disable-msg=C0103
-def run_ICTs(install_profile, hostname, ict_mesg, inst_device, locale,
+def run_ICTs(install_profile, hostname, ict_mesg, locale,
              root_pass, ulogin, upass, ureal_name, rootpool_name):
     '''Run all necessary ICTs. This function ensures that each ICT is run,
     regardless of the success/failure of any others. After running all ICTs

@@ -162,7 +162,7 @@ class InstallProgress(BaseScreen):
         returns.
         
         '''
-        install_profile.disk.to_tgt()
+        install_profile.disks[0].to_tgt()
         for i in range(101):
             update_status(screen, i, "at %d percent" % i)
             logging.log(LOG_LEVEL_INPUT, "at %s percent", i)

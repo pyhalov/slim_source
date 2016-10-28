@@ -36,22 +36,44 @@ class InstallProfile(object):
     
     TAG = "install_profile"
     
-    def __init__(self, disk=None, nic=None, system=None, users=None,
-                 zpool=None):
-        self.disk = disk
+    def __init__(self, disks=None, nic=None, system=None, users=None,
+                 zpool_type=None):
+        if disks is None:
+            disks = []
+        self.original_disks = []
+        self.disks = disks
         self.nic = nic
         self.system = system
         if users is None:
             users = []
         self.users = users
-        self.zpool = zpool
+        self.zpool_type = zpool_type
     
     def __str__(self):
         result = ["Install Profile:"]
-        result.append(str(self.disk))
+        for disk in self.disks:
+            result.append(str(disk))
         result.append(str(self.nic))
         result.append(str(self.system))
         for user in self.users:
             result.append(str(user))
-        result.append(str(self.zpool))
+        result.append(str(self.zpool_type))
         return "\n".join(result)
+
+    def estimate_pool_size(self):
+        pool_size = 0
+        if len(self.disks) > 0:
+            min_disk_size = (int) (self.disks[0].get_size().size_as("mb"))
+            for disk in self.disks:
+                disk_size = (int) (disk.get_size().size_as("mb"))
+                if disk_size < min_disk_size:
+                    min_disk_size = disk_size
+            if self.zpool_type is None or self.zpool_type == 'mirror':
+                pool_size = min_disk_size
+            elif self.zpool_type == 'raidz' and len(self.disks) > 2:
+                pool_size = min_disk_size * (len(self.disks) - 1)
+            elif self.zpool_type == 'raidz2' and len(self.disks) > 3:
+                pool_size = min_disk_size * (len(self.disks) - 2)
+            elif self.zpool_type == 'raidz3' and len(self.disks) > 4:
+                pool_size = min_disk_size * (len(self.disks) - 3)
+        return pool_size

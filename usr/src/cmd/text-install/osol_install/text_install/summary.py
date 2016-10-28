@@ -86,6 +86,8 @@ class SummaryScreen(BaseScreen):
         
         lines.append(_("Software: %s") % self.get_release())
         lines.append("")
+        lines.append(self.get_zfs_summary())
+        lines.append("")
         lines.append(self.get_disk_summary())
         lines.append("")
         lines.append(self.get_tz_summary())
@@ -150,38 +152,48 @@ class SummaryScreen(BaseScreen):
     
     def get_disk_summary(self):
         '''Return a string summary of the disk selection'''
-        disk = self.install_profile.disk
-        
-        solaris_data = disk.get_solaris_data()
-        if isinstance(solaris_data, SliceInfo):
-            slice_data = solaris_data
-            part_data = None
-        elif isinstance(solaris_data, PartitionInfo):
-            part_data = solaris_data
-            slice_data = part_data.get_solaris_data()
-	else:
-            part_data = None
-            slice_data = None
-        
-        format_dict = {}
-        disk_string = [_("Disk: %(disk-size).1fGB %(disk-type)s")]
-        format_dict['disk-size'] = disk.size.size_as("gb")
-        format_dict['disk-type'] = disk.type
-        
-        if part_data is not None:
-            disk_string.append(_("Partition: %(part-size).1fGB %(part-type)s"))
-            format_dict['part-size'] = part_data.size.size_as("gb")
-            format_dict['part-type'] = part_data.get_description()
+        result = ""
+        for disk in self.install_profile.disks:
+            solaris_data = disk.get_solaris_data()
+            if isinstance(solaris_data, SliceInfo):
+                slice_data = solaris_data
+                part_data = None
+            elif isinstance(solaris_data, PartitionInfo):
+                part_data = solaris_data
+                slice_data = part_data.get_solaris_data()
+            else:
+                part_data = None
+                slice_data = None
 
-        if not slice_data is None:
-	        if part_data is None or not part_data.use_whole_segment:
-	            disk_string.append(_("Slice %(slice-num)i: %(slice-size).1fGB"
-	                                 " %(pool)s"))
-	            format_dict['slice-num'] = slice_data.number
-	            format_dict['slice-size'] = slice_data.size.size_as("gb")
-	            format_dict['pool'] = slice_data.type[1]
-        
-        return "\n".join(disk_string) % format_dict
+            format_dict = {}
+            disk_string = [_("Disk: %(disk-size).1fGB %(disk-type)s")]
+            format_dict['disk-size'] = disk.size.size_as("gb")
+            format_dict['disk-type'] = disk.type
+
+            if part_data is not None:
+                disk_string.append(_("Partition: %(part-size).1fGB %(part-type)s"))
+                format_dict['part-size'] = part_data.size.size_as("gb")
+                format_dict['part-type'] = part_data.get_description()
+
+            if not slice_data is None:
+                    if part_data is None or not part_data.use_whole_segment:
+                        disk_string.append(_("Slice %(slice-num)i: %(slice-size).1fGB"
+                                             " %(pool)s"))
+                        format_dict['slice-num'] = slice_data.number
+                        format_dict['slice-size'] = slice_data.size.size_as("gb")
+                        format_dict['pool'] = slice_data.type[1]
+
+            result = result + "\n".join(disk_string) % format_dict +"\n"
+        return result
+
+    def get_zfs_summary(self):
+        '''Return a string summary of the root pool configuration'''
+        pool_name = SliceInfo.DEFAULT_POOL.data
+        pool_type = self.install_profile.zpool_type
+        if (pool_type):
+           return _("ZFS Pool name: %(name)s, type: %(type)s") % { "name": pool_name, "type": pool_type}
+        else:
+           return _("ZFS Pool name: %s") % (pool_name)
     
     def get_tz_summary(self):
         '''Return a string summary of the timezone selection'''

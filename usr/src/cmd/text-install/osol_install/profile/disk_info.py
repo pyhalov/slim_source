@@ -194,6 +194,7 @@ class DiskInfo(object):
             self.size = size
             self.vendor = vendor
         self.use_whole_segment = True
+        self.used = None
         
         if platform.processor() == "i386":
             self.was_blank = not bool(self.partitions)

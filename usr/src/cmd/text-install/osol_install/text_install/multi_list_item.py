@@ -23,48 +23,67 @@
 #
 
 '''
-UI element for representing a single selectable list item
+UI element for representing a single activatable list item
 '''
 
-from osol_install.text_install.inner_window import InnerWindow
+import logging
+from osol_install.text_install.list_item import ListItem
+from osol_install.text_install import LOG_LEVEL_INPUT
+
+KEY_SPACE = ord(' ')
 
 
-class ListItem(InnerWindow):
+class MultiListItem(ListItem):
     '''
     Represents a single item selectable from a list
     '''
-    
     def __init__(self, area, window=None, color_theme=None, color=None,
-                 highlight_color=None, text="", centered=False, **kwargs):
+                 highlight_color=None, text="", centered=False, used=False, **kwargs):
         '''
-        See also InnerWindow.__init__
-        
-        Sets color to color_theme.default, and
-        highlight to color_theme.list-field
-        
-        If 'text' is given, adds the text to the display
+        See also ListItem.__init__
+
         '''
-        if color_theme is None:
-            color_theme = window.color_theme
-        if color is None:
-            color = color_theme.default
-        if highlight_color is None:
-            highlight_color = color_theme.list_field
-        self.text = text
-        self.centered=centered
-        super(ListItem, self).__init__(area, window=window,
-                                       color_theme=color_theme, 
+        self.on_select_kwargs = {}
+        self.on_select = None
+        self.used = used
+        super(MultiListItem, self).__init__(area=area, window=window,
+                                       color_theme=color_theme,
                                        color=color,
                                        highlight_color=highlight_color,
+                                       text=text,
+                                       centered=centered,
                                        **kwargs)
-        self.set_text(text, centered)
-    
+
+    def _init_key_dict(self):
+        '''Map some keystrokes by default
+
+        '''
+
+        super(MultiListItem, self)._init_key_dict()
+        self.key_dict[KEY_SPACE] = self.on_space
+
+    def on_space (self, input_key):
+        '''On KEY_SPACE:
+        Activate object action
+
+        '''
+        logging.log(LOG_LEVEL_INPUT, "MultiListItem.on_space\n%s", type(self))
+        if self.on_select is not None:
+           self.on_select(**self.on_select_kwargs)
+        self.used = not self.used
+        self.set_text(self.text, self.centered)
+        self.no_ut_refresh()
+        return input_key
+
     def set_text(self, text, centered=False):
         '''Set the text of this ListItem. Shortcut to InnerWindow.add_text
         ensures that this window is cleared first
-        
+
         '''
         self.window.clear()
-        self.add_text(text, max_chars=(self.window.getmaxyx()[1] - 1),
+        if self.used:
+           additional_text = '[*] '
+        else:
+           additional_text = '[ ] '
+        self.add_text(additional_text + text, max_chars=(self.window.getmaxyx()[1] - 1),
                       centered=centered)
-
