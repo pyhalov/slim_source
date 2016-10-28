@@ -263,6 +263,12 @@ requiring validation or defaults.
 				<ref name="nm_user"/>
 			</zeroOrMore>
 
+			<!-- loader menu modifications. -->
+			<optional>	<!-- If not specified,
+					     use defaults -->
+				<ref name="nm_loader_menu_mods"/>
+			</optional>
+
 			<!-- grub menu modifications. -->
 			<optional>	<!-- If not specified,
 					     use regular menu.lst -->
@@ -308,6 +314,21 @@ requiring validation or defaults.
 	<define name="nm_vmimg_params">
 		<element name="vmimg_params">
 			<empty/>
+		</element>
+	</define>
+
+	<!--
+	=======================================================================
+	Loader menu modifications
+	=======================================================================
+	-->
+	<define name="nm_loader_menu_mods">
+		<element name="loader_menu_modifications">
+			<optional>
+				<element name="timeout">
+					<data type="int"/>
+				</element>
+			</optional>
 		</element>
 	</define>
 

@@ -116,10 +116,10 @@
 						name="post-mod-custom"
 						message="Post boot archive image area custom modification"/>
 				</script>
-				<script name="/usr/share/distro_const/grub_setup.py">
+				<script name="/usr/share/distro_const/loader_setup.py">
 					<checkpoint
-						name="grub-setup"
-						message="Grub menu setup"/>
+						name="loader-setup"
+						message="Loader menu setup"/>
 					<argslist>
 						"text-install"
 					</argslist>
@@ -289,22 +289,11 @@
 		-->
 		<live_img_compression type="lzma"/>
 		<!--
-		     Grub menu modifications. Will use menu.lst if not specified
+		     Loader menu modifications.
 		-->
-		<grub_menu_modifications>
-			<!--
-			    Specify a title for the grub menu.
-			    If a title for the grub menu is not specified,
-			    the first line of /etc/release will be used as
-			    the title for the grub menu
-			-->
-			<!--
-			     Uncomment before using
-			<title>Special Grub Title Text</title>
-			-->
-			<timeout>5</timeout>
-
-		</grub_menu_modifications>
+		<loader_menu_modifications>
+			<timeout>10</timeout>
+		</loader_menu_modifications>
 		<!--
 		     Indicate whether the IPS index should be generated for
 		     pkg install and uninstall.  The default is to not

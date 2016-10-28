@@ -31,43 +31,19 @@ clean:=		TARGET=	clean
 clobber:=	TARGET=	clobber
 install:=	TARGET=	install
 
-PYMODULES=	boot_archive_initialize.py \
-		boot_archive_archive.py \
-		grub_setup.py \
-		loader_setup.py \
-		im_pop.py \
-		plat_setup.py \
-		pre_boot_archive_pkg_image_mod.py
-
-PYCMODULES=	$(PYMODULES:%.py=%.pyc)
-
-DC_UTIL_FILES=	mkrepo \
-		create_iso \
-		create_usb \
-		gen_cd_content \
-		boot_archive_configure \
-		boot_archive_strip \
-		post_boot_archive_pkg_image_mod \
-		post_boot_archive_pkg_image_mod_custom \
-		generic_live.xml \
-		$(PYMODULES)
+DC_LOADER_FILES=	loader.rc.local menu.rc.local
 
 # Note: PYCMODULES are not delivered.
 # They are only compiled for error checking purposes.
-ROOTDC_UTIL_FILES=	$(DC_UTIL_FILES:%=$(ROOTDC)/%)
+ROOTDC_LOADER=	$(ROOTDC)/loader
+ROOTDC_LOADER_FILES=	$(DC_LOADER_FILES:%=$(ROOTDC)/loader/%)
 
-all:		python
-
+all:
 clean:
-		$(RM) $(PYCMODULES)
-
 clobber: clean
 
-install:	all .WAIT $(ROOTDC) \
-		$(ROOTDC_UTIL_FILES)
-
-python:
-		$(PYTHON) -m compileall -l $(@D)
-
+install:	all .WAIT $(ROOTDC)	\
+		$(ROOTDC_LOADER)	\
+		$(ROOTDC_LOADER_FILES)
 
 include ../../Makefile.targ
