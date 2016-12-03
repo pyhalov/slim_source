@@ -442,5 +442,7 @@ def on_select(disk_info=None, disk_select=None, disk_list_item=None):
        disk_info.used = True
    else:
        disk_info.used = not disk_info.used
+   # User changed selected disks; reset zpool type
+   disk_select.install_profile.zpool_type = None
    # User selected a different disk; set the flag so that it gets copied later
    disk_select.do_copy = True
