@@ -30,6 +30,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
+#include <strings.h>
 
 #include <unistd.h>
 #include <stropts.h>
@@ -39,6 +40,9 @@
 #include <sys/dkio.h>
 #include <sys/dktp/fdisk.h>
 #include <sys/fs/ufs_fs.h>
+
+#include <sys/mntent.h>
+#include <sys/mnttab.h>
 
 #include <sys/stat.h>
 #include <sys/vtoc.h>
@@ -59,6 +63,8 @@
 #define	DDM_LSWAP_MAGICV0	"SWAP-SPACE"	/* magic word for swap v0 */
 #define	DDM_LSWAP_MAGICVx	"SWAPSPACE"	/* magic word for swap v1 */
 #define	DDM_LSWAP_MAGIC_SIZE	10		/* size of magic word */
+
+#define	DDM_INSTALL_MEDIA_MOUNTPOINT	"/.cdrom"
 
 typedef struct ddm_conv_attr_t {
 	char	*nv_name_src;
@@ -136,6 +142,13 @@ static char *ddm_slice_inuse_conv_tbl[][2] = {
  * of drive descriptors returned from libdiskmgt library.
  */
 static dm_descriptor_t	*ddm_drive_desc = NULL;
+
+
+/* ------------------------ local functions declarations -------------- */
+
+static char *
+ddm_get_device_path_from_ctd_name(char *ctd_name, char strip_symbol,
+	boolean_t strip_devices);
 
 /* ------------------------ local functions --------------------------- */
 
@@ -1103,6 +1116,76 @@ ddm_drive_is_floppy(ddm_handle_t d)
 	return (drive_is_diskette);
 }
 
+/*
+ * ddm_drive_is_install_media()
+ *	Checks if drive is mounted on /.cdrom
+ *
+ * Parameters:
+ *	ddm_handle_t d
+ * Return:
+ *	boolean_t
+ * Status:
+ *	public
+ */
+static boolean_t
+ddm_drive_is_install_media(ddm_handle_t d)
+{
+	int		errn;
+	nvlist_t	*dz;
+	char		*dn, *device_path;
+	boolean_t	drive_is_install_media = B_FALSE;
+	struct mnttab 	mp, search_mp;
+	FILE *mnttab;
+
+	dn = ddm_drive_get_name(d);
+
+	/*
+	 * If drive name can't be obtained, filter the drive out as well
+	 */
+
+	if (dn == NULL)
+		return (B_TRUE);
+
+	/*
+	 * If device path can't be obtained, filter the drive out as well
+	 */
+	if ((device_path = ddm_get_device_path_from_ctd_name(dn, ',', B_FALSE))
+		== NULL) {
+		DDM_DEBUG(DDM_DBGLVL_INFO, "Could not obtain physical device "
+			"path for disk %s\n", dn);
+		dm_free_name(dn);
+		return (B_TRUE);
+	}
+	DDM_DEBUG(DDM_DBGLVL_INFO, "Physical device path for disk %s: "
+		"%s\n", dn, device_path);
+
+	mnttab = fopen(MNTTAB, "r");
+	/*
+	 * If we can't open mnttab, filter the drive out as well
+	 */
+	if (mnttab == NULL) {
+		DDM_DEBUG(DDM_DBGLVL_ERROR,
+			"Couldn't open mnttab. Something is terribly wrong. ");
+		dm_free_name(dn);
+		free(device_path);
+		return (B_TRUE);
+	}
+
+	bzero(&search_mp, sizeof (struct mnttab));
+	search_mp.mnt_special = device_path;
+	search_mp.mnt_mountp = DDM_INSTALL_MEDIA_MOUNTPOINT;
+	if (!getmntany(mnttab, &mp, &search_mp)) {
+		DDM_DEBUG(DDM_DBGLVL_INFO,
+			"Drive %s is install media. Skipping. ", device_path);
+		drive_is_install_media = B_TRUE;
+	}
+
+	fclose(mnttab);
+	dm_free_name(dn);
+	free(device_path);
+
+	return (drive_is_install_media);
+}
 
 /*
  * ddm_drive_is_zvol()
@@ -1190,6 +1273,10 @@ ddm_filter_disks(dm_descriptor_t *drives)
 		if (ddm_drive_is_cdrom(drives[i]))
 			continue;
 
+		/* omit install media mounted on /.cdrom */
+		if (ddm_drive_is_install_media(drives[i]))
+			continue;
+
 		df[df_num++] = drives[i];
 	}
 
@@ -1212,16 +1299,20 @@ ddm_filter_disks(dm_descriptor_t *drives)
  *
  * Parameters:
  *	char *ctd_name - disk device name in c#t#d# format
+ *	char strip_symbol - last symbol to look for
+ *	boolean_t strip_devices - strip /devices from device path
+ *
  * Return:
- *	Pointer to string containing disk device path under '/devices'
- *	directory. Function allocates memory for the string. Caller is
+ *	Pointer to string containing disk device path directory.
+ *	Function allocates memory for the string. Caller is
  *	responsible for freeing it when no longer needed.
  *	NULL is returned, if the the conversion fails.
  * Scope:
  *	private
  */
 static char *
-ddm_get_device_path_from_ctd_name(char *ctd_name)
+ddm_get_device_path_from_ctd_name(char *ctd_name, char strip_symbol,
+	boolean_t strip_devices)
 {
 	char	*rdsk_slice;
 	char	*device_path;
@@ -1274,16 +1365,22 @@ ddm_get_device_path_from_ctd_name(char *ctd_name)
 		return (NULL);
 	}
 
-	/* omit "devices" part of path */
-	devpath_start += strlen("devices");
+	if (strip_devices) {
+		/* omit "devices" part of path */
+		devpath_start += strlen("devices");
+	} else {
+		/* return one symbol back to get '/' */
+		devpath_start --;
+	}
 
 	/*
 	 * Strip trailing part of the device path representing minor name -
 	 * it is in form of <device_path>:a,raw
 	 */
-	if ((devpath_end = strrchr(device_path, ':')) == NULL) {
+	if ((devpath_end = strrchr(device_path, strip_symbol)) == NULL) {
 		DDM_DEBUG(DDM_DBGLVL_WARNING, "Unexpected format of device path"
-		    " %s, trailing ':' not found\n", device_path);
+			" %s, trailing '%c' not found\n", device_path,
+			strip_symbol);
 
 		free(device_path);
 		return (NULL);
@@ -1631,7 +1728,8 @@ ddm_get_disk_attributes(ddm_handle_t disk)
 	 * If it can't be obtained, set to "unknown".
 	 */
 
-	if ((device_path = ddm_get_device_path_from_ctd_name(dn)) == NULL) {
+	if ((device_path = ddm_get_device_path_from_ctd_name(dn, ':', B_TRUE))
+		== NULL) {
 		DDM_DEBUG(DDM_DBGLVL_INFO, "Could not obtain physical device "
 		    "path for disk %s\n", dn);
 	} else {
