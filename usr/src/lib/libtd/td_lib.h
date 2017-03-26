@@ -91,7 +91,6 @@ int	td_umount_all(void);
 void	td_set_profile_upgrade(void);
 char	*td_get_failed_mntdev(void);
 char	*td_get_fs_type(char *path);
-int	td_set_mntdev_if_svm(char *, char *, char **, char *, nvlist_t **);
 int	td_safe_system(char *, boolean_t);
 
 /* td_util.c */

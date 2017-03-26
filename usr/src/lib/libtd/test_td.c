@@ -677,12 +677,6 @@ slice_show_attr(nvlist_t *attrs, rep_verbosity_t verbosity)
 		(void) printf("%11s|", "- ");
 	}
 
-	/* discover root slice for SVM stuff */
-
-	if (strcmp(root_slice_name, name) == 0) {
-		(void) ddm_slice_inuse_by_svm(root_slice_name, attrs, &errp);
-	}
-
 	if (verbosity <= REPORT_VERB_LOW) {
 		if (nvlist_lookup_string(attrs, TD_SLICE_ATTR_LASTMNT, &name)
 		    == 0) {

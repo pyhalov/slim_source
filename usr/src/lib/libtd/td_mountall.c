@@ -23,8 +23,6 @@
  * Use is subject to license terms.
  */
 
-#include <libsvm.h>
-
 #include <ctype.h>
 #include <dirent.h>
 #include <fcntl.h>
@@ -102,11 +100,6 @@ static void	free_retry_list(void);
 static void	free_mountentry(struct mountentry *);
 static void	save_for_swap_retry(char *, char *);
 static void	save_for_mnt_retry(char *, char *, char *, char *);
-
-int		ddm_check_for_svm(char *);
-svm_info_t	*ddm_svm_alloc(void);
-void		ddm_svm_free(svm_info_t *);
-int		ddm_start_svm(char *, svm_info_t **, int);
 
 /* ******************************************************************** */
 /*			PUBLIC SUPPORT FUNCTIONS			*/
@@ -552,19 +545,11 @@ td_mount_filesys(char *mntdev, char *fsckdev, char *mntpnt,
 	char			fsckoptions[30];
 	char			cmd[MAXPATHLEN];
 	char			basemount[MAXPATHLEN];
-	char			tmpfsckdev[MAXPATHLEN];
 	int			status;
 	int			cmdstatus;
 	int			isslasha = 0;
 
 	(void) strcpy(err_mount_dev, mntdev);
-
-	/*
-	 * make local copy of fsckdev, so td_set_mntdev_if_svm can
-	 * overwrite it if needed (when a mirrored root is in use)
-	 */
-	if (fsckdev != NULL)
-		(void) strncpy(tmpfsckdev, fsckdev, MAXPATHLEN);
 
 	if (strcmp(mntopts, "-") == 0)
 		options[0] = '\0';
@@ -637,10 +622,6 @@ td_mount_filesys(char *mntdev, char *fsckdev, char *mntpnt,
 				return (0);
 			}
 		}
-		/* set the mntdev to the mirror if there is one */
-		if (td_set_mntdev_if_svm(basemount,
-		    mntopts, &mntdev, tmpfsckdev, attr) != SUCCESS)
-			return (ERR_MOUNT_FAIL);
 	} else if (cmdstatus == 32 || cmdstatus == 33 || cmdstatus == 34) {
 		dev_t	mntpt_dev;	/* device ID for mount point */
 		dev_t	mntdev_dev;	/* dev ID for device */
@@ -747,10 +728,6 @@ td_mount_filesys(char *mntdev, char *fsckdev, char *mntpnt,
 				return (0);
 			}
 		}
-		/* set the mntdev to the mirror if there is one */
-		if (td_set_mntdev_if_svm(basemount,
-		    mntopts, &mntdev, tmpfsckdev, attr) != SUCCESS)
-			return (ERR_MOUNT_FAIL);
 	} else {
 		if (TLW)
 			td_debug_print(LS_DBGLVL_WARN,
@@ -775,16 +752,8 @@ td_mount_filesys(char *mntdev, char *fsckdev, char *mntpnt,
 
 			return (ERR_MOUNT_FAIL);
 		}
-		/*
-		 * Overwrite what we think the root device is,
-		 * in case td_set_mntdev_if_svm gave us a new one.
-		 * Also make note of any root metadevice component
-		 * names in case we need them later (in gen_installboot).
-		 */
 		free(rootmntdev);
-		free(rootrawdev);
 		rootmntdev = strdup(mntdev);
-		rootrawdev = strdup(tmpfsckdev);
 	}
 	err_mount_dev[0] = 0;
 	save_for_umount(mntdev, &umount_head, MOUNT_DEV);
@@ -1118,138 +1087,7 @@ free_mountentry(struct mountentry *mntp)
 }
 
 /*
- * Function:	td_remount_svm
- * Description: Trys to mount the metadevice on the mountpoint
- * Scope:	public
- * Parameters:  mountpoint - non-NULL path string
- *		svm- non-NULL structure that will contain the svm info
- *		mntopt - flag to determine mounting ro or rw.
- *
- * Return:	SUCCESS
- *		FAILURE
- */
-
-int
-td_remount_svm(char *mountpoint, svm_info_t *svm, char *mntopts)
-{
-	char cmd[MAXPATHLEN];
-	char options[MAXPATHLEN];
-
-	if ((mntopts == NULL) || (strcmp(mntopts, "-") == 0)) {
-		options[0] = '\0';
-	} else {
-		(void) snprintf(options, sizeof (options), "-o %s", mntopts);
-	}
-
-	/*
-	 * umount the mounted root filesystem
-	 */
-	(void) snprintf(cmd, sizeof (cmd),
-	    "/usr/sbin/umount %s", mountpoint);
-	if (td_safe_system(cmd, B_TRUE) != 0) {
-		if (TLI)
-			td_debug_print(LS_DBGLVL_INFO,
-			    "remount_svm() %s failed\n", cmd);
-		return (FAILURE);
-	} else {
-		/*
-		 * now mount the mirror
-		 */
-		(void) snprintf(cmd, sizeof (cmd),
-		    "/usr/sbin/mount -F ufs %s /dev/md/dsk/%s %s",
-		    options, svm->root_md, mountpoint);
-		if (td_safe_system(cmd, B_TRUE) != 0) {
-			if (TLI)
-				td_debug_print(LS_DBGLVL_INFO,
-				    "remount_svm(): %s failed\n", cmd);
-			return (FAILURE);
-		}
-	}
-
-	if (TLI)
-		td_debug_print(LS_DBGLVL_INFO,
-		    "SPMI_STORE_SVM : remount_svm(): Mounted "
-		    "/dev/md/dsk/%s on %s\n", svm->root_md, mountpoint);
-	return (SUCCESS);
-}
-
-/*
- * td_set_mntdev_if_svm()
- *
- * Function to determine if the mounted fs is a metadevice
- * If it is then mount it instead.
- * Parameters:
- *	basemount - the base to check for svm info
- *	mntopts - the options to use for the mount
- *	mntdev - the device path that is to be mounted
- *		if non-NULL, name will be altered to remount SVM root mirror
- *		expected to accommodate MAXPATHLEN chars
- *	fsckdev - the raw device that could be fsck'd
- *		if non-NULL, name will be altered for SVM root mirror
- *		expected to accommodate MAXPATHLEN chars
- *	md_comp_count - where to store count of sides of mirror,
- *	if "basemount" is mirrored.  Stores 0 if not a mirror.
- *	md_comps - string array of component names
- * Return:
- *	SUCCESS : if mirror is mounted or there is no mirror
- *	FAILURE : if mirror is present and unable to start the SVM
- * Status:
- *	private
- */
-int
-td_set_mntdev_if_svm(char *basemount, char *mntopts, char **mntdev,
-    char *fsckdev, nvlist_t **attr)
-{
-	svm_info_t	*svminfo;
-	int		ret;
-
-	if (ddm_check_for_svm(basemount) == SUCCESS) {
-		svminfo = ddm_svm_alloc();
-		if ((ret = ddm_start_svm(basemount, &svminfo, SVM_DONT_CONV))
-		    != SUCCESS) {
-			td_debug_print(LS_DBGLVL_WARN,
-			    "svm on %s fails code=%d\n", basemount, ret);
-			ddm_svm_free(svminfo);
-			return (FAILURE);
-		}
-		if (TLI)
-			td_debug_print(LS_DBGLVL_INFO,
-			    "start_svm on %s succeeds comp cnt=%d\n",
-			    basemount, svminfo->count);
-
-		if (svminfo->count > 0) {
-			if (td_remount_svm(basemount,
-			    svminfo, mntopts) == SUCCESS) {
-				if (mntdev != NULL && *mntdev != NULL)
-					(void) snprintf(*mntdev, MAXPATHLEN,
-					    "/dev/md/dsk/%s", svminfo->root_md);
-				if (fsckdev != NULL)
-					(void) snprintf(fsckdev, MAXPATHLEN,
-					    "/dev/md/rdsk/%s",
-					    svminfo->root_md);
-			}
-			if (attr != NULL) {
-				/* root is a mirror - get component names */
-				(void) nvlist_alloc(attr, NV_UNIQUE_NAME, 0);
-				(void) nvlist_add_string(*attr,
-				    TD_SLICE_ATTR_MD_NAME, svminfo->root_md);
-				(void) nvlist_add_string_array(*attr,
-				    TD_SLICE_ATTR_MD_COMPS,
-				    svminfo->md_comps, (uint_t)svminfo->count);
-			}
-		}
-		ddm_svm_free(svminfo);
-		return (SUCCESS);
-	}
-	/*
-	 * No mirror, return success, meaning the ctds is OK
-	 * to continue using
-	 */
-	return (SUCCESS);
-}
-
-/*
- * td_safe_system()
+ * Function:	td_safe_system()
  *
  * Function to execute shell commands in a thread-safe manner
  * Parameters:

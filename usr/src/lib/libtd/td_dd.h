@@ -90,14 +90,6 @@ extern void		ddm_free_handle_list(ddm_handle_t *h);
 extern void		ddm_free_attr_list(nvlist_t *attrs);
 extern int		ddm_get_slice_inuse_stats(char *, nvlist_t *);
 
-extern ddm_err_t
-    ddm_slice_inuse_by_svm(char *slice, nvlist_t *attr, int *errp);
-extern int
-    ddm_start_svm_and_get_root_comps(char *slice, char *mntpnt, nvlist_t *attr);
-extern int
-    ddm_get_svm_comps_from_md_name(char *md_name, char *mntpnt, nvlist_t *attr);
-extern int ddm_stop_svm(void);
-
 extern int ddm_is_slice_name(char *str);
 
 /* PRINTFLIKE2 */

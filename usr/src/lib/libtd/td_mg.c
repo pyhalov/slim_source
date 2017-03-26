@@ -140,7 +140,6 @@ static td_errno_t os_discover(void);
 static struct td_obj *search_disks(const char *);
 static char *td_get_default_inst(void);
 static boolean_t string_array_add(const char *, char ***);
-static boolean_t is_path_on_svm(FILE *, const char *);
 static char *clustertoc_read_path(int, const char *);
 static char *CLUSTER_read_path(int, const char *);
 static char *td_get_value(const char *, char);
@@ -1049,25 +1048,6 @@ non_upgradeable_zone_list(FILE *fp, char ***znvl)
 			zname = zonename;
 		}
 
-		/*
-		 * zone cannot be on svm
-		 */
-		zonepath = z_zlist_get_zonepath(zoneList, zoneIndex);
-		if (TLI)
-			td_debug_print(LS_DBGLVL_INFO,
-			    "zone path = %s\n", zonepath);
-		if (zonepath != NULL && is_path_on_svm(fp, zonepath)) {
-			td_debug_print(LS_DBGLVL_ERR,
-			    "zone path = %s\n", zonepath);
-
-			if (string_array_add(zname, znvl))
-				are_bad_zones = B_TRUE;
-
-			td_debug_print(LS_DBGLVL_INFO,
-			    MSG0_MISSING_ZONE_PKG_DIR, zonename);
-			continue;
-		}
-
 		if (usr_packages_exist(zname)) {
 			/* add zonename to list of nonupgradeable zones */
 			if (string_array_add(zname, znvl))
@@ -1192,37 +1172,6 @@ static void
 clear_td_errno(void)
 {
 	td_errno = TD_E_SUCCESS;
-}
-
-static boolean_t
-is_path_on_svm(FILE *fp, const char *path)
-{
-	boolean_t is_on_svm = B_FALSE;
-	struct vfstab vfstab;
-	const char svm_prefix[] = "/dev/md/";
-
-	if (fp == NULL) {
-		td_debug_print(LS_DBGLVL_INFO,
-		    "vfstab file pointer is null in is_path_on_svm\n");
-		return (B_FALSE);
-	}
-	resetmnttab(fp);
-	while (getvfsent(fp, &vfstab) == 0) {
-		if (vfstab.vfs_mountp == NULL)
-			continue;
-		/* find match on mount point */
-		if (strncmp(path, vfstab.vfs_mountp,
-		    strlen(vfstab.vfs_mountp)) != 0)
-			continue;
-		/* check for svm type of device name */
-		if (strncmp(vfstab.vfs_special,
-		    svm_prefix, sizeof (svm_prefix) - 1) == 0) {
-			is_on_svm = B_TRUE;
-			break;
-		}
-	}
-	resetmnttab(fp);
-	return (is_on_svm);
 }
 
 /*
@@ -1663,13 +1612,6 @@ add_instance:
 			tderr = TD_E_MEMORY;
 			goto umount;
 		}	/* allocate list */
-		/* factor in any svm information */
-		if (svmnvl != NULL) {
-			if (nvlist_merge(onvl, svmnvl, NV_UNIQUE_NAME) != 0)
-				td_debug_print(LS_DBGLVL_ERR,
-				    "nvlist merge failure\n");
-			fr.svm_root_mirror = 1;
-		}
 		if (zones_not_upgradeable_on_slice(slicenm, vfstabfp, &znvl)) {
 
 			int nelem = 0;
@@ -1877,23 +1819,6 @@ td_fsck_mount(char *basemount, char *slicenm, boolean_t dofsck, char *fsckdev,
 		if (TLI)
 			td_debug_print(LS_DBGLVL_INFO,
 			    "fsck on %s %s succeeds\n", mntdev, basemount);
-		/* set the mntdev to the mirror if there is one */
-		if (td_set_mntdev_if_svm(basemount, mntopts, NULL, NULL, attr)
-		    != SUCCESS) {
-			td_debug_print(LS_DBGLVL_WARN,
-			    "Failed to bring up SVM, releasing mountpoint %s\n",
-			    basemount);
-
-			/* clean up things in case of failure - unmount slice */
-			if (umount2(basemount, MS_FORCE) != 0) {
-				td_debug_print(LS_DBGLVL_ERR,
-				    "umount2(2) failed to unmount device %s"
-				    " mounted on %s, errno=%d: %s\n,", mntdev,
-				    basemount, errno, strerror(errno));
-			}
-
-			return (MNTRC_MOUNT_FAIL);
-		}
 	} else {
 		if (TLW)
 			td_debug_print(LS_DBGLVL_WARN,

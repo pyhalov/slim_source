@@ -183,7 +183,6 @@ typedef enum {
 
 /* nv inuse types for slices */
 #define	TD_SLICE_USEDBY_MOUNT	"mount"
-#define	TD_SLICE_USEDBY_SVM	"svm"
 #define	TD_SLICE_USEDBY_LU	"lu"
 #define	TD_SLICE_USEDBY_DUMP	"dump"
 #define	TD_SLICE_USEDBY_VXVM	"vxvm"
@@ -251,7 +250,6 @@ struct td_upgrade_fail_reasons {
 	uint32_t zones_not_upgradeable	: 1;
 	uint32_t no_usr_packages	: 1;
 	uint32_t no_version		: 1;
-	uint32_t svm_root_mirror	: 1;
 	uint32_t wrong_metacluster	: 1;
 	uint32_t os_version_too_old	: 1;
 };

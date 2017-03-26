@@ -35,7 +35,6 @@ OBJECTS	= \
 	td_mountall.o \
 	td_util.o \
 	td_dd.o \
-	td_dd_svm.o \
 	td_iscsi.o \
 	test_td.o
 
