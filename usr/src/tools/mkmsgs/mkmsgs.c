@@ -321,7 +321,7 @@ static	int	first_msg;		/* 0 = next msg is not the first to */
 static	char	*text_domain = DEFAULT_DOMAIN;
 
 
-
+int
 main(argc, argv)
 	int	argc;
 	char	**argv;

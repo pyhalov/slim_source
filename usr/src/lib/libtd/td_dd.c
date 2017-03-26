@@ -117,7 +117,6 @@ static char *ddm_slice_attr_conv_tbl[][2] = {
 
 static char *ddm_slice_inuse_conv_tbl[][2] = {
 	{ DM_USE_MOUNT,		TD_SLICE_USEDBY_MOUNT },
-	{ DM_USE_SVM,		TD_SLICE_USEDBY_SVM },
 	{ DM_USE_LU,		TD_SLICE_USEDBY_LU },
 	{ DM_USE_DUMP,		TD_SLICE_USEDBY_DUMP },
 	{ DM_USE_VXVM,		TD_SLICE_USEDBY_VXVM },

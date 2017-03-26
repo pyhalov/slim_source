@@ -34,6 +34,7 @@
 #include <sys/param.h>
 
 #include	"td_api.h"
+#include	"td_lib.h"
 
 #define	INSTISCSI_MAX_RETRY_TIME	6
 #define	INSTISCSI_SLEEP_INTERVAL	5

@@ -245,8 +245,6 @@ dump_upg_codes(struct td_upgrade_fail_reasons *fr)
 		(void) printf("\n\t\t no_usr_packages");
 	if (fr->no_version)
 		(void) printf("\n\t\t no_version");
-	if (fr->svm_root_mirror)
-		(void) printf("\n\t\t svm_root_mirror");
 	if (fr->wrong_metacluster)
 		(void) printf("\n\t\t wrong_metacluster");
 	if (fr->os_version_too_old)

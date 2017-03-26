@@ -27,6 +27,7 @@
 
 #include <assert.h>
 #include <string.h>
+#include <stdlib.h>
 #include "spmicommon_lib.h"
 #include "common_strings.h"
 

@@ -1282,9 +1282,6 @@ convert_td_value_to_om_upgrade_message(uint32_t *value)
 	if (reason->no_version) {
 		return (OM_UPGRADE_RELEASE_INFO_MISSING);
 	}
-	if (reason->svm_root_mirror) {
-		return (OM_UPGRADE_INSTANCE_IS_MIRROR);
-	}
 	if (reason->wrong_metacluster) {
 		return (OM_UPGRADE_WRONG_METACLUSTER);
 	}

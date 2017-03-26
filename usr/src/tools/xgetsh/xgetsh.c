@@ -56,6 +56,7 @@ static char buf[MAX_LEN], string[MAX_LEN];
 /* ncmsg.c */
 extern int	cmsg(const char *msgid);
 
+int
 main(int argc, char *argv[])
 {
 	extern char *optarg;
