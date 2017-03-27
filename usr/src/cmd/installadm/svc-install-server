@@ -27,10 +27,10 @@
 cd /
 GREP=/bin/grep
 INSTALLADM=/usr/sbin/installadm
-APACHE2=/usr/apache2/2.2/bin/apachectl
+APACHE2=/usr/apache2/2.4/bin/apachectl
 AI_HTTPD_CONF=/var/installadm/ai-webserver/ai-httpd.conf
 ECHO=/usr/bin/echo
-HTTPD=/usr/apache2/2.2/bin/httpd
+HTTPD=/usr/apache2/2.4/bin/httpd
 AWK=/usr/bin/awk
 SVCCFG=/usr/sbin/svccfg
 INSTANCE=svc:/system/install/server:default
