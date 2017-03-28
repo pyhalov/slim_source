@@ -42,9 +42,7 @@ patch:=         TARGET= install
 
 .KEEP_STATE:
 
-$(SUBDIRS): headers
-
-all install: headers $(SUBDIRS)
+all install: headers .WAIT $(SUBDIRS)
 
 check clean clobber cstyle headers lint lintlib patch: $(SUBDIRS)
 
