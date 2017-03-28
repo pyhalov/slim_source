@@ -50,7 +50,9 @@ clean:
 
 clobber: clean
 
-install: all .WAIT $(ROOTPROGS) 
+$(ROOTPROGS): python $(PY_PROGS)
+
+install: all $(ROOTPROGS) 
 
 ManifestRead: ManifestRead.py
 	$(CP) ManifestRead.py ManifestRead

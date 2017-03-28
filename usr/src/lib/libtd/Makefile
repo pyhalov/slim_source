@@ -65,7 +65,7 @@ CLEANFILES	= $(TEST_PROGS)
 
 .KEEP_STATE:
 
-all: $(HDRS) .WAIT static dynamic
+all: $(HDRS) static dynamic
 	@true
 
 # Target Discovery Manager test program
@@ -104,9 +104,16 @@ test_td_static:	static test_td.o
 
 static: $(LIBS)
 
-dynamic: $(DYNLIB) .WAIT $(DYNLIBLINK)
+dynamic: $(DYNLIB) $(DYNLIBLINK)
 
-install:	all .WAIT \
+$(LIBS) $(DYNLIB): $(HDRS)
+
+$(DYNLIBLINK): $(DYNLIB)
+
+$(ROOTADMINLIB) $(ROOTADMINLIBS) $(ROOTADMINLIBDYNLIB): $(HDRS) static dynamic
+$(ROOT_TEST_PROGS) $(ROOTADMINLIBDYNLIBLINK): $(HDRS) static dynamic
+
+install:	all \
 		$(ROOTADMINLIB) $(ROOTADMINLIBS) $(ROOTADMINLIBDYNLIB) \
 		$(ROOT_TEST_PROGS) $(ROOTADMINLIBDYNLIBLINK)
 

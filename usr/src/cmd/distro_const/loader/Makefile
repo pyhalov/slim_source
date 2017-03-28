@@ -38,11 +38,13 @@ DC_LOADER_FILES=	loader.rc.local menu.rc.local
 ROOTDC_LOADER=	$(ROOTDC)/loader
 ROOTDC_LOADER_FILES=	$(DC_LOADER_FILES:%=$(ROOTDC)/loader/%)
 
+$(ROOTDC_LOADER_FILES): $(ROOTDC_LOADER)
+
 all:
 clean:
 clobber: clean
 
-install:	all .WAIT $(ROOTDC)	\
+install:	all $(ROOTDC)	\
 		$(ROOTDC_LOADER)	\
 		$(ROOTDC_LOADER_FILES)
 

@@ -95,23 +95,27 @@ ${ARCH}/%.o: %.c
 
 .KEEP_STATE: 
 
-all: ${ARCH} .WAIT python  $(PYTHON_EXECS) \
+all: ${ARCH} python $(PYTHON_EXECS) \
 	$(PROGS) $(SCRIPTS) $(CONF)
 	@true
 
 ${ARCH}:
 	@[ -d ${@} ] || (${RM} ${@} ;mkdir -p ${@})
 
-python:
+python: ${ARCH}
 	$(PYTHON) -m compileall -l $(@D)
 
-$(PYTHON_EXECS):
+$(PYTHON_EXECS): ${ARCH}
 	$(CP) $(@).py $(@)
 
-$(PROGS):  $(OBJS) $(HDRS) .WAIT $(LIBDEP)
+$(PROGS):  $(OBJS) $(HDRS) $(LIBDEP)
 	$(LINK.c) -o $@ $(OBJS) $(LDLIBS)
 	cp $@ ${ARCH}
 	$(POST_PROCESS)
+
+$(OBJS): ${ARCH}
+
+$(LIBDEP): $(OBJS) $(HDRS)
 
 lint: ${SRCS} ${HDRS}
 	${LINT.c} ${SRCS}
@@ -125,10 +129,15 @@ clobber: clean
 
 install_h: 
 
-install: all .WAIT $(ROOTPYMODULES) $(ROOTPYCMODULES) $(ROOTPYSCRIPTS) \
+install: all $(ROOTPYMODULES) $(ROOTPYCMODULES) $(ROOTPYSCRIPTS) \
 	$(SYSMANIFESTS) $(PROGS) $(ROOTPROGS) $(ROOTSCRIPTS) $(ROOTMANSYS) \
 	$(ROOTLIBSVCMETHOD) $(SVCMETHODS) $(ROOTPYTHONVENDORINSTALLAI) \
 	$(SYSMANIFESTS) $(VARWEB)
+
+$(ROOTPYMODULES) $(ROOTPYCMODULES) $(ROOTPYSCRIPTS): ${ARCH} python $(PYTHON_EXECS) $(PROGS) $(SCRIPTS) $(CONF)
+$(SYSMANIFESTS) $(PROGS) $(ROOTPROGS) $(ROOTSCRIPTS) $(ROOTMANSYS): ${ARCH} python $(PYTHON_EXECS) $(PROGS) $(SCRIPTS) $(CONF)
+$(ROOTLIBSVCMETHOD) $(SVCMETHODS) $(ROOTPYTHONVENDORINSTALLAI): ${ARCH} python $(PYTHON_EXECS) $(PROGS) $(SCRIPTS) $(CONF)
+$(SYSMANIFESTS) $(VARWEB): ${ARCH} python $(PYTHON_EXECS) $(PROGS) $(SCRIPTS) $(CONF)
 
 include ../Makefile.targ
 

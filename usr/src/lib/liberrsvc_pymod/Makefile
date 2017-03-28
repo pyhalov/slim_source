@@ -58,14 +58,24 @@ static:
 
 dynamic:	$(CPYTHONLIB)
 
-python:
+python:		$(HDRS) dynamic
 	$(PYTHON) -m compileall -l $(@D)
 
-all:		$(HDRS) dynamic .WAIT python $(SUBDIRS)
+$(SUBDIRS):	$(HDRS) dynamic
+
+all:		$(HDRS) dynamic python $(SUBDIRS)
 
 install_h:
 
-install:	all .WAIT \
+$(ROOTPYTHONVENDOR): $(HDRS) dynamic python $(SUBDIRS)
+$(ROOTPYTHONVENDORINSTALL): $(HDRS) dynamic python $(SUBDIRS)
+$(ROOTPYTHONVENDORINSTALLLIBS): $(HDRS) dynamic python $(SUBDIRS)
+$(ROOTPYTHONVENDORINSTALLMODS): $(HDRS) dynamic python $(SUBDIRS)
+$(ROOTPYTHONVENDORINSTALLCMODS): $(HDRS) dynamic python $(SUBDIRS)
+
+
+
+install:	all \
 		$(ROOTPYTHONVENDOR) \
 		$(ROOTPYTHONVENDORINSTALL) \
 		$(ROOTPYTHONVENDORINSTALLLIBS) \

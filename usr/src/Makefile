@@ -45,20 +45,30 @@ pkgs:=		TARGET= pkgs
 
 .KEEP_STATE:
 
-all install:	headers .WAIT man .WAIT lib .WAIT cmd .WAIT pkgs
+all install:	headers man lib cmd pkgs
 
 clean clobber lint: $(SUBDIRS) pkg
 
 proto: headers
 
-headers: rootdirs .WAIT build-tools .WAIT $(SUBDIRS)
+headers: rootdirs build-tools $(SUBDIRS)
+
+man lib cmd pkgs: headers
+
+pkgs: man lib cmd
+
+lib: man headers
+
+man: headers
 
 rootdirs: $(ROOTDIRS)
+
+$(SUBDIRS): build-tools
 
 # We use our own local tools when creating the header files.  These
 # should eventually be packaged separately and delivered onto build
 # machines, rather than rebuilt with every nightly run.
-build-tools:
+build-tools: rootdirs
 	@cd tools; pwd; $(MAKE) install
 
 $(SUBDIRS) pkg: FRC

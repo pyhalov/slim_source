@@ -63,7 +63,7 @@ clean:
 
 clobber: clean
 
-install:	all .WAIT $(ROOTDC) \
+install:	python $(ROOTDC) \
 		$(ROOTDC_UTIL_FILES)
 
 python:

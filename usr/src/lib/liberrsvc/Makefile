@@ -54,11 +54,15 @@ static:		$(LIBS)
 
 dynamic:	$(DYNLIB) $(DYNLIBLINK)
 
-all:		$(HDRS) dynamic .WAIT $(SUBDIRS)
+all:		$(HDRS) dynamic $(SUBDIRS)
+
+$(SUBDIRS):	$(HDRS) dynamic
 
 install_h:	$(EXPHDRS:%=$(ROOTINC)/%)
 
-install:	all .WAIT \
+$(ROOTUSRLIB) $(ROOTUSRLIBDYNLIB) $(ROOTUSRLIBDYNLIBLINK): $(HDRS) dynamic $(SUBDIRS)
+
+install:	all \
 		$(ROOTUSRLIB) $(ROOTUSRLIBDYNLIB) \
 		$(ROOTUSRLIBDYNLIBLINK) 
 

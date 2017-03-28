@@ -31,7 +31,9 @@ FILEMODE= 555
 
 all: $(PROG) 
 
-install: all .WAIT $(ROOTSBINPROG)
+$(ROOTSBINPROG): $(PROG)
+
+install: all $(ROOTSBINPROG)
 
 $(PROG): listusb.c
 	$(CC) $(CFLAGS) $@.c -l$(LIBS) -o $@

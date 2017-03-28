@@ -43,10 +43,13 @@ all:		python
 
 install_h:
 
-install:	all .WAIT \
+install:	all \
 		$(ROOTPYTHONVENDORINSTALL) $(ROOTPYTHONVENDORINSTALLLIBS) \
 		$(ROOTPYMODULES) $(ROOTPYCMODULES) \
 		$(ROOTUSRSHAREINSTALL) $(PROFILES)
+
+$(ROOTPYMODULES) $(ROOTPYCMODULES):	python
+
 python:
 		$(PYTHON) -m compileall -l $(@D)
 

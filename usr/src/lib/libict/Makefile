@@ -55,22 +55,30 @@ CLEANFILES	= $(TEST_PROGS) ict_test.o
 
 .KEEP_STATE:
 
-all: $(HDRS) .WAIT dynamic $(TEST_PROGS)
+all: $(HDRS) dynamic $(TEST_PROGS)
 	@true
 
+$(DYNLIB) $(TEST_PROGS):	$(HDRS)
+
+$(DYNLIBLINK): $(DYNLIB)
+
+$(ROOTADMINLIB) $(ROOTADMINLIBS) $(ROOTADMINLIBDYNLIB): $(DYNLIB) $(DYNLIBLINK)
+$(ROOTADMINLIBDYNLIBLINK): $(ROOTADMINLIBDYNLIB)
+$(ROOT_TEST_PROGS):	$(TEST_PROGS)
+
 #Install Completion Tasks test program
-ict_test:	.WAIT dynamic ict_test.o
+ict_test:	dynamic ict_test.o
 	${LINK.c} -R$(ROOTADMINLIB:$(ROOT)%=%) \
 		-o ict_test ict_test.o -L$(ROOTADMINLIB) \
 		-Lpics/${ARCH} -L$(ROOTUSRLIB) -lict -llogsvc -lnvpair
 
-dynamic: $(DYNLIB) .WAIT $(DYNLIBLINK)
+dynamic: $(DYNLIB) $(DYNLIBLINK)
 
-install:	all .WAIT \
+install:	all \
 		$(ROOTADMINLIB) $(ROOTADMINLIBS) $(ROOTADMINLIBDYNLIB) \
 		$(ROOTADMINLIBDYNLIBLINK) $(ROOT_TEST_PROGS)
 
-install_test:	all .WAIT \
+install_test:	all \
 		$(ROOTADMINLIB) $(ROOTADMINLIBS) $(ROOTADMINLIBDYNLIB) \
 		$(ROOTADMINLIBDYNLIBLINK)
 

@@ -41,7 +41,7 @@ ROOTTM_FILES=	$(TM_FILES:%=$(ROOTDC_TM)/%)
 
 all:
 
-install:	all .WAIT $(ROOTDC) \
+install:	all $(ROOTDC) \
 		$(ROOTDC_TM) \
 		$(ROOTTM_FILES)
 

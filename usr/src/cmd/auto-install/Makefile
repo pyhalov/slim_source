@@ -91,20 +91,30 @@ GROUP= sys
 
 .KEEP_STATE: 
 
-all: ${ARCH} .WAIT $(PROG) python $(PROGS)
+all: ${ARCH} $(PROG) python $(PROGS)
 	@true
 
 ${ARCH}:
 	@[ -d ${@} ] || (${RM} ${@} ;mkdir -p ${@})
 
-$(PROG):  $(OBJS) $(HDRS) .WAIT $(LIBDEP)
+$(LIBDEP): $(OBJS) $(HDRS)
+ 
+$(PROG):  $(OBJS) $(HDRS) $(LIBDEP) ${ARCH}
 	$(LINK.c) -o $@ $(OBJS) $(LDLIBS)
 	cp $@ ${ARCH}
 	$(POST_PROCESS)
 
-${OBJS}: $(HDRS)
+${OBJS}: $(HDRS) ${ARCH}
 
-install: all .WAIT $(ROOTPROGS) \
+$(ROOTPROGS) $(ROOTUSRBIN) $(ROOTUSRBINPROG) $(ROOTPYTHONVENDOR): ${ARCH} $(PROG) python $(PROGS)
+$(ROOTPYTHONVENDORINSTALL) $(ROOTPYTHONVENDORINSTALLAI) $(ROOTMANIFESTS) $(ROOTPYMODULES) $(ROOTPYCMODULES): ${ARCH} $(PROG) python $(PROGS)
+$(ROOTPYCMODULES) $(ROOTSCPROFILES) $(SUBDIRS): ${ARCH} $(PROG) python $(PROGS)
+
+msgs: ${ARCH} $(PROG) python $(PROGS)
+msgs: $(ROOTPYTHONVENDORINSTALL) $(ROOTPYTHONVENDORINSTALLAI) $(ROOTMANIFESTS) $(ROOTPYMODULES) $(ROOTPYCMODULES)
+msgs: $(ROOTPYCMODULES) $(ROOTSCPROFILES) $(SUBDIRS)
+
+install: all $(ROOTPROGS) \
 	$(ROOTUSRBIN) \
 	$(ROOTUSRBINPROG) \
 	$(ROOTPYTHONVENDOR) \
@@ -114,9 +124,9 @@ install: all .WAIT $(ROOTPROGS) \
 	$(ROOTPYMODULES) $(ROOTPYCMODULES) \
 	$(ROOTSCPROFILES) \
 	$(SUBDIRS) \
-	.WAIT msgs
+	msgs
 
-python:
+python: ${ARCH}
 	$(PYTHON) -m compileall -l $(@D)
 
 headers:

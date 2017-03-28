@@ -74,19 +74,19 @@ MSG_DOMAIN	= SUNW_INSTALL_LIBCOMMON
 
 .KEEP_STATE:
 
-all: $(HDRS) .WAIT static dynamic
+all: $(HDRS) static dynamic
 
 static: $(LIBS)
 
 dynamic: $(DYNLIB) $(DYNLIBLINK)
 
-install:	all .WAIT \
-		$(ROOTADMINLIB) .WAIT $(ROOTADMINLIBS) $(ROOTADMINLIBDYNLIB) \
-		$(ROOTADMINLIBDYNLIBLINK) .WAIT msgs .WAIT $(INSTMSGS)
-
-install_test:	all .WAIT \
+install:	all \
 		$(ROOTADMINLIB) $(ROOTADMINLIBS) $(ROOTADMINLIBDYNLIB) \
-		$(ROOTADMINLIBDYNLIBLINK) .WAIT $(INSTMSGS)
+		$(ROOTADMINLIBDYNLIBLINK) msgs $(INSTMSGS)
+
+install_test:	all \
+		$(ROOTADMINLIB) $(ROOTADMINLIBS) $(ROOTADMINLIBDYNLIB) \
+		$(ROOTADMINLIBDYNLIBLINK) $(INSTMSGS)
 
 install_h:	$(ROOTUSRINCLEXP)
 
@@ -97,11 +97,13 @@ common_proc:	objs/$(ARCH)/$(LIBRARY)
 
 msgs: ${MSG_DOMAIN}.po
 
-${MSG_DOMAIN}.po: ${SRCS} ${HDRS}
+${MSG_DOMAIN}.po: ${SRCS} ${HDRS} $(ROOTADMINLIBS) $(ROOTADMINLIBDYNLIB) $(ROOTADMINLIBDYNLIBLINK)
 	@echo "Making messages file ${MSG_DOMAIN}.po"
 	@${COMPILE.c} -C -E ${SRCS} 2>/dev/null | \
 		xgettext -d ${MSG_DOMAIN} -s \
 			-c "i18n:" - >/dev/null 2>&1
+
+instmsgs: msgs
  
 # Create a message file with "translated" test strings.
 # Turn the po file into an mo file ready for testing.
@@ -117,5 +119,11 @@ lint:  ${SRCS} ${HDRS}
 
 cstyle:	$(SRCS) $(PRIVHDRS) $(PUBHDRS)
 	cstyle $(SRCS) $(PRIVHDRS) $(PUBHDRS)
+
+$(LIBS) $(DYNLIB) $(DYNLIBLINK): $(HDRS)
+
+$(ROOTADMINLIBS) $(ROOTADMINLIBDYNLIB) $(ROOTADMINLIBDYNLIBLINK): $(ROOTADMINLIB)
+
+
 
 include ../Makefile.targ

@@ -54,13 +54,16 @@ all:		dynamic
 
 install_h:
 
-install:	all .WAIT \
+install:	all \
 		$(ROOTADMINLIB) $(ROOTADMINLIBS) $(ROOTADMINLIBDYNLIB) \
 		$(ROOTADMINLIBDYNLIBLINK)
 
+$(ROOTADMINLIB) $(ROOTADMINLIBS) $(ROOTADMINLIBDYNLIB) $(ROOTADMINLIBDYNLIBLINK): dynamic 
+
+
 lint:		lint_SRCS
 
-$(TEST_BIN): 	.WAIT dynamic
+$(TEST_BIN): 	dynamic
 	${LINK.c} -o $(TEST_BIN) $(TEST_CFLAGS) $(TEST_SRCS) \
 		-L$(ROOTADMINLIB) -R$(ROOTADMINLIB:$(ROOT)%=%) \
 		-lnvpair -lpython2.7 -llogsvc

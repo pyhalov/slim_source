@@ -62,8 +62,17 @@ CLEANFILES	= $(TEST_PROGS)
 
 .KEEP_STATE:
 
-all: $(HDRS) .WAIT static dynamic $(TEST_PROGS)
+all: $(HDRS) static dynamic $(TEST_PROGS)
 	@true
+
+$(LIBS) $(DYNLIB) $(TEST_PROGS): $(HDRS)
+
+$(DYNLIBLINK): $(DYNLIB)
+
+$(ROOTADMINLIB) $(ROOTADMINLIBS) $(ROOTADMINLIBDYNLIB): $(HDRS) static dynamic
+$(ROOTADMINLIBDYNLIBLINK): $(HDRS) static dynamic
+
+$(ROOT_TEST_PROGS): $(TEST_PROGS)
 
 # Target Instantiation test program
 test_ti:	dynamic test_ti.o
@@ -84,9 +93,9 @@ test_ti_static:	static test_ti.o
 
 static: $(LIBS)
 
-dynamic: $(DYNLIB) .WAIT $(DYNLIBLINK)
+dynamic: $(DYNLIB) $(DYNLIBLINK)
 
-install:	all .WAIT \
+install:	all \
 		$(ROOTADMINLIB) $(ROOTADMINLIBS) $(ROOTADMINLIBDYNLIB) \
 		$(ROOT_TEST_PROGS) $(ROOTADMINLIBDYNLIBLINK)
 

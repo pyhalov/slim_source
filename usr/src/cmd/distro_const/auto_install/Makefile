@@ -46,7 +46,7 @@ ROOT_AUTOINSTALL_FILES=	$(AUTOINSTALL_FILES:%=$(ROOTDC_AI)/%)
 
 all:
 
-install:	all .WAIT $(ROOTDC) \
+install:	all $(ROOTDC) \
 		$(ROOTDC_AI) \
 		$(ROOT_AUTOINSTALL_FILES)
 

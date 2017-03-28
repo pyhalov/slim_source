@@ -43,6 +43,8 @@ CFLAGS		+= $(DEBUG_CFLAGS)  ${CPPFLAGS}
 SOFLAGS		+= -L$(ROOTADMINLIB) -R$(ROOTADMINLIB:$(ROOT)%=%) \
 		-llogsvc -lpython2.7 -lnvpair
 
+$(ROOTPYTHONVENDOR) $(ROOTPYTHONVENDORINSTALL) $(ROOTPYTHONVENDORINSTALLLIBS): $(HDRS) $(CPYTHONLIB)
+
 static:	
 
 dynamic:	$(CPYTHONLIB)
@@ -51,7 +53,7 @@ all:		$(HDRS) dynamic
 
 install_h:
 
-install:	all .WAIT \
+install:	all \
                 $(ROOTPYTHONVENDOR) \
                 $(ROOTPYTHONVENDORINSTALL) \
 		$(ROOTPYTHONVENDORINSTALLLIBS)

@@ -451,7 +451,10 @@ repository-metadata: publish_pkgs
 # derive the target repository as a component of the metadata-derived
 # symlink for each package.
 #
-publish_pkgs: $(REPOS:%=$(PKGDEST)/repo.%) $(PDIR)/gendeps .WAIT $(PUB_PKGS)
+
+$(PUB_PKGS): $(REPOS:%=$(PKGDEST)/repo.%) $(PDIR)/gendeps
+
+publish_pkgs: $(REPOS:%=$(PKGDEST)/repo.%) $(PDIR)/gendeps $(PUB_PKGS)
 
 $(PUB_PKGS): FRC
 

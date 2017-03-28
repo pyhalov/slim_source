@@ -57,6 +57,8 @@ clean:
 
 clobber: clean
 
-install: all .WAIT $(ROOTHELP_FILES)
+$(ROOTHELP_FILES): $(ROOTUSRSHARETIHELPC)
+
+install: all $(ROOTHELP_FILES)
 
 include ../../Makefile.targ

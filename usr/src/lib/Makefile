@@ -62,7 +62,7 @@ lint:=		TARGET= lint
 
 all check clean clobber lint: $(COMSUBDIRS) $(SUBDIRS)
 
-install: .WAIT $(COMSUBDIRS) $(SUBDIRS)
+install: $(COMSUBDIRS) $(SUBDIRS)
 
 headers: install_h
 
