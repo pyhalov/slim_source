@@ -75,7 +75,7 @@ $(ROOTADMINLIBDYNLIBLINK): $(HDRS) static dynamic
 $(ROOT_TEST_PROGS): $(TEST_PROGS)
 
 # Target Instantiation test program
-test_ti:	dynamic test_ti.o
+test_ti:	$(ROOTADMINLIBDYNLIBLINK) test_ti.o
 	$(LINK.c) -o test_ti test_ti.o \
 		-R$(ROOTADMINLIB:$(ROOT)%=%) \
 		-L$(ROOTADMINLIB) -L$(ROOTUSRLIB) -Lpics/$(ARCH) \
