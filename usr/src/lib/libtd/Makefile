@@ -86,14 +86,14 @@ tdmgtst_static:	static tdmgtst.o
 		-linstzones -lzonecfg -lcontract -lgen -lima
 
 # Target Discovery test program
-test_td:	dynamic test_td.o
+test_td:	$(ROOTADMINLIBDYNLIBLINK) test_td.o
 	$(LINK.c) -o test_td test_td.o \
 		-R$(ROOTADMINLIB:$(ROOT)%=%) \
 		-L$(ROOTADMINLIB) -Lpics/$(ARCH) \
 		-ltd -lfstyp -llogsvc -lnvpair
 
 # statically built Target Discovery test program
-test_td_static:	static test_td.o
+test_td_static:	$(LIBS) test_td.o
 	$(LINK.c) -o test_td_static test_td.o \
 		-L$(ROOTADMINLIB) -Lobjs/$(ARCH) \
 		-Wl,-Bstatic \

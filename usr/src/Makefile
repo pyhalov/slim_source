@@ -47,6 +47,10 @@ pkgs:=		TARGET= pkgs
 
 all install:	headers .WAIT man .WAIT lib .WAIT cmd .WAIT pkgs
 
+pkgs: cmd
+
+cmd: lib
+
 clean clobber lint: $(SUBDIRS) pkg
 
 proto: headers
