@@ -344,8 +344,8 @@ class InnerWindow(object):
         if centered:
             start_x = (max_x - textwidth(text)) / 2 + start_x
         
-        if isinstance(text, unicode):
-            text = text.encode(get_encoding())
+        text = unicode(text)
+        text = text.encode(get_encoding())
         logging.log(LOG_LEVEL_INPUT, "calling addstr with params start_y=%s,"
                     "start_x=%s, text=%s", start_y, start_x, text)
         self.window.addstr(start_y, start_x, text)
