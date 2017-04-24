@@ -152,7 +152,11 @@ def make_screen_list(main_win):
 
 
 if __name__ == '__main__':
-    locale.setlocale(locale.LC_ALL, "")
+    loc = locale.getdefaultlocale()
+    if loc[1] != 'UTF-8':
+        locale.setlocale(locale.LC_ALL, "en_US.UTF-8")
+    else:
+        locale.setlocale(locale.LC_ALL, "")
     gettext.install("textinstall", "/usr/share/locale", unicode=True)
     if os.getuid() != 0:
         print _("The %(release)s Text Installer must be run with "

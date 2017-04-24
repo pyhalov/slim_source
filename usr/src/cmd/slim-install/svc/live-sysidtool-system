@@ -49,6 +49,7 @@ then
 	if [ -x /usr/bin/mate-session ]; then
 		echo '[Desktop]' > /jack/.dmrc
 		echo 'Session=mate' >> /jack/.dmrc
+		echo 'Language=en_US.UTF-8' >> /jack/.dmrc
 	fi
 
 	#
