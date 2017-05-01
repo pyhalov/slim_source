@@ -97,4 +97,6 @@ set zfs:zfs_arc_max=0x4002000
 set zfs:zfs_vdev_cache_size=0
 EOF
 
+$CHROOT $PKG_IMG_PATH $SH /lib/svc/method/svc-cacert start
+
 exit 0

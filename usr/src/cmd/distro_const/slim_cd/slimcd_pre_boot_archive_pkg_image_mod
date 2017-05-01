@@ -191,6 +191,8 @@ if [ -f ${PKG_IMG_PATH}/etc/gconf/schemas/panel-default-setup.entries ]; then
 	$TOUCH ${SAVE_PATH}/etc/gconf/schemas/panel-default-setup.entries
 fi
 
+$CHROOT $PKG_IMG_PATH $SH /lib/svc/method/svc-cacert start
+
 #Remove the temp /dev/null
 $RM ${PKG_IMG_PATH}/dev/null
 

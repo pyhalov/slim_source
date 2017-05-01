@@ -142,6 +142,10 @@
     <instance name='default' enabled='false' />
   </service>
 
+  <service name='system/ca-certificates' version='1' type='service'>
+    <instance name='default' enabled='false' />
+  </service>
+
   <!--
       Increase the timeout to avoid error messages for the next 3 services.
       Default of 30 seconds is not enough when starting from a slow device
