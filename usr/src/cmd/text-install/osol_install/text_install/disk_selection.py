@@ -94,6 +94,8 @@ class DiskScreen(BaseScreen):
     DISK_WARNING_GPT = _("You have chosen a GPT labeled disk. Installing "
                          "onto a GPT labeled disk will cause the loss "
                          "of all existing data. ")
+    DISK_WARNING_NEED_ONE_DISK = _("You haven't selected a disk for installation "
+                         "of the operating system.")
 
     CANCEL_BUTTON = _("Cancel")
     CONTINUE_BUTTON = _("Continue")
@@ -397,10 +399,19 @@ class DiskScreen(BaseScreen):
         disk = self.disk_detail.disk_info
         
         warning_txt = []
-        if DiskInfo.GPT in disk.label:
+        disk_selected = False
+        gpt_disk_selected = False
+        
+        for d in self.disks:
+            if d.used:
+                disk_selected = True
+                if DiskInfo.GPT in disk.label:
+                   gpt_disk_selected = True 
+
+        if not disk_selected:
+            warning_txt.append(DiskScreen.DISK_WARNING_NEED_ONE_DISK)
+        elif gpt_disk_selected:
             warning_txt.append(DiskScreen.DISK_WARNING_GPT)
-#        elif disk.size > SliceInfo.MAX_VTOC:
-#            warning_txt.append(self.disk_warning_too_big)
         warning_txt = " ".join(warning_txt)
         
         if warning_txt:
@@ -410,7 +421,7 @@ class DiskScreen(BaseScreen):
                                           DiskScreen.CANCEL_BUTTON,
                                           DiskScreen.CONTINUE_BUTTON)
             
-            if not result:
+            if not result or not disk_selected:
                 raise UIMessage() # let user select different disk
             
             # if user didn't quit it is always OK to ignore disk size,
