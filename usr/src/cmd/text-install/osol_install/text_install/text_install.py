@@ -69,6 +69,7 @@ from osol_install.text_install.summary import SummaryScreen
 from osol_install.text_install.timezone import TimeZone
 from osol_install.text_install.users import UserScreen
 from osol_install.text_install.welcome import WelcomeScreen
+from osol_install.text_install.zpool_selection import ZpoolScreen
 
 
 def setup_curses():
@@ -131,6 +132,7 @@ def make_screen_list(main_win):
     disk_screen = DiskScreen(main_win)
     disk_screen.start_discovery()
     result.append(disk_screen)
+    result.append(ZpoolScreen(main_win))
     result.append(FDiskPart(main_win))
     result.append(PartEditScreen(main_win))
     if platform.processor() == "i386":

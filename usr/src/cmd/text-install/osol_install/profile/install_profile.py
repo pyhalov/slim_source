@@ -28,6 +28,7 @@ including the disk target, netwrok configuration, system details (such as
 timezone and locale), users, and zpool / zfs datasets.
 '''
 
+from osol_install.text_install.ti_install_utils import get_zpool_free_size
 
 class InstallProfile(object):
     '''
@@ -37,7 +38,7 @@ class InstallProfile(object):
     TAG = "install_profile"
     
     def __init__(self, disks=None, nic=None, system=None, users=None,
-                 zpool_type=None):
+                 zpool_type=None, install_to_pool=False, pool_name=None):
         if disks is None:
             disks = []
         self.original_disks = []
@@ -48,11 +49,15 @@ class InstallProfile(object):
             users = []
         self.users = users
         self.zpool_type = zpool_type
+        self.install_to_pool = install_to_pool
+        self.pool_name = pool_name
     
     def __str__(self):
         result = ["Install Profile:"]
         for disk in self.disks:
             result.append(str(disk))
+        if self.install_to_pool and self.pool_name is not None:
+            result.append("Pool: %s" % (self.pool_name))
         result.append(str(self.nic))
         result.append(str(self.system))
         for user in self.users:
@@ -76,4 +81,6 @@ class InstallProfile(object):
                 pool_size = min_disk_size * (len(self.disks) - 2)
             elif self.zpool_type == 'raidz3' and len(self.disks) > 4:
                 pool_size = min_disk_size * (len(self.disks) - 3)
+        elif self.pool_name is not None:
+            pool_size = get_zpool_free_size(pool_name)
         return pool_size

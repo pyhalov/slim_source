@@ -188,7 +188,13 @@ class SummaryScreen(BaseScreen):
 
     def get_zfs_summary(self):
         '''Return a string summary of the root pool configuration'''
-        pool_name = SliceInfo.DEFAULT_POOL.data
+        # In future we want to unify SliceInfo.DEFAULT_POOL 
+        # and self.install_profile.pool_name usage, but we need to 
+        # use both for now
+        if self.install_profile.install_to_pool:
+             pool_name = self.install_profile.pool_name
+        else:
+             pool_name = SliceInfo.DEFAULT_POOL.data
         pool_type = self.install_profile.zpool_type
         if (pool_type):
            return _("ZFS Pool name: %(name)s, type: %(type)s") % { "name": pool_name, "type": pool_type}

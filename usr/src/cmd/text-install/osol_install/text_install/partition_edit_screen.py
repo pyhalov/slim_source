@@ -126,6 +126,9 @@ class PartEditScreen(BaseScreen):
         if len(self.install_profile.disks) > 1:
             logging.debug("Using multiple disks, skipping editing")
             raise SkipException
+        if self.install_profile.install_to_pool:
+            logging.debug("Installing to existing pool, skipping editing")
+            raise SkipException
         part = self.install_profile.disks[0]
         if part.use_whole_segment:
             logging.debug("disk.use_whole_segment true, skipping editing")

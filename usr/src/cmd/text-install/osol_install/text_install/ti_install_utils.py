@@ -426,3 +426,29 @@ def get_zpool_list():
     zpool_list.extend(pool_list("status"))
     
     return zpool_list
+
+def get_zpool_free_size(name):
+    '''Return free size, available for pool's top-level filesystem.
+    Pool is imported if necessary
+    '''
+    
+    status = os.system("/usr/sbin/zpool list %s 2>&1 >/dev/null" % (name))
+    if status != 0:
+	status = os.system("/usr/sbin/zpool import -N %s 2>&1 >/dev/null" % (name))
+
+    if status == 0:
+        try:
+            argslist = ["/usr/sbin/zfs", "get", "-Hp", "-o", "value", "available", name ]
+            (zfsout, zfserr) = Popen(argslist, stdout=PIPE,
+       	          stderr=PIPE).communicate()
+        except OSError, err:
+            logging.error("OSError occured during zfs call: %s", err)
+            return -1
+
+        if zfserr:
+            logging.error("Error occured during zpool call: %s", zfserr)
+            return -1
+
+        return int(zfsout)
+        
+    return 0
