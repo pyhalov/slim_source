@@ -169,75 +169,77 @@ class UserScreen(BaseScreen):
         rc_edit_kwargs = {"linked_win" : self.root_pass_edit}
         self.root_confirm_edit.on_exit_kwargs = rc_edit_kwargs
         
-        y_loc += 2
-        self.center_win.add_text(UserScreen.USER_TEXT, y_loc, 1,
-                                 self.win_size_x - 1)
-        
-        y_loc += 2
-        self.list_area.y_loc = y_loc
-        self.error_area.y_loc = y_loc
-        self.real_name_err = ErrorWindow(self.error_area,
-                                         window=self.center_win)
-        self.real_name_list = ListItem(self.list_area, window=self.center_win,
-                                       text=UserScreen.NAME_LABEL)
-        self.real_name_edit = EditField(self.edit_area,
-                                        window=self.real_name_list,
-                                        error_win=self.real_name_err,
-                                        text=self.user.real_name)
-        
-        y_loc += 1
-        self.list_area.y_loc = y_loc
-        self.error_area.y_loc = y_loc
-        self.username_err = ErrorWindow(self.error_area,
-                                        window=self.center_win)
-        self.username_list = ListItem(self.list_area,
-                                      window=self.center_win,
-                                      text=UserScreen.USERNAME_LABEL)
-        self.username_edit = EditField(self.username_edit_area,
-                                       window=self.username_list,
-                                       validate=username_valid_alphanum,
-                                       error_win=self.username_err,
-                                       on_exit=username_valid,
-                                       text=self.user.login_name)
-        
-        y_loc += 1
-        self.list_area.y_loc = y_loc
-        self.error_area.y_loc = y_loc
-        self.user_pass_err = ErrorWindow(self.error_area,
-                                         window=self.center_win)
-        self.user_pass_list = ListItem(self.list_area, window=self.center_win,
-                                       text=UserScreen.USER_PASS_LABEL)
-        self.user_pass_edit = EditField(self.edit_area,
-                                        window=self.user_pass_list,
-                                        error_win=self.user_pass_err,
-                                        masked=True,
-                                        text=("*" * self.user.passlen))
-        self.user_pass_edit.clear_on_enter = True
-        
-        y_loc += 1
-        self.list_area.y_loc = y_loc
-        self.error_area.y_loc = y_loc
-        self.user_confirm_err = ErrorWindow(self.error_area,
+        if not self.install_profile.install_to_pool:
+            y_loc += 2
+            self.center_win.add_text(UserScreen.USER_TEXT, y_loc, 1,
+                                     self.win_size_x - 1)
+            
+            y_loc += 2
+            self.list_area.y_loc = y_loc
+            self.error_area.y_loc = y_loc
+            self.real_name_err = ErrorWindow(self.error_area,
+                                             window=self.center_win)
+            self.real_name_list = ListItem(self.list_area, window=self.center_win,
+                                           text=UserScreen.NAME_LABEL)
+            self.real_name_edit = EditField(self.edit_area,
+                                            window=self.real_name_list,
+                                            error_win=self.real_name_err,
+                                            text=self.user.real_name)
+            
+            y_loc += 1
+            self.list_area.y_loc = y_loc
+            self.error_area.y_loc = y_loc
+            self.username_err = ErrorWindow(self.error_area,
                                             window=self.center_win)
-        self.user_confirm_list = ListItem(self.list_area,
+            self.username_list = ListItem(self.list_area,
                                           window=self.center_win,
-                                          text=UserScreen.CONFIRM_LABEL)
-        self.user_confirm_edit = EditField(self.edit_area,
-                                           window=self.user_confirm_list,
-                                           masked=True, on_exit=pass_match,
-                                           error_win=self.user_confirm_err,
-                                           text=("*" * self.user.passlen))
-        self.user_confirm_edit.clear_on_enter = True
-        uc_edit_kwargs = {"linked_win" : self.user_pass_edit}
-        self.user_confirm_edit.on_exit_kwargs = uc_edit_kwargs
+                                          text=UserScreen.USERNAME_LABEL)
+            self.username_edit = EditField(self.username_edit_area,
+                                           window=self.username_list,
+                                           validate=username_valid_alphanum,
+                                           error_win=self.username_err,
+                                           on_exit=username_valid,
+                                           text=self.user.login_name)
+            
+            y_loc += 1
+            self.list_area.y_loc = y_loc
+            self.error_area.y_loc = y_loc
+            self.user_pass_err = ErrorWindow(self.error_area,
+                                             window=self.center_win)
+            self.user_pass_list = ListItem(self.list_area, window=self.center_win,
+                                           text=UserScreen.USER_PASS_LABEL)
+            self.user_pass_edit = EditField(self.edit_area,
+                                            window=self.user_pass_list,
+                                            error_win=self.user_pass_err,
+                                            masked=True,
+                                            text=("*" * self.user.passlen))
+            self.user_pass_edit.clear_on_enter = True
+            
+            y_loc += 1
+            self.list_area.y_loc = y_loc
+            self.error_area.y_loc = y_loc
+            self.user_confirm_err = ErrorWindow(self.error_area,
+                                                window=self.center_win)
+            self.user_confirm_list = ListItem(self.list_area,
+                                              window=self.center_win,
+                                              text=UserScreen.CONFIRM_LABEL)
+            self.user_confirm_edit = EditField(self.edit_area,
+                                               window=self.user_confirm_list,
+                                               masked=True, on_exit=pass_match,
+                                               error_win=self.user_confirm_err,
+                                               text=("*" * self.user.passlen))
+            self.user_confirm_edit.clear_on_enter = True
+            uc_edit_kwargs = {"linked_win" : self.user_pass_edit}
+            self.user_confirm_edit.on_exit_kwargs = uc_edit_kwargs
         
         self.main_win.do_update()
         self.center_win.activate_object(self.root_pass_list)
     
     def on_change_screen(self):
         '''Save real name and login name always'''
-        self.user.real_name = self.real_name_edit.get_text()
-        self.user.login_name = self.username_edit.get_text()
+        if not self.install_profile.install_to_pool:
+            self.user.real_name = self.real_name_edit.get_text()
+            self.user.login_name = self.username_edit.get_text()
         self.root.is_role = bool(self.user.login_name)
 
         if self.root_pass_edit.get_text() != self.root_confirm_edit.get_text():
@@ -247,45 +249,50 @@ class UserScreen(BaseScreen):
         self.root_pass_edit.clear_text()
         self.root_confirm_edit.clear_text()
         
-        if self.user_pass_edit.get_text() != self.user_confirm_edit.get_text():
-            self.user.password = ""
-        else:
-            self.user.password = self.user_pass_edit.get_text()
-        self.user_pass_edit.clear_text()
-        self.user_confirm_edit.clear_text()
+        if not self.install_profile.install_to_pool:
+            if self.user_pass_edit.get_text() != self.user_confirm_edit.get_text():
+                self.user.password = ""
+            else:
+                self.user.password = self.user_pass_edit.get_text()
+            self.user_pass_edit.clear_text()
+            self.user_confirm_edit.clear_text()
     
     def validate(self):
         '''Check for mismatched passwords, bad login names, etc.'''
+
+        color = self.main_win.theme.header
+
         if self.root_pass_edit.get_text() != self.root_confirm_edit.get_text():
             raise UIMessage, _("Root passwords don't match")
-        user_pass = self.user_pass_edit.get_text()
-        if user_pass != self.user_confirm_edit.get_text():
-            raise UIMessage, _("User passwords don't match")
-        login_name = self.username_edit.get_text()
-        logging.debug("login_name=%s", login_name)
-        username_valid(self.username_edit)
-        real_name = self.real_name_edit.get_text()
-        
-        logging.debug("real_name=%s", real_name)
-        # If password or real_name has been entered, require a login name
-        
-        if not login_name:
-            if real_name or user_pass:
-                raise UIMessage, _("Enter username or clear all user "
-                                    "account fields")
-        color = self.main_win.theme.header
+        if not self.install_profile.install_to_pool:
+            user_pass = self.user_pass_edit.get_text()
+            if user_pass != self.user_confirm_edit.get_text():
+                raise UIMessage, _("User passwords don't match")
+            login_name = self.username_edit.get_text()
+            logging.debug("login_name=%s", login_name)
+            username_valid(self.username_edit)
+            real_name = self.real_name_edit.get_text()
+            
+            logging.debug("real_name=%s", real_name)
+            # If password or real_name has been entered, require a login name
+            
+            if not login_name:
+                if real_name or user_pass:
+                    raise UIMessage, _("Enter username or clear all user "
+                                        "account fields")
+
+            if login_name and not user_pass:
+                continue_anyway = self.main_win.pop_up(UserScreen.NO_USER_HEADER,
+                                                       UserScreen.NO_USER_TEXT,
+                                                       BaseScreen.CANCEL_BUTTON,
+                                                       UserScreen.CONTINUE_BTN,
+                                                       color=color)
+                if not continue_anyway:
+                    raise UIMessage()
+
         if not self.root_pass_edit.get_text():
             continue_anyway = self.main_win.pop_up(UserScreen.NO_ROOT_HEADER,
                                                    UserScreen.NO_ROOT_TEXT,
-                                                   BaseScreen.CANCEL_BUTTON,
-                                                   UserScreen.CONTINUE_BTN,
-                                                   color=color)
-            if not continue_anyway:
-                raise UIMessage()
-
-        if login_name and not user_pass:
-            continue_anyway = self.main_win.pop_up(UserScreen.NO_USER_HEADER,
-                                                   UserScreen.NO_USER_TEXT,
                                                    BaseScreen.CANCEL_BUTTON,
                                                    UserScreen.CONTINUE_BTN,
                                                    color=color)
