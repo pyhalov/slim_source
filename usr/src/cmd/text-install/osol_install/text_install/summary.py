@@ -90,6 +90,8 @@ class SummaryScreen(BaseScreen):
         lines.append("")
         lines.append(self.get_disk_summary())
         lines.append("")
+        lines.append(self.get_overwrite_boot_configuration())
+        lines.append("")
         lines.append(self.get_tz_summary())
         lines.append("")
         lines.append(_("Language: *The following can be changed when "
@@ -208,6 +210,11 @@ class SummaryScreen(BaseScreen):
         '''Return a string summary of the timezone selection'''
         timezone = self.install_profile.system.tz_timezone
         return _("Time Zone: %s") % timezone
+    
+    def get_overwrite_boot_configuration(self):
+        '''Return a string describing if we modify boot settings'''
+        obc = self.install_profile.overwrite_boot_configuration
+        return _("Overwrite pool's boot configuration: %s") % obc
     
     @staticmethod
     def get_release():

@@ -40,6 +40,7 @@ from osol_install.text_install.i18n import fit_text_truncate, \
                                            textwidth, \
                                            ljust_columns
 from osol_install.text_install.list_item import ListItem
+from osol_install.text_install.multi_list_item import MultiListItem
 from osol_install.text_install.scroll_window import ScrollWindow
 from osol_install.text_install.window_area import WindowArea
 from osol_install.text_install.ti_install_utils import get_zpool_list, \
@@ -61,6 +62,7 @@ class ZpoolScreen(BaseScreen):
     TGT_ERROR = _("An error occurred while searching for installation"
                   " targets. Please check the install log and file a bug"
                   " at bugs.openindiana.org.")
+    OVERWRITE_BOOT_CONFIGURATION_LABEL = _("Overwrite pool's boot configuration")
     BE_LABEL = _("Select BE name:")
     FILESYSTEM_EXISTS_ERROR = _("ZFS file system"
                   " %(pool_name)s/ROOT/%(be_name)s already exists")
@@ -108,6 +110,7 @@ class ZpoolScreen(BaseScreen):
         self.be_name_edit = None
         self.be_name_err = None
 
+        self.boot_configuration_item = None
         self.do_copy = False # Flag indicating if install_profile.disks
                              # should be copied
     
@@ -240,7 +243,20 @@ class ZpoolScreen(BaseScreen):
                                       validate=be_name_valid,
                                       error_win=self.be_name_err,
                                       text=self.install_profile.be_name)
+         
+        y_loc += 2
+        boot_configuration_width = textwidth(ZpoolScreen.OVERWRITE_BOOT_CONFIGURATION_LABEL) + 5
+        cols = (self.win_size_x - boot_configuration_width) / 2
+        boot_configuration_area = WindowArea(1, boot_configuration_width, y_loc, cols)
+
+        self.boot_configuration_item = MultiListItem(boot_configuration_area,
+                                                     window=self.center_win,
+                                                     text=ZpoolScreen.OVERWRITE_BOOT_CONFIGURATION_LABEL,
+                                                     used=self.install_profile.overwrite_boot_configuration)
         
+        self.boot_configuration_item.on_select = on_select_obc
+        self.boot_configuration_item.on_select_kwargs["pool_select"] = self
+
         self.main_win.do_update()
         self.center_win.activate_object(self.pool_win)
         self.pool_win.activate_object(self.selected_pool)
@@ -289,3 +305,10 @@ def be_name_valid(edit_field):
         raise UIMessage, _("Boot environment name contains unallowed symbols")
 
     return True
+
+def on_select_obc(pool_select=None):
+   if pool_select.install_profile.overwrite_boot_configuration is None:
+       pool_select.install_profile.overwrite_boot_configuration = True
+   else:
+       pool_select.install_profile.overwrite_boot_configuration = \
+           not pool_select.install_profile.overwrite_boot_configuration

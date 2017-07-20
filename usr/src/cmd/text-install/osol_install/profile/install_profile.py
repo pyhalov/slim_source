@@ -39,7 +39,9 @@ class InstallProfile(object):
     DEFAULT_BE_NAME = "openindiana"
     
     def __init__(self, disks=None, nic=None, system=None, users=None,
-                 zpool_type=None, install_to_pool=False, pool_name=None):
+                 zpool_type=None, install_to_pool=False, pool_name=None,
+                 be_name = DEFAULT_BE_NAME,
+                 overwrite_boot_configuration=True):
         if disks is None:
             disks = []
         self.original_disks = []
@@ -52,7 +54,8 @@ class InstallProfile(object):
         self.zpool_type = zpool_type
         self.install_to_pool = install_to_pool
         self.pool_name = pool_name
-        self.be_name = InstallProfile.DEFAULT_BE_NAME
+        self.be_name = be_name
+        self.overwrite_boot_configuration = overwrite_boot_configuration
     
     def __str__(self):
         result = ["Install Profile:"]
@@ -60,6 +63,9 @@ class InstallProfile(object):
             result.append(str(disk))
         if self.install_to_pool and self.pool_name is not None:
             result.append("Pool: %s" % (self.pool_name))
+        result.append("BE name: %s" % (self.be_name))
+        result.append("Overwrite boot configuration: %s" \
+            % (self.overwrite_boot_configuration))
         result.append(str(self.nic))
         result.append(str(self.system))
         for user in self.users:
