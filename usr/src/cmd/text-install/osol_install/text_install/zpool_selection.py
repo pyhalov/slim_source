@@ -66,6 +66,8 @@ class ZpoolScreen(BaseScreen):
     BE_LABEL = _("Select BE name:")
     FILESYSTEM_EXISTS_ERROR = _("ZFS file system"
                   " %(pool_name)s/ROOT/%(be_name)s already exists")
+    BE_NAME_EMPTY_ERROR = _("Boot environment name is empty")
+    BE_NAME_UNALLOWED_ERROR = _("Boot environment name contains unallowed symbols")
     
     POOL_HEADERS = [(25, _("Name")),
                     (10, _("Size(GB)")),
@@ -93,7 +95,9 @@ class ZpoolScreen(BaseScreen):
         self._recommended_size = None
         self.pool_win = None
 
-        max_field = textwidth(ZpoolScreen.BE_LABEL)
+        max_field = max(textwidth(ZpoolScreen.BE_LABEL),
+                        textwidth(ZpoolScreen.BE_NAME_EMPTY_ERROR),
+                        textwidth(ZpoolScreen.BE_NAME_UNALLOWED_ERROR))   
 
         self.max_text_len = (self.win_size_x - ZpoolScreen.BE_SCREEN_LEN -
                              ZpoolScreen.ITEM_OFFSET) / 2
@@ -103,9 +107,9 @@ class ZpoolScreen(BaseScreen):
         
         self.edit_area = WindowArea(1, ZpoolScreen.BE_SCREEN_LEN + 1,
                                     0, self.text_len)
-        err_x_loc = 2 * self.max_text_len - self.text_len
+        err_x_loc = 2
         err_width = (self.text_len + ZpoolScreen.BE_SCREEN_LEN)
-        self.error_area = WindowArea(1, err_width, 0, err_x_loc)
+        self.error_area = WindowArea(1, err_width + 1, 0, err_x_loc)
         self.be_name_list = None
         self.be_name_edit = None
         self.be_name_err = None
@@ -233,6 +237,7 @@ class ZpoolScreen(BaseScreen):
  
         y_loc += 7
         self.list_area.y_loc = y_loc
+        y_loc += 2
         self.error_area.y_loc = y_loc
         self.be_name_err =  ErrorWindow(self.error_area,
                                         window=self.center_win)
@@ -279,7 +284,7 @@ class ZpoolScreen(BaseScreen):
         pool_name = self.existing_pools[self.pool_win.active_object]
         be_name = self.be_name_edit.get_text()
         if not be_name:
-            raise UIMessage, _("Boot environment name is empty")
+            raise UIMessage, ZpoolScreen.BE_NAME_EMPTY_ERROR
 
         be_names = get_zpool_be_names(pool_name)
         if be_name in be_names:
@@ -298,11 +303,11 @@ def be_name_valid(edit_field):
 
     be_name = edit_field.get_text()
     if not be_name:
-        raise UIMessage, _("Boot environment name is empty")
+        raise UIMessage, ZpoolScreen.BE_NAME_EMPTY_ERROR
     
     search = re.compile(r'[^a-zA-Z0-9_\-]').search
     if bool(search(be_name)):
-        raise UIMessage, _("Boot environment name contains unallowed symbols")
+        raise UIMessage, ZpoolScreen.BE_NAME_UNALLOWED_ERROR
 
     return True
 
