@@ -240,6 +240,8 @@ class UserScreen(BaseScreen):
         if not self.install_profile.install_to_pool:
             self.user.real_name = self.real_name_edit.get_text()
             self.user.login_name = self.username_edit.get_text()
+        else:
+            self.user.real_name = self.user.login_name = ""
         self.root.is_role = bool(self.user.login_name)
 
         if self.root_pass_edit.get_text() != self.root_confirm_edit.get_text():
@@ -256,6 +258,8 @@ class UserScreen(BaseScreen):
                 self.user.password = self.user_pass_edit.get_text()
             self.user_pass_edit.clear_text()
             self.user_confirm_edit.clear_text()
+        else:
+            self.user.password = ""
     
     def validate(self):
         '''Check for mismatched passwords, bad login names, etc.'''
