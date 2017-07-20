@@ -84,5 +84,5 @@ class InstallProfile(object):
             elif self.zpool_type == 'raidz3' and len(self.disks) > 4:
                 pool_size = min_disk_size * (len(self.disks) - 3)
         elif self.pool_name is not None:
-            pool_size = get_zpool_free_size(pool_name)
+            pool_size = get_zpool_free_size(self.pool_name)
         return pool_size
