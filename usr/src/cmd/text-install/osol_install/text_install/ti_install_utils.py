@@ -324,6 +324,15 @@ def get_minimum_size(swap_dump_info):
     '''
     swap_size = swap_dump_info.get_required_swap_size()
     return(get_image_size() + OVERHEAD + swap_size)
+
+def get_minimum_size_without_swap():
+    ''' Returns the minimum amount of space required to perform an installation
+        without using swap.
+        
+        Size is returned in MB.
+
+    '''
+    return(get_image_size() + OVERHEAD)
     
 def get_recommended_size(swap_dump_info):
     '''Returns the recommended size to perform an installation.
@@ -331,6 +340,14 @@ def get_recommended_size(swap_dump_info):
 
     '''
     return (get_minimum_size(swap_dump_info) + FUTURE_UPGRADE_SPACE)
+
+def get_recommended_size_without_swap():
+    '''Returns the recommended size to perform an installation
+    without swap.
+    This takes into account estimated space to perform an upgrade.
+
+    '''
+    return (get_minimum_size_without_swap() + FUTURE_UPGRADE_SPACE)
 
 INIT_FILE = "/etc/default/init"
 TIMEZONE_KW = "TZ"
@@ -457,7 +474,7 @@ def get_zpool_be_names(name):
     ''' Return list of names which seem to be names of zpool boot environments.
     Pool is imported if necessary
     '''
-    be_names=list()
+    be_names = list()
     prefix = "%s/ROOT" % (name)
     status = os.system("/usr/sbin/zpool list %s 2>&1 >/dev/null" % (name))
     if status != 0:

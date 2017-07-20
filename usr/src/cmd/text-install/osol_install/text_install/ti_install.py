@@ -184,6 +184,10 @@ def cleanup_existing_install_target(install_profile):
             sp.Popen(["/usr/sbin/umount", "-f", "/var/run/boot_archive"],
                      stdout=null_handle, stderr=null_handle)
 
+    # Don't try to clean up existing pool in any way
+    if install_profile.install_to_pool:
+        return
+
     rootpool_name = install_profile.disks[0].get_install_root_pool()
 
     cmd = "/usr/sbin/zpool list " + rootpool_name
@@ -267,47 +271,60 @@ def do_ti(install_profile, swap_dump):
         inst_device_size = \
               install_profile.estimate_pool_size()
 
-        # The installation size we provide already included the required
-        # swap size
-        (swap_type, swap_size, dump_type, dump_size) = \
-            swap_dump.calc_swap_dump_size(ti_utils.get_minimum_size(swap_dump),
-                                          inst_device_size, swap_included=True)
-        for disk in install_profile.disks:
-            tgt_disk = disk.to_tgt()
-            tgt.create_disk_target(tgt_disk, False)
-            logging.debug("Completed create_disk_target for disk %s", str(disk))
-        logging.debug("Completed create_disk_target")
-        INSTALL_STATUS.update(InstallStatus.TI, 20, mesg)
-
-        rootpool_name = install_profile.disks[0].get_install_root_pool()
-        create_root_pool(install_profile)
-        logging.debug("Completed create_root_pool")
-        INSTALL_STATUS.update(InstallStatus.TI, 40, mesg)
-
-        create_swap = False
-        if (swap_type == ti_utils.SwapDump.ZVOL):
-            create_swap = True
-
-        create_dump = False
-        if (dump_type == ti_utils.SwapDump.ZVOL):
-            create_dump = True
-
-        logging.debug("Create swap %s Swap size: %s", create_swap, swap_size)
-        logging.debug("Create dump %s Dump size: %s", create_dump, dump_size)
-
-        tgt.create_zfs_volume(rootpool_name, create_swap, swap_size,
-                              create_dump, dump_size)
-        logging.debug("Completed create swap and dump")
-        INSTALL_STATUS.update(InstallStatus.TI, 70, mesg)
-
         zfs_datasets = ()
-        for ds in reversed(ZFS_SHARED_FS): # must traverse it in reversed order
-            zd = tgt.ZFSDataset(mountpoint=ds)
-            zfs_datasets += (zd,)
-            logging.debug("Adding dataset ZFSDataset(%s %s %s %s %s %s %s)",
-		zd.name, zd.mountpoint, zd.be_name, zd.zfs_swap, zd.swap_size,
-		zd.zfs_dump, zd.dump_size)
-	logging.debug("rootpol_name %s, init_be_name %s, INSTALLED_ROOT_DIR %s",
+        if not install_profile.install_to_pool:
+            # The installation size we provide already included the required
+            # swap size
+            (swap_type, swap_size, dump_type, dump_size) = \
+                swap_dump.calc_swap_dump_size(ti_utils.get_minimum_size(swap_dump),
+                                          inst_device_size, swap_included=True)
+            for disk in install_profile.disks:
+                tgt_disk = disk.to_tgt()
+                tgt.create_disk_target(tgt_disk, False)
+                logging.debug("Completed create_disk_target for disk %s", str(disk))
+            logging.debug("Completed create_disk_target")
+            INSTALL_STATUS.update(InstallStatus.TI, 20, mesg)
+
+            rootpool_name = install_profile.disks[0].get_install_root_pool()
+            create_root_pool(install_profile)
+            logging.debug("Completed create_root_pool")
+            INSTALL_STATUS.update(InstallStatus.TI, 40, mesg)
+
+            create_swap = False
+            if (swap_type == ti_utils.SwapDump.ZVOL):
+                create_swap = True
+
+            create_dump = False
+            if (dump_type == ti_utils.SwapDump.ZVOL):
+                create_dump = True
+
+            logging.debug("Create swap %s Swap size: %s", create_swap, swap_size)
+            logging.debug("Create dump %s Dump size: %s", create_dump, dump_size)
+
+            tgt.create_zfs_volume(rootpool_name, create_swap, swap_size,
+                                  create_dump, dump_size)
+            logging.debug("Completed create swap and dump")
+            INSTALL_STATUS.update(InstallStatus.TI, 70, mesg)
+
+            for ds in reversed(ZFS_SHARED_FS): # must traverse it in reversed order
+                zd = tgt.ZFSDataset(mountpoint=ds)
+                zfs_datasets += (zd,)
+                logging.debug("Adding dataset ZFSDataset(%s %s %s %s %s %s %s)",
+    		zd.name, zd.mountpoint, zd.be_name, zd.zfs_swap, zd.swap_size,
+    		zd.zfs_dump, zd.dump_size)
+        else:
+            rootpool_name = install_profile.pool_name
+            # We don't use grub, but it's still not completely axed from installer.
+            # So at least pretend to have /boot/grub
+            exec_cmd(["/usr/bin/mkdir", "-p", "/%s" % (rootpool_name) ],
+                "creating /%s directory" % (rootpool_name))
+            exec_cmd(["/usr/sbin/zfs", "set", "mountpoint=/%s" % (rootpool_name), \
+                      rootpool_name ], "setting %s mountpoint to /%s" % (rootpool_name, \
+                      rootpool_name))
+            exec_cmd(["/usr/bin/mkdir", "-p", "/%s/boot/grub" % (rootpool_name) ],
+                "creating grub menu directory")
+
+        logging.debug("rootpol_name %s, init_be_name %s, INSTALLED_ROOT_DIR %s",
 		rootpool_name, install_profile.be_name,  INSTALLED_ROOT_DIR)
         tgt.create_be_target(rootpool_name, install_profile.be_name, INSTALLED_ROOT_DIR,
                              zfs_datasets)
@@ -364,6 +381,8 @@ def do_ti_install(install_profile, screen, update_status_func, quit_event,
        Raises InstallationError for any error occurred during install.
 
     '''
+    global ZFS_SHARED_FS
+
     #
     # The following information is needed for installation.
     # Make sure they are provided before even starting
@@ -394,12 +413,16 @@ def do_ti_install(install_profile, screen, update_status_func, quit_event,
 
     logging.debug("Root password: %s", root_pass)
 
-    if ulogin:
-        user_home_dir = "/export/home/" + ulogin
-        ZFS_SHARED_FS.insert(0, user_home_dir)
-        logging.debug("User real name: %s", ureal_name)
-        logging.debug("User login: %s", ulogin)
-        logging.debug("User password: %s", upass)
+    if install_profile.install_to_pool:
+    # Avoid touching pre-created pool
+        ZFS_SHARED_FS = []
+    else:
+        if ulogin:
+            user_home_dir = "/export/home/" + ulogin
+            ZFS_SHARED_FS.insert(0, user_home_dir)
+            logging.debug("User real name: %s", ureal_name)
+            logging.debug("User login: %s", ulogin)
+            logging.debug("User password: %s", upass)
 
     inst_device_size = \
               install_profile.estimate_pool_size()
@@ -407,21 +430,27 @@ def do_ti_install(install_profile, screen, update_status_func, quit_event,
 
     swap_dump = ti_utils.SwapDump()
 
-    min_inst_size = ti_utils.get_minimum_size(swap_dump)
+    if install_profile.install_to_pool:
+        min_inst_size = ti_utils.get_minimum_size_without_swap()
+    else:
+        min_inst_size = ti_utils.get_minimum_size(swap_dump)
     logging.debug("Minimum required size: %sMB", min_inst_size)
     if (inst_device_size < min_inst_size):
-        logging.error("Size of root pool to be created for installation "
+        logging.error("Size of root pool which can be used for installation "
                       "is too small")
         logging.error("Estimated root pool size: %sMB", inst_device_size)
         logging.error("Minimum required size: %sMB", min_inst_size)
         raise ti_utils.InstallationError
 
-    recommended_size = ti_utils.get_recommended_size(swap_dump)
+    if install_profile.install_to_pool:
+        recommended_size = ti_utils.get_recommended_size_without_swap()
+    else:
+        recommended_size = ti_utils.get_recommended_size(swap_dump)
     logging.debug("Recommended size: %sMB", recommended_size)
     if (inst_device_size < recommended_size):
         # Warn users that their install target size is not optimal
         # Just log the warning, but continue with the installation.
-        logging.warning("Size of root pool to be created for installation is "
+        logging.warning("Size of root pool which can be used for installation is "
                         "not optimal") 
         logging.warning("Estimated root pool size: %sMB", inst_device_size)
         logging.warning("Recommended size: %sMB", recommended_size)
@@ -461,7 +490,10 @@ def do_ti_install(install_profile, screen, update_status_func, quit_event,
     global INSTALL_STATUS
     INSTALL_STATUS = InstallStatus(screen, update_status_func, quit_event)
 
-    rootpool_name = install_profile.disks[0].get_install_root_pool()
+    if install_profile.install_to_pool:
+        rootpool_name = install_profile.pool_name
+    else:
+        rootpool_name = install_profile.disks[0].get_install_root_pool()
 
     cleanup_existing_install_target(install_profile)
 
@@ -475,10 +507,11 @@ def do_ti_install(install_profile, screen, update_status_func, quit_event,
     # Save the timezone in the installed root's /etc/default/init file
     ti_utils.save_timezone_in_init(INSTALLED_ROOT_DIR, timezone)
 
-    # If swap was created, add appropriate entry to <target>/etc/vfstab
-    swap_device = swap_dump.get_swap_device(rootpool_name) 
-    logging.debug("Swap device: %s", swap_device)
-    ti_utils.setup_etc_vfstab_for_swap(swap_device, INSTALLED_ROOT_DIR)
+    if not install_profile.install_to_pool:
+        # If swap was created, add appropriate entry to <target>/etc/vfstab
+        swap_device = swap_dump.get_swap_device(rootpool_name) 
+        logging.debug("Swap device: %s", swap_device)
+        ti_utils.setup_etc_vfstab_for_swap(swap_device, INSTALLED_ROOT_DIR)
 
     try:
         run_ICTs(install_profile, hostname, ict_mesg,
@@ -580,20 +613,25 @@ def run_ICTs(install_profile, hostname, ict_mesg, locale,
     except ti_utils.InstallationError:
         failed_icts += 1
 
-    # Setup bootfs property so that newly created Solaris instance is booted
-    # appropriately
-    initial_be = rootpool_name + "/ROOT/" + install_profile.be_name
-    try:
-        exec_cmd(["/usr/sbin/zpool", "set", "bootfs=" + initial_be,
-                  rootpool_name], "activate BE")
-    except ti_utils.InstallationError:
-        failed_icts += 1
+    if install_profile.overwrite_boot_configuration:
+        # Setup bootfs property so that newly created Solaris instance is booted
+        # appropriately
+        initial_be = rootpool_name + "/ROOT/" + install_profile.be_name
+        try:
+            exec_cmd(["/usr/sbin/zpool", "set", "bootfs=" + initial_be,
+                      rootpool_name], "activate BE")
+        except ti_utils.InstallationError:
+            failed_icts += 1
     
-    try:
-        exec_cmd(["/usr/sbin/bootadm", "install-bootloader", "-f", "-R", INSTALLED_ROOT_DIR,
-                  "-P", rootpool_name], "execute bootadm install-bootloader")
-    except ti_utils.InstallationError:
-        failed_icts += 1
+        try:
+            if install_profile.install_to_pool:
+                force = "-Mf"
+            else:
+                force = "-f"
+            exec_cmd(["/usr/sbin/bootadm", "install-bootloader", force, "-R", INSTALLED_ROOT_DIR,
+                      "-P", rootpool_name], "execute bootadm install-bootloader")
+        except ti_utils.InstallationError:
+            failed_icts += 1
 
     INSTALL_STATUS.update(InstallStatus.ICT, 50, ict_mesg)
 
