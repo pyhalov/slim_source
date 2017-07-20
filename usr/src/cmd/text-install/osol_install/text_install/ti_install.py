@@ -70,9 +70,6 @@ ICT_USER_GID = "10"
 
 INSTALL_FINISH_PROG = "/sbin/install-finish"
 
-# Initial BE name
-INIT_BE_NAME = "openindiana"
-
 # definitions for ZFS pool
 INSTALL_SNAPSHOT = "install"
 
@@ -311,8 +308,8 @@ def do_ti(install_profile, swap_dump):
 		zd.name, zd.mountpoint, zd.be_name, zd.zfs_swap, zd.swap_size,
 		zd.zfs_dump, zd.dump_size)
 	logging.debug("rootpol_name %s, init_be_name %s, INSTALLED_ROOT_DIR %s",
-		rootpool_name,INIT_BE_NAME,  INSTALLED_ROOT_DIR)
-        tgt.create_be_target(rootpool_name, INIT_BE_NAME, INSTALLED_ROOT_DIR,
+		rootpool_name, install_profile.be_name,  INSTALLED_ROOT_DIR)
+        tgt.create_be_target(rootpool_name, install_profile.be_name, INSTALLED_ROOT_DIR,
                              zfs_datasets)
 
         logging.debug("Completed create_be_target")
@@ -531,8 +528,8 @@ def post_install_cleanup(install_profile, rootpool_name):
         raise ti_utils.InstallationError
         
     # 0 for the 2nd argument because force-umount need to be 0
-    if beUnmount(INIT_BE_NAME, 0) != 0:
-        logging.error("beUnmount failed for %s", INIT_BE_NAME)
+    if beUnmount(install_profile.be_name, 0) != 0:
+        logging.error("beUnmount failed for %s", install_profile.be_name)
         raise ti_utils.InstallationError
 
 # pylint: disable-msg=C0103
@@ -585,7 +582,7 @@ def run_ICTs(install_profile, hostname, ict_mesg, locale,
 
     # Setup bootfs property so that newly created Solaris instance is booted
     # appropriately
-    initial_be = rootpool_name + "/ROOT/" + INIT_BE_NAME
+    initial_be = rootpool_name + "/ROOT/" + install_profile.be_name
     try:
         exec_cmd(["/usr/sbin/zpool", "set", "bootfs=" + initial_be,
                   rootpool_name], "activate BE")
@@ -618,7 +615,7 @@ def run_ICTs(install_profile, hostname, ict_mesg, locale,
     
     # Take a snapshot of the installation
     try:
-        exec_cmd([ICT_PROG, "ict_snapshot", INIT_BE_NAME, INSTALL_SNAPSHOT],
+        exec_cmd([ICT_PROG, "ict_snapshot", install_profile.be_name, INSTALL_SNAPSHOT],
                  "execute ict_snapshot() ICT")
     except ti_utils.InstallationError:
         failed_icts += 1

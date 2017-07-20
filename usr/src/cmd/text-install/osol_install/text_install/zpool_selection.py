@@ -21,6 +21,7 @@ from copy import deepcopy
 import curses
 import logging
 import platform
+import re
 import threading
 import traceback
 
@@ -33,6 +34,8 @@ from osol_install.text_install.base_screen import BaseScreen, \
 from osol_install.text_install.disk_window import DiskWindow, \
                                                   get_minimum_size, \
                                                   get_recommended_size
+from osol_install.text_install.edit_field import EditField
+from osol_install.text_install.error_window import ErrorWindow
 from osol_install.text_install.i18n import fit_text_truncate, \
                                            textwidth, \
                                            ljust_columns
@@ -40,7 +43,8 @@ from osol_install.text_install.list_item import ListItem
 from osol_install.text_install.scroll_window import ScrollWindow
 from osol_install.text_install.window_area import WindowArea
 from osol_install.text_install.ti_install_utils import get_zpool_list, \
-                                                       get_zpool_free_size
+                                                       get_zpool_free_size, \
+                                                       get_zpool_be_names
 class ZpoolScreen(BaseScreen):
     '''
     Allow the user to select a (valid) zpool target for installation
@@ -57,10 +61,16 @@ class ZpoolScreen(BaseScreen):
     TGT_ERROR = _("An error occurred while searching for installation"
                   " targets. Please check the install log and file a bug"
                   " at bugs.openindiana.org.")
+    BE_LABEL = _("Select BE name:")
+    FILESYSTEM_EXISTS_ERROR = _("ZFS file system"
+                  " %(pool_name)s/ROOT/%(be_name)s already exists")
     
     POOL_HEADERS = [(25, _("Name")),
                     (10, _("Size(GB)")),
                     (16, _("Notes"))]
+
+    BE_SCREEN_LEN = 32
+    ITEM_OFFSET = 2
     
     def __init__(self, main_win):
         super(ZpoolScreen, self).__init__(main_win)
@@ -79,6 +89,25 @@ class ZpoolScreen(BaseScreen):
         self.selected_pool = 0
         self._minimum_size = None
         self._recommended_size = None
+        self.pool_win = None
+
+        max_field = textwidth(ZpoolScreen.BE_LABEL)
+
+        self.max_text_len = (self.win_size_x - ZpoolScreen.BE_SCREEN_LEN -
+                             ZpoolScreen.ITEM_OFFSET) / 2
+        self.text_len = min(max_field + 1, self.max_text_len)
+        self.list_area = WindowArea(1, self.text_len, 0,
+                                    ZpoolScreen.ITEM_OFFSET)
+        
+        self.edit_area = WindowArea(1, ZpoolScreen.BE_SCREEN_LEN + 1,
+                                    0, self.text_len)
+        err_x_loc = 2 * self.max_text_len - self.text_len
+        err_width = (self.text_len + ZpoolScreen.BE_SCREEN_LEN)
+        self.error_area = WindowArea(1, err_width, 0, err_x_loc)
+        self.be_name_list = None
+        self.be_name_edit = None
+        self.be_name_err = None
+
         self.do_copy = False # Flag indicating if install_profile.disks
                              # should be copied
     
@@ -198,6 +227,19 @@ class ZpoolScreen(BaseScreen):
 
             pool_index += 1
         self.pool_win.no_ut_refresh()
+ 
+        y_loc += 7
+        self.list_area.y_loc = y_loc
+        self.error_area.y_loc = y_loc
+        self.be_name_err =  ErrorWindow(self.error_area,
+                                        window=self.center_win)
+        self.be_name_list = ListItem(self.list_area, window=self.center_win,
+                                     text=ZpoolScreen.BE_LABEL)
+        self.be_name_edit = EditField(self.edit_area,
+                                      window=self.be_name_list,
+                                      validate=be_name_valid,
+                                      error_win=self.be_name_err,
+                                      text=self.install_profile.be_name)
         
         self.main_win.do_update()
         self.center_win.activate_object(self.pool_win)
@@ -215,6 +257,18 @@ class ZpoolScreen(BaseScreen):
         if self.do_copy or self.install_profile.pool_name is None:
             self.install_profile.pool_name = self.existing_pools[self.pool_win.active_object]
         self.selected_pool = self.pool_win.active_object
+        self.install_profile.be_name = self.be_name_edit.get_text()
+
+    def validate(self):
+        pool_name = self.existing_pools[self.pool_win.active_object]
+        be_name = self.be_name_edit.get_text()
+        if not be_name:
+            raise UIMessage, _("Boot environment name is empty")
+
+        be_names = get_zpool_be_names(pool_name)
+        if be_name in be_names:
+            filesystem_dict = {"pool_name": pool_name, "be_name": be_name}
+            raise UIMessage, ZpoolScreen.FILESYSTEM_EXISTS_ERROR % filesystem_dict
 
 def on_activate(pool_select=None):
     '''When a disk is selected, pass its data to the disk_select_screen'''
@@ -222,3 +276,16 @@ def on_activate(pool_select=None):
     # User selected a different disk; set the flag so that it gets copied
     # later
     pool_select.do_copy = True
+
+def be_name_valid(edit_field):
+    '''Ensure BE name is valid'''
+
+    be_name = edit_field.get_text()
+    if not be_name:
+        raise UIMessage, _("Boot environment name is empty")
+    
+    search = re.compile(r'[^a-zA-Z0-9_\-]').search
+    if bool(search(be_name)):
+        raise UIMessage, _("Boot environment name contains unallowed symbols")
+
+    return True

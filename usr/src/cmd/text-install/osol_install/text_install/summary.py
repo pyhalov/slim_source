@@ -196,10 +196,13 @@ class SummaryScreen(BaseScreen):
         else:
              pool_name = SliceInfo.DEFAULT_POOL.data
         pool_type = self.install_profile.zpool_type
+        be_name = self.install_profile.be_name
         if (pool_type):
-           return _("ZFS Pool name: %(name)s, type: %(type)s") % { "name": pool_name, "type": pool_type}
+           return _("ZFS Pool name: %(name)s, type: %(type)s, BE name: %(bename)s") \
+              % { "name": pool_name, "type": pool_type, "bename": be_name }
         else:
-           return _("ZFS Pool name: %s") % (pool_name)
+           return _("ZFS Pool name: %(name)s, BE name: %(bename)s") \
+              % { "name": pool_name, "bename": be_name }
     
     def get_tz_summary(self):
         '''Return a string summary of the timezone selection'''

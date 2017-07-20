@@ -36,6 +36,7 @@ class InstallProfile(object):
     '''
     
     TAG = "install_profile"
+    DEFAULT_BE_NAME = "openindiana"
     
     def __init__(self, disks=None, nic=None, system=None, users=None,
                  zpool_type=None, install_to_pool=False, pool_name=None):
@@ -51,6 +52,7 @@ class InstallProfile(object):
         self.zpool_type = zpool_type
         self.install_to_pool = install_to_pool
         self.pool_name = pool_name
+        self.be_name = InstallProfile.DEFAULT_BE_NAME
     
     def __str__(self):
         result = ["Install Profile:"]
