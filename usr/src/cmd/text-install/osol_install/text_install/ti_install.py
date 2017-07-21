@@ -318,16 +318,17 @@ def do_ti(install_profile, swap_dump):
             exec_cmd(["/usr/sbin/dumpadm", "-d", "none" ],
                 "setting dump device to none")
 
-            # We don't use grub, but it's still not completely axed from installer.
-            # So at least pretend to have /boot/grub
-            exec_cmd(["/usr/bin/mkdir", "-p", "/%s" % (rootpool_name) ],
-                "creating /%s directory" % (rootpool_name))
-            exec_cmd(["/usr/sbin/zfs", "set", "mountpoint=legacy", \
-                      rootpool_name ], "setting %s mountpoint to legacy" % (rootpool_name))
-            exec_cmd(["/usr/sbin/mount", "-F", "zfs", rootpool_name, "/%s" % (rootpool_name) ],
-                      "mounting %s on /%s" % (rootpool_name, rootpool_name))
-            exec_cmd(["/usr/bin/mkdir", "-p", "/%s/boot/grub" % (rootpool_name) ],
-                "creating grub menu directory")
+            if install_profile.overwrite_boot_configuration:
+                # We don't use grub, but it's still not completely axed from installer.
+                # So at least pretend to have /boot/grub
+                exec_cmd(["/usr/bin/mkdir", "-p", "/%s" % (rootpool_name) ],
+                    "creating /%s directory" % (rootpool_name))
+                exec_cmd(["/usr/sbin/zfs", "set", "mountpoint=legacy", \
+                          rootpool_name ], "setting %s mountpoint to legacy" % (rootpool_name))
+                exec_cmd(["/usr/sbin/mount", "-F", "zfs", rootpool_name, "/%s" % (rootpool_name) ],
+                          "mounting %s on /%s" % (rootpool_name, rootpool_name))
+                exec_cmd(["/usr/bin/mkdir", "-p", "/%s/boot/grub" % (rootpool_name) ],
+                    "creating grub menu directory")
 
         logging.debug("rootpol_name %s, init_be_name %s, INSTALLED_ROOT_DIR %s",
 		rootpool_name, install_profile.be_name,  INSTALLED_ROOT_DIR)
@@ -650,6 +651,9 @@ def run_ICTs(install_profile, hostname, ict_mesg, locale,
         nic=install_profile.nic
         cmd.extend(["-F", nic.nic_name, "-I", nic.ip_address, "-M", nic.netmask,
                     "-W", nic.gateway, "-D", nic.dns_address, "-O", nic.domain])
+
+    if not install_profile.overwrite_boot_configuration:
+        cmd.append("-C")
     
     try:
         exec_cmd(cmd, "execute INSTALL_FINISH_PROG")
