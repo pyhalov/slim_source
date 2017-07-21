@@ -323,10 +323,12 @@ def do_ti(install_profile, swap_dump):
                 # So at least pretend to have /boot/grub
                 exec_cmd(["/usr/bin/mkdir", "-p", "/%s" % (rootpool_name) ],
                     "creating /%s directory" % (rootpool_name))
-                exec_cmd(["/usr/sbin/zfs", "set", "mountpoint=legacy", \
-                          rootpool_name ], "setting %s mountpoint to legacy" % (rootpool_name))
-                exec_cmd(["/usr/sbin/mount", "-F", "zfs", rootpool_name, "/%s" % (rootpool_name) ],
-                          "mounting %s on /%s" % (rootpool_name, rootpool_name))
+                # We set rpool mounpoint to none => /rpool  to umount /rpool if it was mounted
+                exec_cmd(["/usr/sbin/zfs", "set", "mountpoint=none", \
+                          rootpool_name ], "setting %s mountpoint to none" % (rootpool_name))
+                exec_cmd(["/usr/sbin/zfs", "set", "mountpoint=/%s" % (rootpool_name), \
+                          rootpool_name  ], "setting %s mountpoint to /%s" \
+                          % (rootpool_name, rootpool_name))
                 exec_cmd(["/usr/bin/mkdir", "-p", "/%s/boot/grub" % (rootpool_name) ],
                     "creating grub menu directory")
 
