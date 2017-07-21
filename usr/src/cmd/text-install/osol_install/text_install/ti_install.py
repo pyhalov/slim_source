@@ -314,13 +314,18 @@ def do_ti(install_profile, swap_dump):
     		zd.zfs_dump, zd.dump_size)
         else:
             rootpool_name = install_profile.pool_name
+            # We don't want to create dump device, but at least provide default config
+            exec_cmd(["/usr/sbin/dumpadm", "-d", "none" ],
+                "setting dump device to none")
+
             # We don't use grub, but it's still not completely axed from installer.
             # So at least pretend to have /boot/grub
             exec_cmd(["/usr/bin/mkdir", "-p", "/%s" % (rootpool_name) ],
                 "creating /%s directory" % (rootpool_name))
-            exec_cmd(["/usr/sbin/zfs", "set", "mountpoint=/%s" % (rootpool_name), \
-                      rootpool_name ], "setting %s mountpoint to /%s" % (rootpool_name, \
-                      rootpool_name))
+            exec_cmd(["/usr/sbin/zfs", "set", "mountpoint=legacy", \
+                      rootpool_name ], "setting %s mountpoint to legacy" % (rootpool_name))
+            exec_cmd(["/usr/sbin/mount", "-F", "zfs", rootpool_name, "/%s" % (rootpool_name) ],
+                      "mounting %s on /%s" % (rootpool_name, rootpool_name))
             exec_cmd(["/usr/bin/mkdir", "-p", "/%s/boot/grub" % (rootpool_name) ],
                 "creating grub menu directory")
 
