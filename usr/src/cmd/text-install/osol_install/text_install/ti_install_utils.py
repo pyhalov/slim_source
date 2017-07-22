@@ -449,9 +449,9 @@ def get_zpool_free_size(name):
     Pool is imported if necessary
     '''
     
-    status = os.system("/usr/sbin/zpool list %s 2>&1 >/dev/null" % (name))
+    status = os.system("/usr/sbin/zpool list %s >/dev/null 2>&1" % (name))
     if status != 0:
-	status = os.system("/usr/sbin/zpool import -N %s 2>&1 >/dev/null" % (name))
+	status = os.system("/usr/sbin/zpool import -N %s >/dev/null 2>&1" % (name))
 
     if status == 0:
         try:
@@ -476,9 +476,9 @@ def get_zpool_be_names(name):
     '''
     be_names = list()
     prefix = "%s/ROOT" % (name)
-    status = os.system("/usr/sbin/zpool list %s 2>&1 >/dev/null" % (name))
+    status = os.system("/usr/sbin/zpool list %s >/dev/null 2>&1" % (name))
     if status != 0:
-	status = os.system("/usr/sbin/zpool import -N %s 2>&1 >/dev/null" % (name))
+	status = os.system("/usr/sbin/zpool import -N %s >/dev/null 2>&1" % (name))
 
     if status == 0:
         try:
