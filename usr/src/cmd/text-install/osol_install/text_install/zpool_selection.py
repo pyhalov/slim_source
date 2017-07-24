@@ -17,22 +17,15 @@
 Screens and functions to display a list of pools to the user.
 '''
 
-from copy import deepcopy
 import curses
 import logging
-import platform
 import re
-import threading
-import traceback
 
-from osol_install.profile.disk_info import DiskInfo, SliceInfo
 from osol_install.text_install import _, RELEASE
 from osol_install.text_install.base_screen import BaseScreen, \
                                                   SkipException, \
-                                                  QuitException, \
                                                   UIMessage
-from osol_install.text_install.disk_window import DiskWindow, \
-                                                  get_minimum_size, \
+from osol_install.text_install.disk_window import get_minimum_size, \
                                                   get_recommended_size
 from osol_install.text_install.edit_field import EditField
 from osol_install.text_install.error_window import ErrorWindow
@@ -115,7 +108,7 @@ class ZpoolScreen(BaseScreen):
         self.be_name_err = None
 
         self.boot_configuration_item = None
-        self.do_copy = False # Flag indicating if install_profile.disks
+        self.do_copy = False # Flag indicating if install_profile.pool_name
                              # should be copied
     
     def determine_minimum(self):
@@ -152,9 +145,8 @@ class ZpoolScreen(BaseScreen):
     size_line = property(get_size_line)
 
     def _show(self):
-        '''Create a list of disks to choose from and create the window
-        for displaying the partition/slice information from the selected
-        disk
+        '''Create a list of pools to choose from, ask user to select BE
+        name and if we should overwrite pool's boot configuration
         
         '''
         if not self.install_profile.install_to_pool:
@@ -292,9 +284,9 @@ class ZpoolScreen(BaseScreen):
             raise UIMessage, ZpoolScreen.FILESYSTEM_EXISTS_ERROR % filesystem_dict
 
 def on_activate(pool_select=None):
-    '''When a disk is selected, pass its data to the disk_select_screen'''
+    '''When a pool is selected, note that it should be copied'''
 
-    # User selected a different disk; set the flag so that it gets copied
+    # User selected a different pool; set the flag so that it gets copied
     # later
     pool_select.do_copy = True
 
@@ -312,8 +304,9 @@ def be_name_valid(edit_field):
     return True
 
 def on_select_obc(pool_select=None):
-   if pool_select.install_profile.overwrite_boot_configuration is None:
-       pool_select.install_profile.overwrite_boot_configuration = True
-   else:
-       pool_select.install_profile.overwrite_boot_configuration = \
-           not pool_select.install_profile.overwrite_boot_configuration
+    '''Note that user changed boot configuration flag'''
+    if pool_select.install_profile.overwrite_boot_configuration is None:
+        pool_select.install_profile.overwrite_boot_configuration = True
+    else:
+        pool_select.install_profile.overwrite_boot_configuration = \
+            not pool_select.install_profile.overwrite_boot_configuration

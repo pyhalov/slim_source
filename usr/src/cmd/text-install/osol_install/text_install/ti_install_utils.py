@@ -496,7 +496,6 @@ def get_zpool_be_names(name):
 
 
         line = zfsout.splitlines(False)
-        first = True
         for entry in line:
             prefix_slash = "%s/" % (prefix)
             if entry.startswith(prefix_slash):

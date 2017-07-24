@@ -61,8 +61,8 @@ class WelcomeScreen(BaseScreen):
         self.main_win.actions[zpool_install_action.key] = zpool_install_action
 
     def zpool_install(self, dummy):
-        '''We just skip one screen as installer doesn't have means of navigating between
-        screens
+        '''We write down install_profile.install_to_pool flag
+        and show the next screen.
         '''
         self.install_profile.install_to_pool = True
         return self.main_win.screen_list.get_next(self)
