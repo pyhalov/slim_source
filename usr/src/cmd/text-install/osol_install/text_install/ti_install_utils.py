@@ -32,6 +32,7 @@ import shutil
 from tempfile import NamedTemporaryFile
 from subprocess import Popen
 from subprocess import PIPE
+from osol_install.install_utils import exec_cmd_outputs_to_log
 from osol_install.profile.disk_space import DiskSpace
 import osol_install.tgt as tgt
 
@@ -304,7 +305,7 @@ def get_system_memory():
 	            "Memory size:")):
                     memory_size = int(val[2]) # convert the size to an integer
                     break
-    except Exceptions:
+    except Exception:
         pass
 
     if (memory_size <= 0):
@@ -449,13 +450,15 @@ def get_zpool_free_size(name):
     Pool is imported if necessary
     '''
     
-    status = os.system("/usr/sbin/zpool list %s >/dev/null 2>&1" % (name))
+    status = exec_cmd_outputs_to_log(["/usr/sbin/zpool", "list", name], logging)
     if status != 0:
-	status = os.system("/usr/sbin/zpool import -N %s >/dev/null 2>&1" % (name))
+        status = exec_cmd_outputs_to_log(["/usr/sbin/zpool", "import",
+                                          "-N", name], logging)
 
     if status == 0:
         try:
-            argslist = ["/usr/sbin/zfs", "get", "-Hp", "-o", "value", "available", name ]
+            argslist = ["/usr/sbin/zfs", "get", "-Hp", "-o", "value",
+                        "available", name]
             (zfsout, zfserr) = Popen(argslist, stdout=PIPE,
        	          stderr=PIPE).communicate()
         except OSError, err:
@@ -476,14 +479,15 @@ def get_zpool_be_names(name):
     '''
     be_names = list()
     prefix = "%s/ROOT" % (name)
-    status = os.system("/usr/sbin/zpool list %s >/dev/null 2>&1" % (name))
+    status = exec_cmd_outputs_to_log(["/usr/sbin/zpool", "list", name], logging)
     if status != 0:
-	status = os.system("/usr/sbin/zpool import -N %s >/dev/null 2>&1" % (name))
+        status = exec_cmd_outputs_to_log(["/usr/sbin/zpool", "import",
+                                          "-N", name], logging)
 
     if status == 0:
         try:
-            argslist = ["/usr/sbin/zfs", "list", "-t", "filesystem", "-d", "1", "-H",
-                       "-o","name", "-r", prefix ]
+            argslist = ["/usr/sbin/zfs", "list", "-t", "filesystem", "-d", "1",
+                        "-H", "-o","name", "-r", prefix ]
             (zfsout, zfserr) = Popen(argslist, stdout=PIPE,
                   stderr=PIPE).communicate()
         except OSError, err:
