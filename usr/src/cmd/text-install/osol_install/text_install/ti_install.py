@@ -200,7 +200,7 @@ def cleanup_existing_install_target(install_profile):
     # Check value of rpool's org.openindiana.caiman:install property
     # If it is busy, that means the pool is left over from an aborted install.
     # If the property doesn't exist or has another value, we assume
-    # that the root pool contains valid Solaris instance.
+    # that the root pool contains valid OpenIndiana instance.
     cmd = "/usr/sbin/zfs get -H -o value org.openindiana.caiman:install " + \
           rootpool_name
     logging.debug("Executing: %s", cmd)
@@ -622,8 +622,8 @@ def run_ICTs(install_profile, hostname, ict_mesg, locale,
         failed_icts += 1
 
     if install_profile.overwrite_boot_configuration:
-        # Setup bootfs property so that newly created Solaris instance is booted
-        # appropriately
+        # Setup bootfs property so that newly created OpenIndiana instance
+        # is booted appropriately
         initial_be = rootpool_name + "/ROOT/" + install_profile.be_name
         try:
             exec_cmd(["/usr/sbin/zpool", "set", "bootfs=" + initial_be,
@@ -670,7 +670,7 @@ def run_ICTs(install_profile, hostname, ict_mesg, locale,
         failed_icts += 1
 
     # Mark ZFS root pool "ready" - it was successfully populated and contains
-    # valid Solaris instance
+    # valid OpenIndiana instance
     try:
         exec_cmd([ICT_PROG, "ict_mark_root_pool_ready", rootpool_name],
                  "execute ict_mark_root_pool_ready() ICT")
