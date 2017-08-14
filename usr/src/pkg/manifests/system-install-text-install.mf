@@ -137,6 +137,8 @@ file path=usr/lib/python2.7/vendor-packages/osol_install/text_install/welcome.py
 file path=usr/lib/python2.7/vendor-packages/osol_install/text_install/welcome.pyc mode=0444
 file path=usr/lib/python2.7/vendor-packages/osol_install/text_install/window_area.py mode=0444
 file path=usr/lib/python2.7/vendor-packages/osol_install/text_install/window_area.pyc mode=0444
+file path=usr/lib/python2.7/vendor-packages/osol_install/text_install/zpool_selection.py mode=0444
+file path=usr/lib/python2.7/vendor-packages/osol_install/text_install/zpool_selection.pyc mode=0444
 file path=usr/sbin/text-mode-menu mode=0555
 file path=usr/share/text-install/help/C/date_time.txt group=sys
 file path=usr/share/text-install/help/C/disks.txt group=sys

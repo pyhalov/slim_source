@@ -36,6 +36,7 @@ from osol_install.profile.disk_info import DiskInfo, SliceInfo
 from osol_install.text_install import _, RELEASE
 from osol_install.text_install.base_screen import BaseScreen, \
                                                   QuitException, \
+                                                  SkipException, \
                                                   UIMessage
 from osol_install.text_install.disk_window import DiskWindow, \
                                                   get_minimum_size, \
@@ -220,6 +221,9 @@ class DiskScreen(BaseScreen):
         disk
         
         '''
+        if self.install_profile.install_to_pool:
+            raise SkipException
+
         self.wait_for_disks()
         self.num_targets = 0
         

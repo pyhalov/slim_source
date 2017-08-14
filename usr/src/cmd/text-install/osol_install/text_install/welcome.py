@@ -24,9 +24,11 @@
 '''
 Contains the Welcome Screen for the Text Installer
 '''
+import curses
 
 from osol_install.text_install import _, RELEASE
-from osol_install.text_install.base_screen import BaseScreen
+from osol_install.text_install.action import Action
+from osol_install.text_install.base_screen import BaseScreen, SkipException
 
 
 class WelcomeScreen(BaseScreen):
@@ -55,6 +57,15 @@ class WelcomeScreen(BaseScreen):
     def set_actions(self):
         '''Remove the F3_Back Action from the first screen'''
         self.main_win.actions.pop(self.main_win.back_action.key, None)
+        zpool_install_action = Action(curses.KEY_F5, _("InstallToExistingPool"), self.zpool_install)
+        self.main_win.actions[zpool_install_action.key] = zpool_install_action
+
+    def zpool_install(self, dummy):
+        '''We write down install_profile.install_to_pool flag
+        and show the next screen.
+        '''
+        self.install_profile.install_to_pool = True
+        return self.main_win.screen_list.get_next(self)
     
     def _show(self):
         '''Display the static paragraph WELCOME_TEXT'''

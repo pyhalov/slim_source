@@ -32,6 +32,7 @@ import shutil
 from tempfile import NamedTemporaryFile
 from subprocess import Popen
 from subprocess import PIPE
+from osol_install.install_utils import exec_cmd_outputs_to_log
 from osol_install.profile.disk_space import DiskSpace
 import osol_install.tgt as tgt
 
@@ -304,7 +305,7 @@ def get_system_memory():
 	            "Memory size:")):
                     memory_size = int(val[2]) # convert the size to an integer
                     break
-    except Exceptions:
+    except Exception:
         pass
 
     if (memory_size <= 0):
@@ -324,6 +325,15 @@ def get_minimum_size(swap_dump_info):
     '''
     swap_size = swap_dump_info.get_required_swap_size()
     return(get_image_size() + OVERHEAD + swap_size)
+
+def get_minimum_size_without_swap():
+    ''' Returns the minimum amount of space required to perform an installation
+        without using swap.
+        
+        Size is returned in MB.
+
+    '''
+    return(get_image_size() + OVERHEAD)
     
 def get_recommended_size(swap_dump_info):
     '''Returns the recommended size to perform an installation.
@@ -331,6 +341,14 @@ def get_recommended_size(swap_dump_info):
 
     '''
     return (get_minimum_size(swap_dump_info) + FUTURE_UPGRADE_SPACE)
+
+def get_recommended_size_without_swap():
+    '''Returns the recommended size to perform an installation
+    without swap.
+    This takes into account estimated space to perform an upgrade.
+
+    '''
+    return (get_minimum_size_without_swap() + FUTURE_UPGRADE_SPACE)
 
 INIT_FILE = "/etc/default/init"
 TIMEZONE_KW = "TZ"
@@ -426,3 +444,65 @@ def get_zpool_list():
     zpool_list.extend(pool_list("status"))
     
     return zpool_list
+
+def get_zpool_free_size(name):
+    '''Return free size, available for pool's top-level filesystem.
+    Pool is imported if necessary
+    '''
+    
+    status = exec_cmd_outputs_to_log(["/usr/sbin/zpool", "list", name], logging)
+    if status != 0:
+        status = exec_cmd_outputs_to_log(["/usr/sbin/zpool", "import",
+                                          "-N", name], logging)
+
+    if status == 0:
+        try:
+            argslist = ["/usr/sbin/zfs", "get", "-Hp", "-o", "value",
+                        "available", name]
+            (zfsout, zfserr) = Popen(argslist, stdout=PIPE,
+       	          stderr=PIPE).communicate()
+        except OSError, err:
+            logging.error("OSError occured during zfs call: %s", err)
+            return -1
+
+        if zfserr:
+            logging.error("Error occured during zpool call: %s", zfserr)
+            return -1
+
+        return int(zfsout)
+        
+    return 0
+
+def get_zpool_be_names(name):
+    ''' Return list of names which seem to be names of zpool boot environments.
+    Pool is imported if necessary
+    '''
+    be_names = list()
+    prefix = "%s/ROOT" % (name)
+    status = exec_cmd_outputs_to_log(["/usr/sbin/zpool", "list", name], logging)
+    if status != 0:
+        status = exec_cmd_outputs_to_log(["/usr/sbin/zpool", "import",
+                                          "-N", name], logging)
+
+    if status == 0:
+        try:
+            argslist = ["/usr/sbin/zfs", "list", "-t", "filesystem", "-d", "1",
+                        "-H", "-o","name", "-r", prefix ]
+            (zfsout, zfserr) = Popen(argslist, stdout=PIPE,
+                  stderr=PIPE).communicate()
+        except OSError, err:
+            logging.error("OSError occured during zfs call: %s", err)
+            return be_names
+
+        if zfserr:
+            logging.error("Error occured during zfs call: %s", zfserr)
+            return be_names
+
+
+        line = zfsout.splitlines(False)
+        for entry in line:
+            prefix_slash = "%s/" % (prefix)
+            if entry.startswith(prefix_slash):
+                be_names.append(entry.split(prefix_slash)[1])
+
+    return be_names

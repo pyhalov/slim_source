@@ -90,6 +90,8 @@ class SummaryScreen(BaseScreen):
         lines.append("")
         lines.append(self.get_disk_summary())
         lines.append("")
+        lines.append(self.get_overwrite_boot_configuration())
+        lines.append("")
         lines.append(self.get_tz_summary())
         lines.append("")
         lines.append(_("Language: *The following can be changed when "
@@ -188,17 +190,31 @@ class SummaryScreen(BaseScreen):
 
     def get_zfs_summary(self):
         '''Return a string summary of the root pool configuration'''
-        pool_name = SliceInfo.DEFAULT_POOL.data
-        pool_type = self.install_profile.zpool_type
-        if (pool_type):
-           return _("ZFS Pool name: %(name)s, type: %(type)s") % { "name": pool_name, "type": pool_type}
+        # In future we want to unify SliceInfo.DEFAULT_POOL 
+        # and self.install_profile.pool_name usage, but we need to 
+        # use both for now
+        if self.install_profile.install_to_pool:
+             pool_name = self.install_profile.pool_name
         else:
-           return _("ZFS Pool name: %s") % (pool_name)
+             pool_name = SliceInfo.DEFAULT_POOL.data
+        pool_type = self.install_profile.zpool_type
+        be_name = self.install_profile.be_name
+        if (pool_type):
+           return _("ZFS Pool name: %(name)s, type: %(type)s, BE name: %(bename)s") \
+              % { "name": pool_name, "type": pool_type, "bename": be_name }
+        else:
+           return _("ZFS Pool name: %(name)s, BE name: %(bename)s") \
+              % { "name": pool_name, "bename": be_name }
     
     def get_tz_summary(self):
         '''Return a string summary of the timezone selection'''
         timezone = self.install_profile.system.tz_timezone
         return _("Time Zone: %s") % timezone
+    
+    def get_overwrite_boot_configuration(self):
+        '''Return a string describing if we modify boot settings'''
+        obc = self.install_profile.overwrite_boot_configuration
+        return _("Overwrite pool's boot configuration: %s") % obc
     
     @staticmethod
     def get_release():

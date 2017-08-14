@@ -1207,7 +1207,7 @@ class ICT(object):
         status = _cmd_status(sedcmd)
         if status != 0:
             prerror('Adding bootfs command to grub menu fails. ' +
-                    'exit status=' + int(status))
+                    'exit status=' + str(status))
             prerror('Failure. Returning: ICT_EXPLICIT_BOOTFS_FAILED')
             return ICT_EXPLICIT_BOOTFS_FAILED
         try:

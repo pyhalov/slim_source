@@ -65,7 +65,8 @@ PYMODULES=	__init__.py \
 		timezone.py \
 		users.py \
 		welcome.py \
-		window_area.py
+		window_area.py \
+		zpool_selection.py
 
 PYCMODULES=     $(PYMODULES:%.py=%.pyc)
 

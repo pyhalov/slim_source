@@ -94,11 +94,12 @@ IP_NETMASK = ""        # argument M
 GW_ADDRESS = ""        # argument W
 DNS_SERVER = ""        # argument D
 DNS_DOMAIN = ""        # argument O
+OVERWRITE_BOOT_CONFIG = True # argument C
 
 
 #parse command line arguments
 try:
-    OPTS, ARGS = getopt.getopt(sys.argv[1:],'B:d:R:n:l:p:G:U:NF:I:M:D:O:W:')
+    OPTS, ARGS = getopt.getopt(sys.argv[1:],'B:d:R:n:l:p:G:U:NF:I:M:D:O:W:C')
 
 except getopt.GetoptError, err:
     prerror('Parsing command line arguments failed. (%s)' % str(err))
@@ -147,6 +148,8 @@ for o, a in OPTS:
         DNS_SERVER = a
     if o in '-O':
         DNS_DOMAIN = a
+    if o in '-C':
+        OVERWRITE_BOOT_CONFIG = False
 
 #perform ICT initialization, specifying root target path, debugging level
 
@@ -210,19 +213,21 @@ if autoinstall_exists():
         SA.append(ICTO.create_smf_repository())
         #ICTs ported from original install-finish
         SA.append(ICTO.set_boot_device_property())
-        SA.append(ICTO.add_splash_image_to_grub_menu())
-        SA.append(ICTO.set_partition_active())
+        if OVERWRITE_BOOT_CONFIG:
+            SA.append(ICTO.add_splash_image_to_grub_menu())
+            SA.append(ICTO.set_partition_active())
+            SA.append(ICTO.fix_grub_entry())
+            SA.append(ICTO.add_operating_system_grub_entry())
+            SA.append(ICTO.explicit_bootfs())
+            SA.append(ICTO.enable_happy_face_boot())
+            SA.append(ICTO.copy_splash_xpm())
         SA.append(ICTO.remove_bootpath())
-        SA.append(ICTO.fix_grub_entry())
-        SA.append(ICTO.add_operating_system_grub_entry())
         SA.append(ICTO.update_dumpadm_nodename())
-        SA.append(ICTO.explicit_bootfs())
-        SA.append(ICTO.enable_happy_face_boot())
         SA.append(ICTO.setup_dev_namespace())
-        SA.append(ICTO.copy_splash_xpm())
         SA.append(ICTO.configure_nwam())
         SA.append(ICTO.set_flush_content_cache_false())
-        SA.append(ICTO.copy_capability_file())
+        if OVERWRITE_BOOT_CONFIG:
+            SA.append(ICTO.copy_capability_file())
         SA.append(ICTO.apply_sysconfig_profile())
         SA.append(ICTO.smf_correct_sys_profile())
         SA.append(ICTO.update_boot_archive())
@@ -241,24 +246,26 @@ else:
     SA.append(ICTO.delete_misc_trees())
     #ICTs ported from original install-finish
     if not IS_SPARC:
-        SA.append(ICTO.set_boot_device_property())
-        SA.append(ICTO.add_splash_image_to_grub_menu())
+        if OVERWRITE_BOOT_CONFIG:
+            SA.append(ICTO.set_boot_device_property())
+            SA.append(ICTO.add_splash_image_to_grub_menu())
+            SA.append(ICTO.fix_grub_entry())
+            SA.append(ICTO.add_operating_system_grub_entry())
     SA.append(ICTO.remove_livecd_coreadm_conf())
-    SA.append(ICTO.set_partition_active())
+    if OVERWRITE_BOOT_CONFIG:
+        SA.append(ICTO.set_partition_active())
     if not IS_SPARC:
         SA.append(ICTO.remove_bootpath())
-        SA.append(ICTO.fix_grub_entry())
-        SA.append(ICTO.add_operating_system_grub_entry())
     SA.append(ICTO.update_dumpadm_nodename())
     if IS_SPARC:
         SA.append(ICTO.create_sparc_boot_menu())
         SA.append(ICTO.copy_sparc_bootlst())
     else:
-        SA.append(ICTO.explicit_bootfs())
-        if not textinstall_exists():
-            SA.append(ICTO.enable_happy_face_boot())
-    if not IS_SPARC:
-        SA.append(ICTO.copy_splash_xpm())
+        if OVERWRITE_BOOT_CONFIG:
+            SA.append(ICTO.explicit_bootfs())
+            if not textinstall_exists():
+                SA.append(ICTO.enable_happy_face_boot())
+            SA.append(ICTO.copy_splash_xpm())
     SA.append(ICTO.smf_correct_sys_profile())
     if textinstall_exists():
         PKG_REMOVE_LIST = ['pkg:/system/install/media/internal',
@@ -271,8 +278,9 @@ else:
 			   'pkg:/system/install/locale']
     if NO_NETWORK:
         SA.append(ICTO.do_not_configure_network())
-    elif IP_ADDRESS !="":
-        SA.append(ICTO.configure_network(IF_NAME,IP_ADDRESS,IP_NETMASK,GW_ADDRESS,DNS_SERVER,DNS_DOMAIN))
+    elif IP_ADDRESS != "":
+        SA.append(ICTO.configure_network(IF_NAME, IP_ADDRESS, IP_NETMASK,
+                  GW_ADDRESS, DNS_SERVER, DNS_DOMAIN))
     else:
         SA.append(ICTO.enable_nwam())
 
@@ -284,7 +292,7 @@ else:
     SA.append(ICTO.create_new_user(NU_GOS, NU_LOGIN, NU_PW, NU_GID, NU_UID))
     SA.append(ICTO.setup_rbac(NU_LOGIN))
     SA.append(ICTO.setup_sudo(NU_LOGIN))
-    if not IS_SPARC:
+    if OVERWRITE_BOOT_CONFIG and not IS_SPARC:
         SA.append(ICTO.copy_capability_file())
     SA.append(ICTO.reset_image_uuid())
     SA.append(ICTO.update_boot_archive())

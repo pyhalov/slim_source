@@ -114,6 +114,9 @@ class FDiskPart(BaseScreen):
         choices
         
         '''
+        if self.install_profile.install_to_pool:
+            raise SkipException
+
         if self.x86_slice_mode:
             if len(self.install_profile.disks) > 1:
                 # When installing on multiple disks use only whole disk EFI type
