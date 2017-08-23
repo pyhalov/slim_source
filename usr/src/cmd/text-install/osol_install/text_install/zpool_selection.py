@@ -90,7 +90,8 @@ class ZpoolScreen(BaseScreen):
 
         max_field = max(textwidth(ZpoolScreen.BE_LABEL),
                         textwidth(ZpoolScreen.BE_NAME_EMPTY_ERROR),
-                        textwidth(ZpoolScreen.BE_NAME_UNALLOWED_ERROR))   
+                        textwidth(ZpoolScreen.BE_NAME_UNALLOWED_ERROR),
+                        textwidth(ZpoolScreen.NO_POOLS))
 
         self.max_text_len = (self.win_size_x - ZpoolScreen.BE_SCREEN_LEN -
                              ZpoolScreen.ITEM_OFFSET) / 2
@@ -267,12 +268,15 @@ class ZpoolScreen(BaseScreen):
         its index (in case the user returns to this screen later)
         
         '''
-        if self.do_copy or self.install_profile.pool_name is None:
-            self.install_profile.pool_name = self.existing_pools[self.pool_win.active_object]
-        self.selected_pool = self.pool_win.active_object
-        self.install_profile.be_name = self.be_name_edit.get_text()
+        if self.pool_win:
+            if self.do_copy or self.install_profile.pool_name is None:
+                self.install_profile.pool_name = self.existing_pools[self.pool_win.active_object]
+            self.selected_pool = self.pool_win.active_object
+            self.install_profile.be_name = self.be_name_edit.get_text()
 
     def validate(self):
+        if not self.pool_win:
+            raise UIMessage, ZpoolScreen.NO_POOLS
         pool_name = self.existing_pools[self.pool_win.active_object]
         be_name = self.be_name_edit.get_text()
         if not be_name:
