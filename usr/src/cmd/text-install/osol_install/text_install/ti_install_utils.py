@@ -454,6 +454,11 @@ def get_zpool_free_size(name):
     if status != 0:
         status = exec_cmd_outputs_to_log(["/usr/sbin/zpool", "import",
                                           "-N", name], logging)
+        if status != 0:
+            logging.warning(("Couldn't import pool %s, "
+                             "you can try to run "
+                             "\"zpool import -Nf %s\" "
+                             "before proceeding"), name, name)
 
     if status == 0:
         try:
@@ -483,6 +488,11 @@ def get_zpool_be_names(name):
     if status != 0:
         status = exec_cmd_outputs_to_log(["/usr/sbin/zpool", "import",
                                           "-N", name], logging)
+        if status != 0:
+            logging.warning(("Couldn't import pool %s, "
+                             "you can try to run "
+                             "\"zpool import -Nf %s\" "
+                             "before proceeding"), name, name)
 
     if status == 0:
         try:
