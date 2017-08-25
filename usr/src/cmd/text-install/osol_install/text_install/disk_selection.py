@@ -47,7 +47,8 @@ from osol_install.text_install.i18n import fit_text_truncate, \
 from osol_install.text_install.multi_list_item import MultiListItem
 from osol_install.text_install.scroll_window import ScrollWindow
 from osol_install.text_install.window_area import WindowArea
-from osol_install.text_install.ti_install_utils import get_zpool_list
+from osol_install.text_install.ti_install_utils import get_zpool_list, \
+                                                       export_zpools
 import osol_install.tgt as tgt
 
 
@@ -214,6 +215,9 @@ class DiskScreen(BaseScreen):
         # Set the SliceInfo.DEFAULT_POOL to the unique
         # pool name
         SliceInfo.DEFAULT_POOL.data = pool_name
+
+        # Export all zpools, which could be imported due to zpool install
+        export_zpools()
 
     def _show(self):
         '''Create a list of disks to choose from and create the window
