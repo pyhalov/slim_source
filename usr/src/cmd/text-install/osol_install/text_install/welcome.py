@@ -28,7 +28,8 @@ import curses
 
 from osol_install.text_install import _, RELEASE
 from osol_install.text_install.action import Action
-from osol_install.text_install.base_screen import BaseScreen, SkipException
+from osol_install.text_install.base_screen import BaseScreen
+from osol_install.profile.install_profile import InstallProfile
 
 
 class WelcomeScreen(BaseScreen):
@@ -57,7 +58,8 @@ class WelcomeScreen(BaseScreen):
     def set_actions(self):
         '''Remove the F3_Back Action from the first screen'''
         self.main_win.actions.pop(self.main_win.back_action.key, None)
-        zpool_install_action = Action(curses.KEY_F5, _("InstallToExistingPool"), self.zpool_install)
+        zpool_install_action = Action(curses.KEY_F5, _("InstallToExistingPool"),
+                                      self.zpool_install)
         self.main_win.actions[zpool_install_action.key] = zpool_install_action
 
     def zpool_install(self, dummy):
@@ -80,3 +82,8 @@ class WelcomeScreen(BaseScreen):
             self.center_win.add_text(WelcomeScreen.BULLET, start_y=y_loc)
             y_loc += self.center_win.add_paragraph(bullet, start_y=y_loc,
                                                    start_x=x_loc)
+        # If user returned back to this screen, forget about hitting F5
+        if self.install_profile.install_to_pool:
+            self.install_profile.install_to_pool = False
+            self.install_profile.pool_name = None
+            self.install_profile.be_name = InstallProfile.DEFAULT_BE_NAME

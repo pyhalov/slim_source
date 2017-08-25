@@ -516,3 +516,11 @@ def get_zpool_be_names(name):
                 be_names.append(entry.split(prefix_slash)[1])
 
     return be_names
+
+def export_zpools():
+    ''' Export all imported pools
+
+    '''
+    zpool_list = pool_list("status")
+    for name in zpool_list:
+        exec_cmd_outputs_to_log(["/usr/sbin/zpool", "export", name], logging)
