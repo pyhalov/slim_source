@@ -49,7 +49,11 @@ then
 	if [ -x /usr/bin/mate-session ]; then
 		echo '[Desktop]' > /jack/.dmrc
 		echo 'Session=mate' >> /jack/.dmrc
-		echo 'Language=en_US.UTF-8' >> /jack/.dmrc
+		RC_LANG="en_US.UTF-8"
+		if [ -f /etc/sysconfig/language ]; then
+			. /etc/sysconfig/language
+		fi
+		echo 'Language=${RC_LANG}' >> /jack/.dmrc
 	fi
 
 	#
