@@ -186,8 +186,9 @@ ICT_COPY_CAPABILITY_FAILED,
 ICT_APPLY_SYSCONFIG_FAILED,
 ICT_GENERATE_SC_PROFILE_FAILED,
 ICT_SETUP_RBAC_FAILED,
-ICT_SETUP_SUDO_FAILED
-) = range(200,254)
+ICT_SETUP_SUDO_FAILED,
+ICT_COPY_GENERATED_FILES_FAILED,
+) = range(200,255)
 
 # Global variables
 DEBUGLVL = LS_DBGLVL_ERR
@@ -500,6 +501,8 @@ class ICT(object):
         self.ai_sc_profile = ai_sc_profile
         # name of target System Configuration profile
         self.sc_profile = target_sc_profile
+        # files to copy from home directory
+        self.home_generated_files = [ '.dmrc' ]
 
     #support methods
     def _get_bootprop(self, property_id):
@@ -2347,6 +2350,35 @@ class ICT(object):
 
         return return_status
 
+    def copy_generated_files(self, login):
+        '''ICT - copy generated files from /jack to user home
+        '''
+        _register_task(inspect.currentframe())
+        
+        return_status = 0
+        _dbg_msg('copying generated user files to home directory under: ' + self.basedir)
+        
+        if not login:
+            _dbg_msg('No login specified')
+            return return_status
+        
+        dest_dir = self.basedir + '/export/home/' + login
+        for fl in self.home_generated_files:
+            dstfile = dest_dir + '/' + fl
+            srcfile = '/jack/' + fl
+            if os.path.exists(srcfile):
+                try:
+                    if os.path.exists(dstfile):
+                        os.unlink(dstfile)
+                    shutil.copy2(srcfile, dstfile)
+                except (OSError, IOError) as err:
+                    prerror('Error copying ' +
+                            srcfile + ' to ' + dstfile +
+                            ' :' + str(err))
+                    return_status = ICT_COPY_GENERATED_FILES_FAILED
+
+        return return_status
+        
     def set_root_password(self, newpw, expire=False):
         '''ICT - set the root password on the specified install target.
         using IPS class PasswordFile from pkg.cfgfiles.  Pre-expire password
