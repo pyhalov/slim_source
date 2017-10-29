@@ -264,13 +264,7 @@ elif [ $LIVECD = 1 ]; then
 		/usr/bin/kbd -s US-English
 		/usr/sbin/svcadm enable network/ssh
 	else
-		#
-		# Ask user to configure Keyboard Layout
-		#
-		if [ "x$assistive_tech" != "x" ] ; then
-			printf "\\a"
-		fi
-		/usr/bin/kbd -s </dev/console >/dev/console 2>&1
+		/usr/bin/kbd -s US-English
 
 		#
 		# Ask user to configure Language
