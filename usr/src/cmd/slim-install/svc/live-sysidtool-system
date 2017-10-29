@@ -62,7 +62,7 @@ then
 		if [ "$layout" != "en" -a "$layout" != "C" ]; then
 			DCONF_CONFIG=/etc/dconf/db/local.d/98-xkb-settings
 		
-			printf "[org/mate/desktop/peripherals/keyboard/kbd]\n" >> $DCONF_CONFIG
+			printf "[org/mate/desktop/peripherals/keyboard/kbd]\n" > $DCONF_CONFIG
 			printf "layouts=['us','%s']\n" "$layout" >> $DCONF_CONFIG
 			printf "options=['grp\\\tgrp:alt_shift_toggle']\n" >> $DCONF_CONFIG
 			printf "model='pc105'\n" >> $DCONF_CONFIG
