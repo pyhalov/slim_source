@@ -2350,7 +2350,7 @@ class ICT(object):
 
         return return_status
 
-    def copy_generated_files(self, login):
+    def copy_generated_files(self, login, uid, gid):
         '''ICT - copy generated files from /jack to user home
         '''
         _register_task(inspect.currentframe())
@@ -2371,6 +2371,7 @@ class ICT(object):
                     if os.path.exists(dstfile):
                         os.unlink(dstfile)
                     shutil.copy2(srcfile, dstfile)
+                    os.chown(dstfile, uid, gid)
                 except (OSError, IOError) as err:
                     prerror('Error copying ' +
                             srcfile + ' to ' + dstfile +
