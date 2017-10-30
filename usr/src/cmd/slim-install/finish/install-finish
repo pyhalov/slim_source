@@ -289,7 +289,7 @@ else:
     SA.append(ICTO.set_flush_content_cache_false())
     # Password is pre-expired in GUI case since user didn't explicitly set it
     SA.append(ICTO.set_root_password(ROOT_PW, not textinstall_exists()))
-    SA.append(ICTO.copy_generated_files(NU_LOGIN, NU_UID, NU_GID))
+    SA.append(ICTO.copy_generated_files(NU_LOGIN))
     SA.append(ICTO.create_new_user(NU_GOS, NU_LOGIN, NU_PW, NU_GID, NU_UID))
     SA.append(ICTO.setup_rbac(NU_LOGIN))
     SA.append(ICTO.setup_sudo(NU_LOGIN))
