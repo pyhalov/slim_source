@@ -2371,7 +2371,7 @@ class ICT(object):
                     if os.path.exists(dstfile):
                         os.unlink(dstfile)
                     shutil.copy2(srcfile, dstfile)
-                    os.chown(dstfile, uid, gid)
+                    os.chown(dstfile, int(uid), int(gid))
                 except (OSError, IOError) as err:
                     prerror('Error copying ' +
                             srcfile + ' to ' + dstfile +
