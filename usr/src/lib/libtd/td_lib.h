@@ -32,6 +32,7 @@
 
 #include <libnvpair.h>
 #include <ls_api.h>	/* logging service */
+#include <td_api.h>	/* for td_errno_t */
 
 #ifdef __cplusplus
 extern "C" {
@@ -75,6 +76,7 @@ int	td_is_new_var_sadm(const char *);
 void	td_debug_print(ls_dbglvl_t, const char *, ...);
 char	*td_get_rootdir(void);
 boolean_t td_is_fstyp(const char *, char *);
+td_errno_t add_td_discovered_obj(td_object_type_t objtype, nvlist_t *onvl);
 
 /* td_version.c */
 boolean_t	td_get_release(const char *, char *, int, char *, int);
@@ -97,6 +99,7 @@ int	td_safe_system(char *, boolean_t);
 int	td_map_node_to_devlink(char *, char *, int);
 int	td_map_old_device_to_new(char *, char *, int);
 int	td_map_to_effective_dev(char *, char *, int);
+void	td_SetExemptSwapfile(char *sf);
 
 /* td_be.c */
 void	td_be_list(void);

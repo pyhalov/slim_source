@@ -375,7 +375,7 @@ main(argc, argv)
 	strcpy(decl, cfile);
 	LOWER_CASE(decl);
 
-	while (gets(line) != NULL) {
+	while (fgets(line, sizeof(line), stdin) != NULL) {
 
 		/*
 		 * Check for comment or empty line, which are
