@@ -889,9 +889,6 @@ td_is_new_var_sadm(const char *rootdir)
 		return (0);	/* Less than 2.5 */
 }
 
-/*
- * static functions
- */
 td_errno_t
 add_td_discovered_obj(td_object_type_t objtype, nvlist_t *onvl)
 {
@@ -919,6 +916,9 @@ add_td_discovered_obj(td_object_type_t objtype, nvlist_t *onvl)
 	pobja->discovery_done = B_FALSE;
 	return (TD_E_SUCCESS);
 }
+/*
+ * static functions
+ */
 
 /*
  * usr_packages_exist
