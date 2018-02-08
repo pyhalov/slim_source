@@ -34,7 +34,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <td_api.h>
-#include <bootlog.h>
 #include <libintl.h>
 #include <libnvpair.h>
 #include <orchestrator_api.h>
