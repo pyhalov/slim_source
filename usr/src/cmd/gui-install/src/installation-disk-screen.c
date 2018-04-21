@@ -24,6 +24,7 @@
 
 #include <ctype.h>
 #include <math.h>
+#include <gtk/gtk.h>
 
 #include "orchestrator-wrappers.h"
 #include "callbacks.h"

@@ -27,6 +27,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <config.h>
+#include <gtk/gtk.h>
 #include "orchestrator-wrappers.h"
 #include "installation-disk-screen.h"
 #include "disk-block-order.h"
