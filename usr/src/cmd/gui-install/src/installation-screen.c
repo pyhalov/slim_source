@@ -27,6 +27,7 @@
 #endif
 
 #include <gtk/gtk.h>
+#include <gdk/gdkkeysyms.h>
 #include <glade/glade-build.h>
 #include <sys/nvpair.h>
 #include <ctype.h>

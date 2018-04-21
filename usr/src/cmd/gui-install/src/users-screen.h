@@ -35,6 +35,7 @@ extern "C" {
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+#include <glib.h>
 #include <glade/glade.h>
 
 typedef struct _UsersWindowXML {

@@ -28,6 +28,7 @@
 #include <string.h>
 #include <glib.h>
 #include <glib/gstdio.h>
+#include <gtk/gtk.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
 #include "callbacks.h"

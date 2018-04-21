@@ -28,6 +28,7 @@
 #endif
 
 #include <glib/gstdio.h>
+#include <string.h>
 
 #include "installation-profile.h"
 #include "interface-globals.h"

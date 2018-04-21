@@ -36,6 +36,8 @@
 #include <time.h>
 #include <libzoneinfo.h>
 
+#include <errno.h>
+#include <glib.h>
 #include <glade/glade.h>
 #include "callbacks.h"
 #include "interface-globals.h"

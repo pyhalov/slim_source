@@ -27,6 +27,7 @@
 #endif
 
 #include <gtk/gtk.h>
+#include <gdk/gdkkeysyms.h>
 #include <ctype.h>
 #include <pwd.h>
 #include <netdb.h>

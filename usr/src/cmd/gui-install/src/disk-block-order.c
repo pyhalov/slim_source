@@ -24,7 +24,9 @@
  */
 #include <ctype.h>
 #include <math.h>
+#include <string.h>
 
+#include <gtk/gtk.h>
 #include "orchestrator-wrappers.h"
 #include "installation-disk-screen.h"
 #include "disk-block-order.h"

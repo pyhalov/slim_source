@@ -34,6 +34,8 @@ extern "C" {
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+#include <glib.h>
+#include <glib/gi18n.h>
 #include <orchestrator_api.h>
 void 		target_discovery_callback(om_callback_info_t *cb_data,
 				uintptr_t app_data);

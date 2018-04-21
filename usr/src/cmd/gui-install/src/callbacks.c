@@ -26,9 +26,12 @@
 #include <config.h>
 #endif
 
+#include <errno.h>
 #include <sys/wait.h>
 #include <libbe.h>
 
+#include <glib.h>
+#include <glib/gi18n.h>
 #include "installation-profile.h"
 #include "interface-globals.h"
 #include "users-screen.h"
