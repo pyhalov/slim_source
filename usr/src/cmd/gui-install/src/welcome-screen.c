@@ -29,12 +29,19 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+#include <pwd.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
 #include "callbacks.h"
 #include "installation-profile.h"
 #include "interface-globals.h"
 #include "window-graphics.h"
 #include "welcome-screen.h"
 #include "help-dialog.h"
+
+#define XDG_OPEN "/usr/bin/xdg-open"
 
 /*
  * Signal handler connected up by Glade XML signal autoconnect
@@ -46,11 +53,49 @@ on_releasenotesbutton_clicked(GtkWidget *widget,
 {
 	GError *error = NULL;
 	gboolean result;
+	uid_t suid;
+	int pid;
 
-	result = gtk_show_uri(gtk_widget_get_screen(widget),
-		RELEASENOTESURL,
-		GDK_CURRENT_TIME,
-		&error);
+	result = FALSE;
+	/* The installer will typically be run as root under sudo,
+           but we don't want to run browser as root */
+
+	suid = geteuid();
+	if (suid == 0) {
+		char *sudo_uid;
+
+		sudo_uid = getenv("SUDO_UID");
+		if (sudo_uid)
+			suid = strtol(sudo_uid, (char**)NULL, 10);
+	}
+	pid = fork();
+	if (pid == 0) {
+		if (suid > 0 && suid != geteuid()) {
+			struct passwd *pw;
+
+			setuid(suid);
+			pw = getpwuid(suid);
+			if (pw != NULL) {
+				if (pw->pw_name != NULL) {
+					setenv("USERNAME", pw->pw_name, 1);
+					setenv("LOGNAME", pw->pw_name, 1);
+				}
+				if (pw->pw_dir != NULL) {
+					setenv("HOME", pw->pw_dir, 1);
+				}
+			}
+		}
+		execl(XDG_OPEN, XDG_OPEN, RELEASENOTESURL, (char *)0);
+		exit(-1);
+	} else if (pid > 0) {
+		int status;
+
+		waitpid(pid, &status, 0);
+		if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
+			result = TRUE;
+		}
+	}
+
 	if (result != TRUE) {
 		gui_install_prompt_dialog(
 			FALSE,
@@ -58,7 +103,7 @@ on_releasenotesbutton_clicked(GtkWidget *widget,
 			FALSE,
 			GTK_MESSAGE_ERROR,
 			_("Unable to display release notes"),
-			error->message);
+			NULL);
 		g_error_free(error);
 	}
 	return (TRUE);
