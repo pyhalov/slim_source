@@ -294,10 +294,6 @@ class DiskScreen(BaseScreen):
         len_mftr = DiskScreen.DISK_HEADERS[5][0] - 1
         for disk in self.disks:
             disk_text_fields = []
-            # Use first disk if no disk were used yet
-            if disk.used is None and not self.one_disk_used:
-               disk.used = True
-               self.one_disk_used = True
             type_field = disk.type[:len_type]
             type_field = ljust_columns(type_field, len_type)
             disk_text_fields.append(type_field)
@@ -328,6 +324,10 @@ class DiskScreen(BaseScreen):
                 note_field = self.too_big_warn
             else:
                 note_field = ""
+            # Use first selectable disk if no disk was used yet
+            if disk.used is None and not self.one_disk_used and selectable:
+               disk.used = True
+               self.one_disk_used = True
             disk_text_fields.append(note_field)
             disk_text = " ".join(disk_text_fields)
             disk_item_area.y_loc = disk_index
