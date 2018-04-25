@@ -1133,7 +1133,7 @@ ddm_drive_is_install_media(ddm_handle_t d)
 	nvlist_t	*dz;
 	char		*dn, *device_path;
 	boolean_t	drive_is_install_media = B_FALSE;
-	struct mnttab 	mp, search_mp;
+	struct mnttab 	mp;
 	FILE *mnttab;
 
 	dn = ddm_drive_get_name(d);
@@ -1170,13 +1170,23 @@ ddm_drive_is_install_media(ddm_handle_t d)
 		return (B_TRUE);
 	}
 
-	bzero(&search_mp, sizeof (struct mnttab));
-	search_mp.mnt_special = device_path;
-	search_mp.mnt_mountp = DDM_INSTALL_MEDIA_MOUNTPOINT;
-	if (!getmntany(mnttab, &mp, &search_mp)) {
-		DDM_DEBUG(DDM_DBGLVL_INFO,
-			"Drive %s is install media. Skipping. ", device_path);
-		drive_is_install_media = B_TRUE;
+	while (getmntent(mnttab, &mp) != -1 && drive_is_install_media != B_TRUE) {
+		char *pos;
+		int len = 0;
+		
+		pos = strrchr(mp.mnt_special, ':');
+		if (pos) {
+			len = pos - mp.mnt_special;
+		} 
+		/* We consider devices matching if their parts prior to last : match or device_path is "device" and special is "device:x" */
+		if (((pos != NULL && strncmp(mp.mnt_special, device_path, len) == 0 && (device_path[len]=='\0' || device_path[len]==':')) 
+			|| strcmp(mp.mnt_special, device_path) == 0) 
+			&& strcmp(mp.mnt_mountp, DDM_INSTALL_MEDIA_MOUNTPOINT) == 0) {
+
+			DDM_DEBUG(DDM_DBGLVL_INFO,
+				"Drive %s is install media. Skipping. ", device_path);
+			drive_is_install_media = B_TRUE;
+		}
 	}
 
 	fclose(mnttab);
