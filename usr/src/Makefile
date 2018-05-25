@@ -135,3 +135,7 @@ cc64-version:
 java-version:
 	@$(ECHO) Java compiler;				\
 	$(ECHO) Java not used in this build
+
+openssl-version:
+	@$(ECHO) OpenSSL
+	$(ECHO) OpenSSL not used in this build
