@@ -160,6 +160,7 @@ builtin ln
 # Define a few commands.
 CHROOT=/usr/sbin/chroot
 DEVFSADM=/usr/sbin/devfsadm
+DEVFSADM_MODULE_DIR=/usr/lib/devfsadm/linkmod
 ED=/usr/bin/ed
 FIND=/usr/bin/find
 GREP=/usr/xpg4/bin/grep
@@ -188,7 +189,7 @@ fi
 
 
 # Configure devices
-${BA_BUILD}/${DEVFSADM} -r $BA_BUILD
+${BA_BUILD}/${DEVFSADM} -r $BA_BUILD -l ${BA_BUILD}${DEVFSADM_MODULE_DIR}
 
 # Set marker so that every boot is a reconfiguration boot
 ${TOUCH} $BA_BUILD/reconfigure
