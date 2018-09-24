@@ -81,7 +81,6 @@ TM_IPS_REFRESH_CATALOG = TM_DEFINES['TM_IPS_REFRESH_CATALOG'].strip('"')
 TM_IPS_PROP_NAME = TM_DEFINES['TM_IPS_PROP_NAME'].strip('"')
 TM_IPS_PROP_VALUE = TM_DEFINES['TM_IPS_PROP_VALUE'].strip('"')
 TM_IPS_ALT_URL = TM_DEFINES['TM_IPS_ALT_URL'].strip('"')
-TM_UNPACK_ARCHIVE = TM_DEFINES['TM_UNPACK_ARCHIVE'].strip('"')
 
 # The following is only useful for python code, not C code.  So, it will 
 # only be defined here, instead of being defined in transfermod.h

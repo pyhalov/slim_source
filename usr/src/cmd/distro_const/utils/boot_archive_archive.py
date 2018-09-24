@@ -43,9 +43,7 @@ from osol_install.distro_const.dc_defs import BOOT_ARCHIVE_COMPRESSION_TYPE
 from osol_install.distro_const.dc_defs import BOOT_ARCHIVE_SIZE_PAD
 from osol_install.distro_const.dc_defs import BOOT_ARCHIVE_BYTES_PER_INODE
 from osol_install.distro_const.dc_defs import BA_FILENAME_SUN4U
-from osol_install.distro_const.dc_defs import BA_FILENAME_X86
 from osol_install.distro_const.dc_defs import BA_FILENAME_AMD64
-from osol_install.distro_const.dc_defs import BA_FILENAME_ALL
 from osol_install.distro_const.dc_defs import \
     BOOT_ARCHIVE_CONTENTS_BASE_INCLUDE_NOCOMPRESS
 from osol_install.ti_defs import TI_ATTR_TARGET_TYPE, \
@@ -320,20 +318,10 @@ IS_SPARC = False
 if (KERNEL_ARCH == "sparc"):
     BA_ARCHFILE = PKG_IMG_MNT_PT + BA_FILENAME_SUN4U
     BA_BUILD = BA_MASTER
-    STRIP_ARCHIVE = False
     IS_SPARC = True
-elif (KERNEL_ARCH == "x86"):
-    BA_ARCHFILE = PKG_IMG_MNT_PT + BA_FILENAME_X86
-    BA_BUILD = TMP_DIR + "/" + KERNEL_ARCH
-    STRIP_ARCHIVE = True
 elif (KERNEL_ARCH == "amd64"):
     BA_ARCHFILE = PKG_IMG_MNT_PT + BA_FILENAME_AMD64
-    BA_BUILD = TMP_DIR + "/" + KERNEL_ARCH
-    STRIP_ARCHIVE = True
-else:
-    BA_ARCHFILE = PKG_IMG_MNT_PT + BA_FILENAME_ALL
     BA_BUILD = BA_MASTER
-    STRIP_ARCHIVE = False
 
 # Location of the lofi file mountpoint, known only to this file.
 BA_LOFI_MNT_PT = TMP_DIR + "/ba_lofimnt"
@@ -388,16 +376,6 @@ if (os.path.exists(BA_ARCHFILE)):
     os.remove(BA_ARCHFILE)
 if not (os.path.exists(os.path.dirname(BA_ARCHFILE))):
     os.mkdir(os.path.dirname(BA_ARCHFILE))
-
-# If creating a single-architecture archive, copy full contents to temporary
-# area and strip unused architecture
-if STRIP_ARCHIVE:
-    CMD = "/usr/share/distro_const/boot_archive_strip "
-    CMD += BA_MASTER + " " + BA_BUILD + " " + KERNEL_ARCH
-    COPY_STATUS = os.system(CMD)
-    if (COPY_STATUS != 0):
-        raise Exception, (sys.argv[0] + ": Unable to strip boot archive: " +
-                          os.strerror(COPY_STATUS >> 8))
 
 print "Sizing boot archive requirements..."
 # dir_size() returns size in bytes, need to convert to KB

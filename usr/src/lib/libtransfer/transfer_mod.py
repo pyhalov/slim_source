@@ -74,7 +74,6 @@ from osol_install.transfer_defs import TRANSFER_ID, \
     TM_IPS_PROP_VALUE, \
     TM_IPS_ALT_URL, \
     TM_IPS_INIT_RETRY_TIMEOUT, \
-    TM_UNPACK_ARCHIVE, \
     TM_PYTHON_LOG_HANDLER, \
     TM_E_SUCCESS, \
     TM_E_INVALID_TRANSFER_TYPE_ATTR, \
@@ -299,7 +298,6 @@ class TransferCpio(object):
         self.image_info = ""
         self.distro_size = 0
         self.log_handler = None
-        self.unpack_archive = None
 
         # This is live media specific and shouldn't be part
         # of transfer mod.
@@ -670,25 +668,12 @@ class TransferCpio(object):
         except OSError, err:
             raise TAbort("Execution of " + cmd + " failed", err)
 		
-    def mount_archive(self, mntdir):
-        """Mount the archive to unpack"""
-        self.run_command(TMDefs.GZCAT + self.unpack_archive + " > " +
-                         TMDefs.GZCAT_DST)
-        self.run_command(TMDefs.MOUNT + TMDefs.GZCAT_DST + " " +
-                         mntdir)
-
     def cpio_transfer_entire_directory(self):
         """Transfer the contents of an entire directory.
               If an unpack archive was specified, mount it first and
               prepend it to the list of prefixes in order to ensure its
               contents can be overlaid by contents from the running instance
               """
-        if (self.unpack_archive is not None):
-            mntdir = tempfile.mkdtemp(dir="/var/run")
-            self.mount_archive(mntdir)
-            self.cpio_prefixes.insert(0,
-                                      CpioSpec(chdir_prefix=mntdir, \
-                                                cpio_dir="."))
 		
         fent_list = self.build_cpio_entire_file_list()
         self.cpio_transfer_filelist(fent_list, TM_E_CPIO_ENTIRE_FAILED)
@@ -790,8 +775,6 @@ class TransferCpio(object):
                 self.cpio_args = val
             elif opt == TM_PYTHON_LOG_HANDLER:
                 self.log_handler = val
-            elif opt == TM_UNPACK_ARCHIVE:
-                self.unpack_archive = val
             else:
                 raise TValueError("Invalid attribute " +
                                   str(opt), 

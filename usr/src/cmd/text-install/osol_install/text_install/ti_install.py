@@ -38,7 +38,7 @@ from libbe_py import beUnmount
 from osol_install.transfer_mod import tm_perform_transfer, tm_abort_transfer
 from osol_install.transfer_defs import TM_ATTR_MECHANISM, \
     TM_PERFORM_CPIO, TM_CPIO_ACTION, TM_CPIO_ENTIRE, TM_CPIO_SRC_MNTPT, \
-    TM_CPIO_DST_MNTPT, TM_UNPACK_ARCHIVE, TM_SUCCESS
+    TM_CPIO_DST_MNTPT, TM_SUCCESS
 from osol_install.install_utils import exec_cmd_outputs_to_log
 from osol_install.profile.disk_info import PartitionInfo
 from osol_install.profile.network_info import NetworkInfo
@@ -365,23 +365,6 @@ def do_transfer():
                    (TM_CPIO_ACTION, TM_CPIO_ENTIRE),
                    (TM_CPIO_SRC_MNTPT, "/"),
                    (TM_CPIO_DST_MNTPT, INSTALLED_ROOT_DIR)]
-
-    # if it is running on x86, need to unpack the root archive from
-    # the architecture that's not booted from.
-    if platform.processor() == "i386":
-        (status, inst_set) = commands.getstatusoutput("/bin/isainfo -k")
-        if (status != 0):
-            logging.error("Unable to determine instruction set.")
-            raise ti_utils.InstallationError
-
-        if (inst_set == "amd64"):
-            # Running 64 bit kernel, need to unpack 32 bit archive
-            tm_argslist.extend([(TM_UNPACK_ARCHIVE,
-                               X86_BOOT_ARCHIVE_PATH % "")])
-        else:
-            # Running 32 bit kernel, need to unpack 64 bit archive
-            tm_argslist.extend([(TM_UNPACK_ARCHIVE,
-                               X86_BOOT_ARCHIVE_PATH % "amd64")])
 
     logging.debug("Going to call TM with this list: %s", tm_argslist)
     

@@ -105,12 +105,6 @@
 						message="Boot archive archiving (64-bit)"/>
 					<argslist>"amd64"</argslist>
 				</script>
-				<script name="/usr/share/distro_const/boot_archive_archive_32">
-					<checkpoint
-						name="ba-arch-32"
-						message="Boot archive archiving (32-bit)"/>
-					<argslist>"x86"</argslist>
-				</script>
 				<script name="/usr/share/distro_const/post_boot_archive_pkg_image_mod_custom">
 					<checkpoint
 						name="post-mod-custom"
