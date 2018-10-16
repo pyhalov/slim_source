@@ -1537,7 +1537,7 @@ get_actual_languages(char **list, int *total)
 	sz = sizeof (orchestrator_lang_list)/sizeof (orchestrator_lang_list[0]);
 
 	lp = list;
-	for (i = 0; lp[i] != '\0'; i++) {
+	for (i = 0; lp[i] != NULL; i++) {
 		for (j = 0; j < sz; j++) {
 			if (strncmp(lp[i],
 			    (char *)orchestrator_lang_list[j].lang_code,
@@ -1593,7 +1593,7 @@ add_lang_to_list(char ***list, char *locale, int *k, int j)
 		/*
 		 * Search for existence of this language in the list already
 		 */
-		for (i = 0; tmp_list[i] != NULL && tmp_list[i] != '\0' &&
+		for (i = 0; tmp_list[i] != NULL && tmp_list[i][0] != '\0' &&
 		    i < *k; i++) {
 			if (strcmp(tmp, tmp_list[i]) == 0) {
 				free(tmp);
