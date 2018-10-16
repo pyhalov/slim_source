@@ -376,7 +376,7 @@ td_mount_and_add_swap_from_vfstab(char *vfstab_path)
 				 * We mapped it to the new /dev/dsk entry,
 				 * so put the `:boot' back on.
 				 */
-				(void) strncat(emnt, ":boot", sizeof (emnt));
+				(void) strncat(emnt, ":boot", sizeof (emnt) - 1);
 			}
 
 			if ((status = td_mount_filesys(emnt, NULL,
