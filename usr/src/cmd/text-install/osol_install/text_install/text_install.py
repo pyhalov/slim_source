@@ -38,7 +38,6 @@ import locale
 import gettext
 from optparse import OptionParser
 
-import libbe_py
 from osol_install.liblogsvc import init_log
 from osol_install.profile.install_profile import InstallProfile
 from osol_install.text_install import _, \
@@ -247,24 +246,6 @@ if __name__ == '__main__':
         finally:
             cleanup_curses()
     except RebootException:
-        if INSTALL_PROFILE.is_x86:
-            RET_VAL, BE_LIST = libbe_py.beList()
-            if RET_VAL == 0:
-                for be in BE_LIST:
-                    if be.get("active_boot", False):
-                        root_ds = be['root_ds']
-                        call_cmd = ["/usr/sbin/reboot", "-f", "--", root_ds]
-                        try:
-                            subprocess.call(call_cmd)
-                        except OSError, err:
-                            logging.warn("Fast reboot failed:\n\t'%s'\n%s",
-                                         " ".join(call_cmd), err)
-                        else:
-                            logging.warn("Fast reboot failed. Will attempt"
-                                         " standard reboot\n(Fast reboot "
-                                         "args:%s)", " ".join(call_cmd))
-                        break
-        # Fallback reboot. If the subprocess.call(..) command above fails,
         # Simply do a standard reboot.
         subprocess.call("/usr/sbin/reboot")
     except SystemExit:
