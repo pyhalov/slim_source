@@ -81,6 +81,9 @@ builtin rm
 
 # Define a few commands.
 MKISOFS=/usr/bin/mkisofs
+ETDUMP=/usr/bin/etdump
+FDISK=/usr/sbin/fdisk
+INSTALLBOOT=/usr/sbin/installboot
 
 # Non core-OS commands.
 MANIFEST_READ=/usr/bin/ManifestRead
@@ -133,6 +136,29 @@ if [[ "${PLATFORM}" == "i86pc" ]] ; then
 	    -eltorito-platform efi \
 	    -eltorito-boot boot/efiboot.img -no-emul-boot \
 	    "$PKG_IMG_PATH"
+
+	LOFIDEV="`lofiadm -la $DIST_ISO`"
+	RLOFIDEV="/dev/rdsk/${LOFIDEV##/*/}"
+	P2DEV="${RLOFIDEV/p0/p2}"
+
+	# Look for the EFI System Partition image we dropped in the ISO image.
+	for entry in `$ETDUMP --format shell $DIST_ISO`; do
+		eval $entry
+		if [ "$et_platform" = "efi" ]; then
+			((et_lba=et_lba * 2048 / 512))
+			espparam="239:0:0:0:0:0:0:0:$et_lba:$et_sectors"
+			break
+		fi
+	done
+
+	if [ -n "$espparam" ]; then
+		# the system area will start at sector 64
+		$FDISK -A 190:0:0:0:0:0:0:0:3:60 $RLOFIDEV
+		$FDISK -A $espparam $RLOFIDEV
+		$INSTALLBOOT -m ${PKG_IMG_PATH}/boot/pmbr \
+			${PKG_IMG_PATH}/boot/isoboot $P2DEV
+	fi
+	lofiadm -d ${LOFIDEV}
 else
 	# 
 	# First create the hsfs bootblock
