@@ -629,11 +629,7 @@ def run_ICTs(install_profile, hostname, ict_mesg, locale,
             failed_icts += 1
     
         try:
-            if install_profile.install_to_pool:
-                force = "-Mf"
-            else:
-                force = "-f"
-            exec_cmd(["/usr/sbin/bootadm", "install-bootloader", force, "-R", INSTALLED_ROOT_DIR,
+            exec_cmd(["/usr/sbin/bootadm", "install-bootloader", "-Mvf", "-R", INSTALLED_ROOT_DIR,
                       "-P", rootpool_name], "execute bootadm install-bootloader")
         except ti_utils.InstallationError:
             failed_icts += 1
