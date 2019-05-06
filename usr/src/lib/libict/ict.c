@@ -627,7 +627,7 @@ ict_installboot(char *target, char *poolname)
 	}
 
 	(void) snprintf(cmd, sizeof (cmd),
-	    "/usr/sbin/bootadm install-bootloader -f -R %s -P %s",
+	    "/usr/sbin/bootadm install-bootloader -Mvf -R %s -P %s",
 	    target, poolname);
 
 	ict_debug_print(ICT_DBGLVL_INFO, INSTALLBOOT_MSG, _this_func_);
