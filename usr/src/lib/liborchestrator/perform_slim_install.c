@@ -1702,13 +1702,6 @@ do_transfer(void *args)
 
 	activate_be(INIT_BE_NAME);
 
-	if (ict_installboot(tcb_args->target, ROOTPOOL_NAME) 
-	    != ICT_SUCCESS) {
-		om_log_print("installboot failed\n%s\n",
-		    ICT_STR_ERROR(ict_errno));
-		status = -1;
-	}
-
 	/*
 	 * run_install_finish_script performs a group of ICT
 	 */
@@ -1728,6 +1721,17 @@ do_transfer(void *args)
 		om_log_print("Failed to generate snapshot\n"
 		    "pool: %s\nsnapshot: %s\n%s\n",
 		    INIT_BE_NAME, INSTALL_SNAPSHOT,
+		    ICT_STR_ERROR(ict_errno));
+		status = -1;
+	}
+
+	/*
+ 	 * install-finish script runs fsdik (which can clean up MBR), so we need to
+	 * run bootadm install-bootloader after it 
+	 */
+	if (ict_installboot(tcb_args->target, ROOTPOOL_NAME) 
+	    != ICT_SUCCESS) {
+		om_log_print("installboot failed\n%s\n",
 		    ICT_STR_ERROR(ict_errno));
 		status = -1;
 	}

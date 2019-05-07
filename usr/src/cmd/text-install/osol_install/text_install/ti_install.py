@@ -628,12 +628,6 @@ def run_ICTs(install_profile, hostname, ict_mesg, locale,
         except ti_utils.InstallationError:
             failed_icts += 1
     
-        try:
-            exec_cmd(["/usr/sbin/bootadm", "install-bootloader", "-Mvf", "-R", INSTALLED_ROOT_DIR,
-                      "-P", rootpool_name], "execute bootadm install-bootloader")
-        except ti_utils.InstallationError:
-            failed_icts += 1
-
     INSTALL_STATUS.update(InstallStatus.ICT, 50, ict_mesg)
 
     # Run the install-finish script
@@ -661,6 +655,13 @@ def run_ICTs(install_profile, hostname, ict_mesg, locale,
                  "execute ict_snapshot() ICT")
     except ti_utils.InstallationError:
         failed_icts += 1
+
+    if install_profile.overwrite_boot_configuration:
+        try:
+            exec_cmd(["/usr/sbin/bootadm", "install-bootloader", "-Mvf", "-R", INSTALLED_ROOT_DIR,
+                      "-P", rootpool_name], "execute bootadm install-bootloader")
+        except ti_utils.InstallationError:
+            failed_icts += 1
 
     # Mark ZFS root pool "ready" - it was successfully populated and contains
     # valid OpenIndiana instance
