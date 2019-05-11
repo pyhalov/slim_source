@@ -109,11 +109,11 @@ PLATFORM=$(uname -m)
 
 if [[ "${PLATFORM}" == "i86pc" ]] ; then
 	# create efi bootblock
-	/usr/bin/dd if=/dev/zero count=4400 bs=1024 \
+	/usr/bin/dd if=/dev/zero count=8800 bs=1024 \
 	    of="${PKG_IMG_PATH}/boot/efiboot.img" 2> /dev/null
 	LOFIDEV="`lofiadm -a ${PKG_IMG_PATH}/boot/efiboot.img`"
 	RLOFIDEV="/dev/rlofi/${LOFIDEV##/*/}"
-	/usr/sbin/mkfs -F pcfs -o nofdisk,size=8800 ${RLOFIDEV} < /dev/null
+	/usr/sbin/mkfs -F pcfs -o nofdisk,size=17600 ${RLOFIDEV} < /dev/null
 	MDIR="`/bin/mktemp -d`"
 	/usr/sbin/mount -F pcfs ${LOFIDEV} ${MDIR}
 	mkdir -p ${MDIR}/efi/boot
