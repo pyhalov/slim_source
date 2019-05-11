@@ -116,15 +116,15 @@ if [[ "${PLATFORM}" == "i86pc" ]] ; then
 	/usr/sbin/mkfs -F pcfs -o nofdisk,size=8800 ${RLOFIDEV} < /dev/null
 	MDIR="`/bin/mktemp -d`"
 	/usr/sbin/mount -F pcfs ${LOFIDEV} ${MDIR}
-	mkdir -p ${MDIR}/efi/boot
+	/usr/bin/mkdir -p ${MDIR}/efi/boot
 	if [ -f ${PKG_IMG_PATH}/boot/loader32.efi ] ; then
-	  cp ${PKG_IMG_PATH}/boot/loader32.efi ${MDIR}/efi/boot/bootia32.efi
-	  cp ${PKG_IMG_PATH}/boot/loader64.efi ${MDIR}/efi/boot/bootx64.efi
+	  /usr/bin/cp ${PKG_IMG_PATH}/boot/loader32.efi ${MDIR}/efi/boot/bootia32.efi
+	  /usr/bin/cp ${PKG_IMG_PATH}/boot/loader64.efi ${MDIR}/efi/boot/bootx64.efi
 	else
-	  cp ${PKG_IMG_PATH}/boot/loader.efi ${MDIR}/efi/boot/bootx64.efi
+	  /usr/bin/cp ${PKG_IMG_PATH}/boot/loader.efi ${MDIR}/efi/boot/bootx64.efi
 	fi
 	/usr/sbin/umount ${MDIR}
-	rmdir ${MDIR}
+	/usr/bin/rmdir ${MDIR}
 	lofiadm -d ${LOFIDEV}
 
 	# the option order is important!
