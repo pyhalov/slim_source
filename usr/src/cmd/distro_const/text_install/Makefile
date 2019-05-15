@@ -35,6 +35,7 @@ TM_FILES=	text_install_x86_iso.sort \
 		text_live.xml \
 		text_mode_sparc.xml \
 		text_mode_x86.xml \
+		text_mode_x86_minimal.xml \
 		tm_pre_boot_archive_pkg_image_mod
 		
 ROOTTM_FILES=	$(TM_FILES:%=$(ROOTDC_TM)/%)
