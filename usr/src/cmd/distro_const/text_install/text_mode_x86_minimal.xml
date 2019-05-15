@@ -18,13 +18,13 @@
    
     CDDL HEADER END
    
-    Copyright (c) 2008, 2010, Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2009, 2010, Oracle and/or its affiliates. All rights reserved.
 
-    XML specification for building the all languages OpenIndiana
-    live CD iso and usb image
+    XML specification for building the limited language OpenIndiana
+    Minimal Text Mode Installer iso and usb image
 -->
 
-<distribution name="OpenIndiana_Live_X86">
+<distribution name="OpenIndiana_Minimal_X86">
 	<distro_constr_params>
 		<!--
 		     Where to build. This can be a zfs dataset or a mountpoint.
@@ -32,7 +32,7 @@
 		     is not a zfs dataset or mountpoint, checkpointing will not
 		     be enabled.
 		-->
-		<build_area>rpool/dc</build_area>
+		<build_area>rpool/distro_const/dc-text</build_area>
 		<distro_constr_flags>
 			<!--
 			     Controls whether the DC should stop
@@ -81,27 +81,22 @@
 						name="im-mod"
 						message="Image area modifications"/>
 				</script>
-				<script name="/usr/share/distro_const/slim_cd/slimcd_pre_boot_archive_pkg_image_mod">
+				<script name="/usr/share/distro_const/text_install/tm_pre_boot_archive_pkg_image_mod">
 					<checkpoint
-						name="slim-im-mod"
-						message="Slim CD Image area Modifications"/>
+						name="tm-im-mod"
+						message="Text mode Image area Modifications"/>
 				</script>
 				<script name="/usr/share/distro_const/boot_archive_initialize.py">
 					<checkpoint
 						name="ba-init"
 						message="Boot archive initialization"/>
 				</script>
-				<script name="/usr/share/distro_const/slim_cd/slimcd_boot_archive_configure">
-					<checkpoint
-						name="slim-ba-config"
-						message="Slim CD boot archive configuration"/>
-				</script>
 				<script name="/usr/share/distro_const/boot_archive_configure">
 					<checkpoint
 						name="ba-config"
 						message="Boot archive configuration"/>
 					<argslist>
-						".livecd"
+						".textinstall"
 					</argslist>
 				</script>
 				<script name="/usr/share/distro_const/boot_archive_archive.py">
@@ -110,17 +105,17 @@
 						message="Boot archive archiving (64-bit)"/>
 					<argslist>"amd64"</argslist>
 				</script>
-				<script name="/usr/share/distro_const/slim_cd/slimcd_post_boot_archive_pkg_image_mod">
+				<script name="/usr/share/distro_const/post_boot_archive_pkg_image_mod_custom">
 					<checkpoint
-						name="slim-post-mod"
-						message="Slim CD post boot archive image area modification"/>
+						name="post-mod-custom"
+						message="Post boot archive image area custom modification"/>
 				</script>
 				<script name="/usr/share/distro_const/loader_setup.py">
 					<checkpoint
 						name="loader-setup"
 						message="Loader menu setup"/>
 					<argslist>
-						"livecd"
+						"text-install"
 					</argslist>
 				</script>
 				<script name="/usr/share/distro_const/post_boot_archive_pkg_image_mod">
@@ -153,16 +148,17 @@
 				     types are gzip and none
 				-->
 				<compression type="gzip" level="9"/>
-
 				<!--
-				    SMF service profiles to apply to the boot archive.
-				    If the "use_build_sys_file" attribute is set to true, the build
-				    system's copy of the file is used.  If not specified, or
-				    "use_build_sys_file" is set to false, 
-				    the image's copy of the file is used.
+				    SMF service profiles to apply to the 
+				    boot archive. If the "use_build_sys_file" 
+				    attribute is set to true, the build
+				    system's copy of the file is used.  If not 
+				    specified, or "use_build_sys_file" is set 
+				    to false, the image's copy of the file 
+				    is used.
 
-				    Service profiles will be applied to the root archive
-				    in the order listed.
+				    Service profiles will be applied to the 
+				    root archive in the order listed.
 				-->
 				<smf_service_profile>
 					<profile path="/etc/svc/profile/generic_limited_net.xml"
@@ -171,7 +167,7 @@
 					         use_build_sys_file="false"/>
 					<profile path="/usr/share/distro_const/generic_live.xml"
 					         use_build_sys_file="true"/>
-					<profile path="/usr/share/distro_const/slim_cd/slimcd_live.xml"
+					<profile path="/usr/share/distro_const/text_install/text_live.xml"
 					         use_build_sys_file="true"/>
 					<profile path="/etc/svc/profile/ns_files.xml"
 					         use_build_sys_file="false"/>
@@ -185,12 +181,12 @@
 		<!--
 		     The preferred authority to install packages into the
 		     pkg_image area from.
-		     The default url is: http://pkg.openindiana.org/dev
+		     The default url is: http://pkg.openindiana.org/hipster
 		     The default authname is openindiana.org
 		-->
 		<pkg_repo_default_authority>
 			<main
-				url="http://pkg.openindiana.org/dev"
+				url="http://pkg.openindiana.org/hipster"
 				authname="openindiana.org"/>
 			<!--
 			     If you want to use one or more  mirrors that are
@@ -220,14 +216,14 @@
 		<!--
 		     The default preferred authority to be used by the system
 		     after it has been installed.
-		     The default url is: http://pkg.openindiana.org/dev
+		     The default url is: http://pkg.openindiana.org/hipster
 		     The default authname is openindiana.org
 		     If you want to use one or more  mirrors that are
 		     setup for the authority, specify the urls here.
 		-->
 		<post_install_repo_default_authority>
 			<main
-				url="http://pkg.openindiana.org/dev"
+				url="http://pkg.openindiana.org/hipster"
 				authname="openindiana.org"/>
 			<!--
 			     Uncomment before using.
@@ -242,22 +238,12 @@
 		     setup for the authority, specify the urls here.
 		-->
 		<!--
-		     Uncomment before using.
+		    Uncomment before using.
 		<post_install_repo_addl_authority>
 			<main
-				url=""
-				authname=""/>
-			<mirror url="" />
+				url="http://your.build.host:10000/"
+				authname="userland"/>
 		</post_install_repo_addl_authority>
-		-->
-		<!--
-		     Password for the root user/role in the image.
-                     If not specified, the default value of "openindiana"
-                     will be used
-                -->
-                <!--
-                     Uncomment before using
-                <rootpass is_plaintext="true">plaintext-password</rootpass>
 		-->
 		<!--
 		     list of packages used to form the installed image
@@ -273,22 +259,21 @@
 			    <pkg name="pkg:/entire@0.5.11-0.build#/>
 			-->
 			<pkg name="pkg:/entire"/>
-			<pkg name="pkg:/babel_install"/>
-			<pkg name="pkg:/system/install/gui-install"/>
+			<pkg name="pkg:/minimal_install"/>
+			<pkg name="pkg:/system/install/text-install"/>
 			<pkg name="pkg:/system/install/media/internal"/>
 		</packages>
 <!--
      Items below this line are rarely configured
 -->
-                <!--
-                    babel_install and slim_install are group packages used to
-                    define the default installation.  They are removed here so
-                    that they do not inhibit removal of other packages on the
-                    installed system.
-                --> 
+		<!--
+		    minimal_install is a group package used to define the
+		    default installation. It is removed here so that it does
+		    not inhibit removal of other packages on the
+		    installed system.
+		--> 
 		<post_install_remove_packages>
-			<pkg name="pkg:/babel_install"/>
-			<pkg name="pkg:/slim_install"/>
+			<pkg name="pkg:/minimal_install"/>
 		</post_install_remove_packages>
 		<!--
 		     If/how to compress the live image.
@@ -319,18 +304,18 @@
 		-->
 		<boot_archive_contents>
 			<base_include type="file">usr/bin/nawk</base_include>
-			<base_include type="file">usr/bin/cp</base_include>
 			<base_include type="file">usr/bin/mkdir</base_include>
+			<base_include type="file">usr/bin/cp</base_include>
 			<base_include type="file">usr/bin/sed</base_include>
 			<base_include type="file">usr/bin/sort</base_include>
-			<base_include type="file">usr/bin/i86/sort</base_include>
 			<base_include type="file">usr/bin/amd64/sort</base_include>
+			<base_include type="file">usr/bin/i86/sort</base_include>
 			<base_include type="file">usr/bin/pkill</base_include>
 			<base_include type="file">usr/sbin/svcadm</base_include>
 			<base_include type="file">usr/sbin/svccfg</base_include>
 			<base_include type="file">usr/sbin/prtconf</base_include>
-			<base_include type="file">usr/sbin/i86/prtconf</base_include>
 			<base_include type="file">usr/sbin/amd64/prtconf</base_include>
+			<base_include type="file">usr/sbin/i86/prtconf</base_include>
 			<base_include type="file">usr/sbin/nwamcfg</base_include>
 			<base_include type="file">usr/sbin/nwamadm</base_include>
 
@@ -382,6 +367,8 @@
 			<base_include type="file">usr/bin/test</base_include>
 			<base_include type="file">usr/bin/sleep</base_include>
 			<base_include type="file">usr/bin/expr</base_include>
+			<base_include type="file">usr/bin/vi</base_include>
+			<base_include type="file">usr/has/bin/vi</base_include>
 			<base_include type="file">usr/lib/fs/hsfs/fstyp</base_include>
 			<base_include type="file">usr/lib/fs/hsfs/fstyp.so.1</base_include>
 			<base_include type="file">usr/lib/fs/hsfs/mount</base_include>
@@ -444,6 +431,6 @@
 	</img_params>
 	<key_value_pairs>
 		<pair key="iso_sort"
-		    value="/usr/share/distro_const/slim_cd/slimcd_iso.sort"/>
+		    value="/usr/share/distro_const/text_install/text_install_x86_iso.sort"/>
 	</key_value_pairs>
 </distribution>

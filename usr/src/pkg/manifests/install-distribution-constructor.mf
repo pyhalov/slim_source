@@ -100,7 +100,6 @@ file path=usr/share/distro_const/plat_setup.py mode=0555
 file path=usr/share/distro_const/post_boot_archive_pkg_image_mod mode=0555
 file path=usr/share/distro_const/post_boot_archive_pkg_image_mod_custom mode=0555
 file path=usr/share/distro_const/pre_boot_archive_pkg_image_mod.py mode=0555
-file path=usr/share/distro_const/slim_cd/all_lang_slim_cd_x86.xml mode=0444 group=sys
 file path=usr/share/distro_const/slim_cd/slim_cd_x86.xml mode=0444 group=sys
 file path=usr/share/distro_const/slim_cd/slimcd_boot_archive_configure mode=0555
 file path=usr/share/distro_const/slim_cd/slimcd_iso.sort mode=0444 group=sys
@@ -111,6 +110,7 @@ file path=usr/share/distro_const/text_install/text_install_x86_iso.sort mode=044
 file path=usr/share/distro_const/text_install/text_live.xml mode=0444 group=sys
 file path=usr/share/distro_const/text_install/text_mode_sparc.xml mode=0444 group=sys
 file path=usr/share/distro_const/text_install/text_mode_x86.xml mode=0444 group=sys
+file path=usr/share/distro_const/text_install/text_mode_x86_minimal.xml mode=0444 group=sys
 file path=usr/share/distro_const/text_install/tm_pre_boot_archive_pkg_image_mod mode=0555
 file path=usr/share/man/man1m/distro_const.1m mode=0444
 license cr_Sun license=cr_Sun

@@ -119,7 +119,7 @@ changes, there may be new items requiring validation or defaults.
 	<default nodepath=
 	    "img_params/pkg_repo_default_authority/main/url"
 	    from="value" type="attribute" missing_parent="create" skip_if_no_exist="img_params">
-		http://pkg.openindiana.org/dev
+		http://pkg.openindiana.org/hipster
 	</default>
 
 	<default nodepath=
@@ -131,7 +131,7 @@ changes, there may be new items requiring validation or defaults.
 	<default nodepath=
 	    "img_params/post_install_repo_default_authority/main/url"
 	    from="value" type="attribute" missing_parent="create" skip_if_no_exist="img_params">
-		http://pkg.openindiana.org/dev
+		http://pkg.openindiana.org/hipster
 	</default>
 
 	<default nodepath=

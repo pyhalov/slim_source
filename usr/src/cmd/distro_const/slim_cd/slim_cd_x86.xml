@@ -32,7 +32,7 @@
 		     is not a zfs dataset or mountpoint, checkpointing will not
 		     be enabled.
 		-->
-		<build_area>rpool/dc</build_area>
+		<build_area>rpool/distro_const/dc-slim</build_area>
 		<distro_constr_flags>
 			<!--
 			     Controls whether the DC should stop
@@ -184,12 +184,12 @@
 		<!--
 		     The preferred authority to install packages into the
 		     pkg_image area from.
-		     The default url is: http://pkg.openindiana.org/release
+		     The default url is: http://pkg.openindiana.org/hipster
 		     The default authname is openindiana.org
 		-->
 		<pkg_repo_default_authority>
 			<main
-				url="http://pkg.openindiana.org/dev"
+				url="http://pkg.openindiana.org/hipster"
 				authname="openindiana.org"/>
 			<!--
 			     If you want to use one or more  mirrors that are
@@ -219,14 +219,14 @@
 		<!--
 		     The default preferred authority to be used by the system
 		     after it has been installed.
-		     The default url is: http://pkg.openindiana.org/release
+		     The default url is: http://pkg.openindiana.org/hipster
 		     The default authname is openindiana.org
 		     If you want to use one or more  mirrors that are
 		     setup for the authority, specify the urls here.
 		-->
 		<post_install_repo_default_authority>
 			<main
-				url="http://pkg.openindiana.org/dev"
+				url="http://pkg.openindiana.org/hipster"
 				authname="openindiana.org"/>
 			<!--
 			     Uncomment before using.
@@ -240,15 +240,14 @@
 		     If you want to use one or more  mirrors that are
 		     setup for the authority, specify the urls here.
 		-->
+		<!--
+		    Uncomment before using.
 		<post_install_repo_addl_authority>
 			<main
-				url="http://pkg.openindiana.org/legacy"
-				authname="openindiana.org"/>
-			<!--
-			     Uncomment before using.
-			<mirror url="" />
-			-->
+				url="http://your.build.host:10000/"
+				authname="userland"/>
 		</post_install_repo_addl_authority>
+		-->
 		<!--
 		     Password for the root user/role in the image.
                      If not specified, the default value of "openindiana"
@@ -273,7 +272,7 @@
 			    <pkg name="pkg:/entire@0.5.11-0.build#/>
 			-->
 			<pkg name="pkg:/entire"/>
-			<pkg name="pkg:/slim_install"/>
+			<pkg name="pkg:/mate_install"/>
 			<pkg name="pkg:/system/install/gui-install"/>
 			<pkg name="pkg:/system/install/text-install"/>
 			<pkg name="pkg:/system/install/media/internal"/>
@@ -282,13 +281,13 @@
      Items below this line are rarely configured
 -->
                 <!--
-                    slim_install is a group package used to define the
+                    mate_install is a group package used to define the
                     default installation.  It is removed here so as to
                     not inhibit removal of other packages on the
                     installed system.
                 --> 
 		<post_install_remove_packages>
-			<pkg name="pkg:/slim_install"/>
+			<pkg name="pkg:/mate_install"/>
 		</post_install_remove_packages>
 		<!--
 		     If/how to compress the live image.
