@@ -25,5 +25,5 @@
 """
 
 __all__ = ["DefValProc", "ENParser", "TreeAcc", "install_utils", "finalizer",
-    "ManifestServ", "ManifestRead", "SocketServProtocol", "errsvc"]
-
+    "ManifestServ", "ManifestRead", "SocketServProtocol", "errsvc",
+    "PasswordFile", "UserattrFile"]

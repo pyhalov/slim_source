@@ -123,7 +123,7 @@ import platform
 import signal
 import commands
 
-from pkg.cfgfiles import PasswordFile, UserattrFile
+from osol_install.cfgfiles import PasswordFile, UserattrFile
 
 from osol_install.liblogsvc import LS_DBGLVL_ERR, \
 LS_DBGLVL_INFO, \
@@ -2310,7 +2310,7 @@ class ICT(object):
 
     def create_new_user(self, gcos, login, pw, gid, uid):
         '''ICT - create the new user.
-        using IPS class PasswordFile from pkg.cfgfiles
+        using class PasswordFile from osol_install.cfgfiles
         It is possible no new user was requested. If none was
         specified do nothing and return 0.
         return 0 on success, error code otherwise
@@ -2377,7 +2377,7 @@ class ICT(object):
         
     def set_root_password(self, newpw, expire=False):
         '''ICT - set the root password on the specified install target.
-        using IPS class PasswordFile from pkg.cfgfiles.  Pre-expire password
+        using class PasswordFile from osol_install.cfgfiles.  Pre-expire password
         if expire is True
         return 0 on success, error code otherwise
         '''

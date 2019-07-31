@@ -29,6 +29,7 @@ set name=variant.arch value=$(ARCH)
 set name=variant.opensolaris.zone value=global value=nonglobal
 depend fmri=compress/gzip type=require
 depend fmri=install/beadm type=require
+depend fmri=library/python/six type=require
 dir path=lib
 dir path=lib/svc
 dir path=lib/svc/manifest group=sys
@@ -66,6 +67,8 @@ file path=usr/lib/python2.7/vendor-packages/osol_install/DefValProc.py
 file path=usr/lib/python2.7/vendor-packages/osol_install/DefValProc.pyc
 file path=usr/lib/python2.7/vendor-packages/osol_install/ENParser.py
 file path=usr/lib/python2.7/vendor-packages/osol_install/ENParser.pyc
+file path=usr/lib/python2.7/vendor-packages/osol_install/cfgfiles.py
+file path=usr/lib/python2.7/vendor-packages/osol_install/cfgfiles.pyc
 file path=usr/lib/python2.7/vendor-packages/osol_install/finalizer.py
 file path=usr/lib/python2.7/vendor-packages/osol_install/finalizer.pyc
 file path=usr/lib/python2.7/vendor-packages/osol_install/ict.py mode=0755

@@ -36,7 +36,7 @@ from osol_install.distro_const.dc_utils import get_manifest_value,\
     get_manifest_boolean
 from osol_install.distro_const.dc_defs import ROOT_PASSWD, ROOT_PASSWD_PLAINTEXT
 from osol_install.install_utils import encrypt_password
-from pkg.cfgfiles import PasswordFile
+from osol_install.cfgfiles import PasswordFile
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Main
