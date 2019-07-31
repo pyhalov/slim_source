@@ -32,6 +32,7 @@ clobber:=	TARGET=	clobber
 install:=	TARGET=	install
 
 PYMODS =	__init__.py \
+		cfgfiles.py \
 		DefValProc.py \
 		ENParser.py \
 		TreeAcc.py \
