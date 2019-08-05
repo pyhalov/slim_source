@@ -96,15 +96,6 @@ ${MSG_DOMAIN}.po: ${SRCS} ${HDRS}
 		xgettext -d ${MSG_DOMAIN} -s \
 			-c "i18n:" - >/dev/null 2>&1
  
-# Create a message file with "translated" test strings.
-# Turn the po file into an mo file ready for testing.
-msgs_test: ${SRCS} ${HDRS}
-	@echo "Making test messages file ${MSG_DOMAIN}.po"
-	@${COMPILE.c} -C -E ${SRCS} 2>/dev/null | \
-		xgettext -d ${MSG_DOMAIN} -s \
-			-c "i18n:" -m "öýê!" - >/dev/null 2>&1
-	@msgfmt -o ${MSG_DOMAIN}.mo ${MSG_DOMAIN}.po
-
 lint:  ${SRCS} ${HDRS}
 	${LINT.c} ${SRCS}
 
