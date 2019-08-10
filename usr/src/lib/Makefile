@@ -26,8 +26,6 @@
 include $(SRC)/Makefile.master
 
 SUBDIRS=	install_utils \
-		libaiscf \
-		libaiscf_pymod \
 		libict  \
 		libict_pymod \
 		liblogsvc \
@@ -68,7 +66,6 @@ headers: install_h
 install_h:	$(COMSUBDIRS) $(SUBDIRS)
 
 # library dependencies
-libaiscf_pymod:		libaiscf
 liblogsvc_pymod:	liblogsvc
 libtransfer_pymod:	libtransfer liblogsvc
 libti_pymod:		libti
