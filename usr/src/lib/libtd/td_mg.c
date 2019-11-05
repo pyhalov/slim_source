@@ -213,7 +213,7 @@ td_discover(td_object_type_t otype, int *number_found)
 				return (set_td_errno(TD_E_NO_DEVICE));
 			}
 		}
-		for (NDISKS = 0, pddm = PDDMDISKS; *pddm != NULL;
+		for (NDISKS = 0, pddm = PDDMDISKS; *pddm != 0;
 		    pddm++, NDISKS++)
 			;
 		if (number_found != NULL)
@@ -241,7 +241,7 @@ td_discover(td_object_type_t otype, int *number_found)
 			ptdobj->discovery_done = B_FALSE;
 		}
 		/* mark end of array */
-		ptdobj->handle = NULL;
+		ptdobj->handle = 0;
 		ptdobj->attrib = NULL;
 		CURDISK = NULL;
 		break;
@@ -255,7 +255,7 @@ td_discover(td_object_type_t otype, int *number_found)
 		if (TLI)
 			td_debug_print(LS_DBGLVL_INFO, "got partitions\n");
 
-		for (NPARTS = 0, pddm = PDDMPARTS; *pddm != NULL;
+		for (NPARTS = 0, pddm = PDDMPARTS; *pddm != 0;
 		    pddm++, NPARTS++)
 			;
 		if (number_found != NULL)
@@ -282,7 +282,7 @@ td_discover(td_object_type_t otype, int *number_found)
 			ptdobj->discovery_done = B_FALSE;
 		}
 		/* mark end of array */
-		ptdobj->handle = NULL;
+		ptdobj->handle = 0;
 		ptdobj->attrib = NULL;
 		CURPART = NULL;
 		break;
@@ -295,7 +295,7 @@ td_discover(td_object_type_t otype, int *number_found)
 		if (TLI)
 			td_debug_print(LS_DBGLVL_INFO, "got slices\n");
 
-		for (NSLICES = 0, pddm = PDDMSLICES; *pddm != NULL;
+		for (NSLICES = 0, pddm = PDDMSLICES; *pddm != 0;
 		    pddm++, NSLICES++)
 			;
 		if (number_found != NULL)
@@ -318,19 +318,19 @@ td_discover(td_object_type_t otype, int *number_found)
 			ptdobj->discovery_done = B_FALSE;
 		}
 		/* mark end of array */
-		ptdobj->handle = NULL;
+		ptdobj->handle = 0;
 		ptdobj->attrib = NULL;
 		CURSLICE = NULL;
 		break;
 	case TD_OT_OS: /* get OS instances */
 		if (PDDMSLICES == NULL) {
-			PDDMSLICES = ddm_get_slices(NULL); /* get all slices */
+			PDDMSLICES = ddm_get_slices(DDM_DISCOVER_ALL); /* get all slices */
 			if (PDDMSLICES == NULL)
 				return (set_td_errno(TD_E_END));
 		}
 		NSLICES = 0;
 		pddm = PDDMSLICES;
-		while (*pddm != NULL) { /* count slices */
+		while (*pddm != 0) { /* count slices */
 			pddm++;
 			NSLICES++;
 		}
@@ -375,7 +375,7 @@ td_get_next(td_object_type_t otype)
 		objlist[otype].objcur++;
 	/* expect NULL terminator to object list */
 	if (objlist[otype].objcur == NULL ||
-	    objlist[otype].objcur->handle == NULL) {
+	    objlist[otype].objcur->handle == 0) {
 		objlist[otype].objcur = NULL;
 		return (set_td_errno(TD_E_END));
 	}
@@ -448,7 +448,7 @@ td_attributes_get(td_object_type_t otype)
 		}
 		return (dup_attr_set_errno(CURDISK));
 	case TD_OT_PARTITION:
-		if (CURPART == NULL || CURPART->handle == NULL) {
+		if (CURPART == NULL || CURPART->handle == 0) {
 			(void) set_td_errno(TD_E_END);
 			return (NULL);
 		}
@@ -466,7 +466,7 @@ td_attributes_get(td_object_type_t otype)
 		}
 		return (dup_attr_set_errno(CURPART));
 	case TD_OT_SLICE:
-		if (CURSLICE == NULL || CURSLICE->handle == NULL) {
+		if (CURSLICE == NULL || CURSLICE->handle == 0) {
 			(void) set_td_errno(TD_E_END);
 			return (NULL);
 		}
@@ -498,7 +498,7 @@ td_attributes_get(td_object_type_t otype)
 		 * Solaris instances are handled differently in that attributes
 		 * are set at discovery time
 		 */
-		if (CUROS == NULL || CUROS->handle == NULL) {
+		if (CUROS == NULL || CUROS->handle == 0) {
 			(void) set_td_errno(TD_E_END);
 			return (NULL);
 		}
@@ -1288,7 +1288,7 @@ os_discover(void)
 		return (TD_E_MNTTAB);
 	}
 	/* seeking partition tag is root */
-	for (cslice = PDDMSLICES; *cslice != NULL; cslice++) {
+	for (cslice = PDDMSLICES; *cslice != 0; cslice++) {
 		struct mnttab mpref, mnttab;
 		struct vfstab vref, vfstab;
 		uint32_t partition_tag;
@@ -1663,7 +1663,7 @@ add_instance:
 		}
 		/* fetch build id */
 		if (td_get_build_id(td_get_rootdir(), build_id,
-		    sizeof (build_id)) != NULL) {
+		    sizeof (build_id)) != 0) {
 			if (nvlist_add_string(onvl, TD_OS_ATTR_BUILD_ID,
 			    build_id) != 0) {
 				td_debug_print(LS_DBGLVL_ERR,

@@ -1256,7 +1256,7 @@ ddm_filter_disks(dm_descriptor_t *drives)
 	 * case, part of it is left unused.
 	 */
 
-	for (i = 0; drives[i] != NULL; i++)
+	for (i = 0; drives[i] != 0; i++)
 		;
 
 	df = malloc((i + 1) * sizeof (dm_descriptor_t));
@@ -1266,7 +1266,7 @@ ddm_filter_disks(dm_descriptor_t *drives)
 		return (NULL);
 	}
 
-	for (i = df_num = 0; drives[i] != NULL; i++) {
+	for (i = df_num = 0; drives[i] != 0; i++) {
 		/* omit floppy disks */
 
 		if (ddm_drive_is_floppy(drives[i]))
@@ -1289,7 +1289,7 @@ ddm_filter_disks(dm_descriptor_t *drives)
 		df[df_num++] = drives[i];
 	}
 
-	df[df_num] = NULL;
+	df[df_num] = 0;
 	return (df);
 }
 

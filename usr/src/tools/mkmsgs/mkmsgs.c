@@ -381,7 +381,7 @@ main(argc, argv)
 		 * Check for comment or empty line, which are
 		 * simply ignored.
 		 */
-		if ((line[0] == '#') || (line[0] == NULL))
+		if ((line[0] == '#') || (line[0] == '\0'))
 			continue;
 		for (p=line; *p && isspace(*p); p++);
 		if (!*p)
@@ -522,9 +522,9 @@ main(argc, argv)
 				 	 * append to previous text.
 					 */
 					q = strdup(p);
-					q[0] = NULL;
+					q[0] = '\0';
 					p = &q[1];
-					p[strlen(p)-1] = NULL;
+					p[strlen(p)-1] = '\0';
 					fprintf(fp_text, "%s", p);
 					free(q);
 				}
@@ -595,9 +595,9 @@ main(argc, argv)
 					 * append to previous text.
 					 */
 					q = strdup(msg);
-					q[0] = NULL;
+					q[0] = '\0';
 					p = &q[1];
-					p[strlen(p)-1] = NULL;
+					p[strlen(p)-1] = '\0';
 					if (!first_msg)
 						fprintf(fp_text, "\",");
 					first_msg = 0;
