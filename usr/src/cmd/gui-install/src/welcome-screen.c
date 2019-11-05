@@ -27,10 +27,13 @@
 #include <config.h>
 #endif
 
+#include <ctype.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <pwd.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <strings.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -41,7 +44,45 @@
 #include "welcome-screen.h"
 #include "help-dialog.h"
 
-#define XDG_OPEN "/usr/bin/xdg-open"
+#define	XDG_OPEN "/usr/bin/xdg-open"
+#define	RELFILE "/etc/release"
+#define	RELEASENOTESURLFORMAT \
+    "https://docs.openindiana.org/release-notes/%s-release-notes/"
+#define	FALLBACKURL "https://docs.openindiana.org/release-notes/latest-changes/"
+#define	MAXVERLEN 10
+#define	MAXURLSIZE 100
+
+static gboolean
+extract_version(char *version, size_t sz)
+{
+	FILE *fl;
+	char buf[1024], *s;
+	gboolean status = FALSE;
+
+	fl = fopen(RELFILE, "r");
+
+	if (fl != NULL) {
+		if (fgets(buf, sizeof(buf), fl) != NULL) {
+			char *t;
+			int n;
+
+			s=buf;
+			while (isblank(*s))
+				s++;
+			/* Looking for third word in "OpenIndiana Hipster VERSION" string */
+			t = strtok(s, " ");
+			for (n = 0; n < 2 && t!= NULL; n++)
+				t = strtok(NULL, " ");
+			if (t != NULL) {
+				snprintf(version, sz, t);
+				status = TRUE;
+			}
+		}
+		fclose(fl);
+	}
+	return status;
+}
+
 
 /*
  * Signal handler connected up by Glade XML signal autoconnect
@@ -70,6 +111,9 @@ on_releasenotesbutton_clicked(GtkWidget *widget,
 	}
 	pid = fork();
 	if (pid == 0) {
+		char version[MAXVERLEN];
+		char url[MAXURLSIZE];
+
 		if (suid > 0 && suid != geteuid()) {
 			struct passwd *pw;
 
@@ -85,7 +129,13 @@ on_releasenotesbutton_clicked(GtkWidget *widget,
 				}
 			}
 		}
-		execl(XDG_OPEN, XDG_OPEN, RELEASENOTESURL, (char *)0);
+		if (extract_version(version, MAXVERLEN)) {
+			snprintf(url, MAXURLSIZE, RELEASENOTESURLFORMAT, version);
+		} else {
+			snprintf(url, MAXURLSIZE, FALLBACKURL);
+		}
+		execl(XDG_OPEN, XDG_OPEN, url, (char *)0);
+
 		exit(-1);
 	} else if (pid > 0) {
 		int status;

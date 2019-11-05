@@ -35,10 +35,6 @@ extern "C" {
 #include <config.h>
 #endif
 
-/* In future this will be provided via an API */
-#define	RELEASENOTESURL \
-    "http://wiki.openindiana.org/oi/OpenIndiana+Releases"
-
 typedef struct _WelcomeWindowXML {
 	GladeXML *welcomewindowxml;
 
