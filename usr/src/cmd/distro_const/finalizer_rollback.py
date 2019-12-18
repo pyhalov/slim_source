@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.5
 #
 # CDDL HEADER START
 #
@@ -55,7 +55,7 @@ Args:
 LENGTH = len(sys.argv)
 
 if LENGTH < 8:
-    raise Exception, (sys.argv[0] + ": At least 9 args are required:\n" +
+    raise Exception(sys.argv[0] + ": At least 9 args are required:\n" +
                       "Reader socket, pkg_image area, tmp area, boot archive"
                       "build area,\n" + "media area, zfs dataset(s), message")
 

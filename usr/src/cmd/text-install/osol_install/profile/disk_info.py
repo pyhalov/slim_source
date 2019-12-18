@@ -27,6 +27,7 @@ Object to represent Disks
 '''
 
 from copy import copy, deepcopy
+from functools import cmp_to_key
 import logging
 import platform
 
@@ -347,14 +348,14 @@ class DiskInfo(object):
         if self.partitions:
             use_partitions = True
             parts = self.get_standards()
-            parts.sort(cmp=PartitionInfo.compare)
-            numbers = range(1, PartitionInfo.MAX_STANDARD_PARTITIONS + 1)
+            parts = sorted(parts, key=cmp_to_key(PartitionInfo.compare))
+            numbers = list(range(1, PartitionInfo.MAX_STANDARD_PARTITIONS + 1))
             start_pt = 0
         elif self.slices:
             use_partitions = False
             parts = copy(self.slices)
-            parts.sort(cmp=SliceInfo.compare)
-            numbers = range(SliceInfo.MAX_SLICES)
+            parts = sorted(parts, key=cmp_to_key(SliceInfo.compare))
+            numbers = list(range(SliceInfo.MAX_SLICES))
             numbers.remove(SliceInfo.BACKUP_SLICE)
             start_pt = 0
         else:
@@ -415,9 +416,9 @@ class DiskInfo(object):
                 logical_gaps = []
                 end_pt = ext_part.offset.size_as("b")
                                  	
-                numbers = range(PartitionInfo.FIRST_LOGICAL, 
+                numbers = list(range(PartitionInfo.FIRST_LOGICAL, 
                     PartitionInfo.FIRST_LOGICAL + 
-                    PartitionInfo.MAX_LOGICAL_PARTITIONS)
+                    PartitionInfo.MAX_LOGICAL_PARTITIONS))
                 for logical in logicals:
                     numbers.remove(logical.number)
                     start_pt = logical.offset.size_as("b") 
@@ -472,8 +473,8 @@ class DiskInfo(object):
     
     def sort_disk_order(self):
         '''Sort partitions/slices in disk order'''
-        self.partitions.sort(cmp=PartitionInfo.compare)
-        self.slices.sort(cmp=SliceInfo.compare)
+        self.partitions = sorted(self.partitions, key=cmp_to_key(PartitionInfo.compare))
+        self.slices = sorted(self.slices, key=cmp_to_key(SliceInfo.compare))
     
     def get_parts(self):
         '''Return the list of partitions or slices, depending on what
@@ -578,9 +579,9 @@ class DiskInfo(object):
             self.slices = [whole_part, backup_part]
             self.label.add(DiskInfo.VTOC)
         else:
-	#   whole_part = PartitionInfo(part_num=1, size=maxsz,
-	#                               partition_id=PartitionInfo.SOLARIS)
-	#   whole_part.create_default_layout()
+        #   whole_part = PartitionInfo(part_num=1, size=maxsz,
+        #                               partition_id=PartitionInfo.SOLARIS)
+        #   whole_part.create_default_layout()
             self.partitions = []
             self.label.add(DiskInfo.GPT)
     
@@ -589,7 +590,10 @@ class DiskInfo(object):
 
         '''
         # do not allow size to exceed MAX_VTOC
-        maxsz = min(self.get_size(), SliceInfo.MAX_VTOC)
+        if self.get_size().size_as("b") > SliceInfo.MAX_VTOC.size_as("b"):
+            maxsz = SliceInfo.MAX_VTOC
+        else:
+            maxsz = self.get_size()
 
         if platform.processor() == "sparc":
             whole_part = SliceInfo(slice_num=0, size=self.size,
@@ -599,9 +603,9 @@ class DiskInfo(object):
             self.slices = [whole_part, backup_part]
             self.label.add(DiskInfo.VTOC)
         else:
-	   whole_part = PartitionInfo(part_num=1, size=maxsz,
-	                               partition_id=PartitionInfo.SOLARIS)
-	   whole_part.create_default_layout()
+           whole_part = PartitionInfo(part_num=1, size=maxsz,
+                                      partition_id=PartitionInfo.SOLARIS)
+           whole_part.create_default_layout()
            self.partitions = [whole_part]
            self.label.add(DiskInfo.FDISK)
 
@@ -610,17 +614,17 @@ class DiskInfo(object):
         install device in MB.
         
         '''
-	if self.partitions or self.slices:
-	        install_target = self.get_install_target()
-	        if install_target is None:
-	            logging.error("Failed to find device to install onto")
-	            raise InstallationError
-	        name = self.name + "s" + str(install_target.number)
-	        size = (int)(install_target.size.size_as("mb"))
-	else:
-		name=self.name
-		size=(int)(self.get_size().size_as("mb"))
-	return (name, size)
+        if self.partitions or self.slices:
+                install_target = self.get_install_target()
+                if install_target is None:
+                    logging.error("Failed to find device to install onto")
+                    raise InstallationError
+                name = self.name + "s" + str(install_target.number)
+                size = (int)(install_target.size.size_as("mb"))
+        else:
+                name=self.name
+                size=(int)(self.get_size().size_as("mb"))
+        return (name, size)
     
     def get_install_device_size(self):
         '''Returns the size of the install device in MB. '''
@@ -648,6 +652,6 @@ class DiskInfo(object):
         ''' Returns name of the pool to be used for installation '''
         install_slice = self.get_install_target()
         if install_slice is None:
-		return str(SliceInfo.DEFAULT_POOL)
+            return str(SliceInfo.DEFAULT_POOL)
         slice_type = install_slice.get_type()
         return (str(slice_type[1]))

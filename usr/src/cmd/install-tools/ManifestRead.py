@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.5
 
 #
 # CDDL HEADER START
@@ -76,15 +76,15 @@ def print_values(manifest_reader_obj, request_list, are_keys=False,
     for request in request_list:
         try:
             result_list = manifest_reader_obj.get_values(request, are_keys)
-        except StandardError, err:
-            print >> sys.stderr, "Error getting values: " + str(err)
+        except Exception as err:
+            print("Error getting values: " + str(err), file=sys.stderr)
             raise
         if (print_nodepath):
             nodepath = request + " "
         else:
             nodepath = ""
         for result in result_list:
-            print "%s%s" % (nodepath, result)
+            print("%s%s" % (nodepath, result))
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -100,19 +100,19 @@ def usage(msg_fd):
 	"""
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    print >> msg_fd, "Usage:"
-    print >> msg_fd, ("  %s [-d] [-r] <socket name> <nodepath> " +
-                      "[ ...<nodepath> ]") % (sys.argv[0])
-    print >> msg_fd, ("  %s [-d] [-r] [-k] <socket name> <key> [ ...<key> ]" %
-                      (sys.argv[0]))
-    print >> msg_fd, "  %s [-h|-?]" % (sys.argv[0])
-    print >> msg_fd, "where:"
-    print >> msg_fd, "  -d: turn on debug output"
-    print >> msg_fd, "  -h or -?: print this message"
-    print >> msg_fd, "  -k: specify keys instead of nodepaths"
-    print >> msg_fd, "  -r: Always print nodepath next to a value"
-    print >> msg_fd, "      (even when only one nodepath is specified)"
-    print >> msg_fd, ""
+    print("Usage:", file=msg_fd)
+    print(("  %s [-d] [-r] <socket name> <nodepath> " +
+                      "[ ...<nodepath> ]") % (sys.argv[0]), file=msg_fd)
+    print(("  %s [-d] [-r] [-k] <socket name> <key> [ ...<key> ]" %
+                      (sys.argv[0])), file=msg_fd)
+    print("  %s [-h|-?]" % (sys.argv[0]), file=msg_fd)
+    print("where:", file=msg_fd)
+    print("  -d: turn on debug output", file=msg_fd)
+    print("  -h or -?: print this message", file=msg_fd)
+    print("  -k: specify keys instead of nodepaths", file=msg_fd)
+    print("  -r: Always print nodepath next to a value", file=msg_fd)
+    print("      (even when only one nodepath is specified)", file=msg_fd)
+    print("", file=msg_fd)
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -137,10 +137,10 @@ def main():
     # Parse commandline into options and args.
     try:
         (opt_pairs, other_args) = getopt.getopt(sys.argv[1:], "dhkr?")
-    except getopt.GetoptError, err:
-        print >> sys.stderr, "ManifestRead: " + str(err)
-    except IndexError, err:
-        print >> sys.stderr, "ManifestRead: Insufficient arguments"
+    except getopt.GetoptError as err:
+        print("ManifestRead: " + str(err), file=sys.stderr)
+    except IndexError as err:
+        print("ManifestRead: Insufficient arguments", file=sys.stderr)
     if (err is not None):
         usage(sys.stderr)
         sys.exit (errno.EINVAL)
@@ -170,8 +170,8 @@ def main():
         print_values(mrobj, other_args[1:], are_keys, force_req_print)
     except (SystemExit, KeyboardInterrupt):
         pass
-    except Exception, err:
-        print >> sys.stderr, "Error running Manifest Reader"
+    except Exception as err:
+        print("Error running Manifest Reader", file=sys.stderr)
     if (err):
         ret = err.args[0]
     sys.exit(ret)

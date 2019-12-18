@@ -61,7 +61,7 @@ init_slice(PyObject *unknown)
 {
 	/* These constants are never cleaned */
 #define	CONSTANT(v, cname, pyname, value) \
-	SliceConst.cname = PyString_FromString(value);
+	SliceConst.cname = PyUnicode_FromString(value);
 	SLICE_TAG_CONSTANTS
 	SLICE_USED_BY_CONSTANTS
 #undef	CONSTANT
@@ -177,8 +177,8 @@ TgtSlice_Init(TgtSlice *self, PyObject *args, PyObject *kwds)
 	if (PyLong_Check(blocks)) {
 		self->blocks = PyLong_AsUnsignedLongLong(blocks);
 	} else {
-		if (PyInt_Check(blocks)) {
-			self->blocks = (uint64_t)PyInt_AsLong(blocks);
+		if (PyLong_Check(blocks)) {
+			self->blocks = (uint64_t)PyLong_AsLong(blocks);
 		} else {
 			PyErr_SetString(PyExc_TypeError, "tgt.Slice() "
 			    "\"blocks\" an integer is required");
@@ -188,8 +188,8 @@ TgtSlice_Init(TgtSlice *self, PyObject *args, PyObject *kwds)
 	if (PyLong_Check(offset)) {
 		self->offset = PyLong_AsUnsignedLongLong(offset);
 	} else {
-		if (PyInt_Check(offset)) {
-			self->offset = (uint64_t)PyInt_AsLong(offset);
+		if (PyLong_Check(offset)) {
+			self->offset = (uint64_t)PyLong_AsLong(offset);
 		} else {
 			PyErr_SetString(PyExc_TypeError, "tgt.Slice() "
 			    "\"offset\" an integer is required");
@@ -261,7 +261,7 @@ TgtSlice_Deallocate(TgtSlice *self)
 		free(self->last_mount);
 		self->last_mount = NULL;
 	}
-	self->ob_type->tp_free((PyObject*)self);
+	Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 static int
@@ -413,25 +413,34 @@ TgtSlice_get_user(TgtSlice *self, void *closure)
 		Py_INCREF(SliceConst.unknown);
 		return (SliceConst.unknown);
 	}
-	return (PyString_FromString(self->user));
+	return (PyUnicode_FromString(self->user));
 }
 static int
 TgtSlice_set_user(TgtSlice *self, PyObject *value, void *closure)
 {
 	char *str;
 	uint8_t newtype;
+	PyObject *tmp;
 	if (value == NULL) {
 		/* NULL/None is OK that will become "unknown" */
 		str = NULL;
 	} else {
-		if (PyString_Check(value) == 0) {
+		if (PyUnicode_Check(value) == 0) {
 			PyErr_SetString(PyExc_TypeError,
 			    "\"user\" must be a str");
 			return (-1);
 		}
-		str = strdup(PyString_AsString(value));
-		if (str == NULL) {
-			PyErr_NoMemory();
+		tmp = PyUnicode_AsEncodedString(value, "UTF-8", "strict");
+		if (tmp) {
+			str = strdup(PyBytes_AS_STRING(tmp));
+			if (str == NULL) {
+				PyErr_NoMemory();
+				return (-1);
+			}
+			Py_DECREF(tmp);
+		} else {
+			PyErr_SetString(PyExc_TypeError,
+			    "Can't decode user name");
 			return (-1);
 		}
 	}
@@ -450,25 +459,34 @@ TgtSlice_get_last_mount(TgtSlice *self, void *closure)
 		Py_INCREF(Py_None);
 		return (Py_None);
 	}
-	return (PyString_FromString(self->last_mount));
+	return (PyUnicode_FromString(self->last_mount));
 }
 static int
 TgtSlice_set_last_mount(TgtSlice *self, PyObject *value, void *closure)
 {
 	char *str;
 	uint8_t newtype;
+	PyObject *tmp;
 	if (value == NULL) {
 		/* NULL/None is OK that will become "None" */
 		str = NULL;
 	} else {
-		if (PyString_Check(value) == 0) {
+		if (PyUnicode_Check(value) == 0) {
 			PyErr_SetString(PyExc_TypeError,
 			    "\"last_mount\" must be a str");
 			return (-1);
 		}
-		str = strdup(PyString_AsString(value));
-		if (str == NULL) {
-			PyErr_NoMemory();
+		tmp = PyUnicode_AsEncodedString(value, "UTF-8", "strict");
+		if (tmp) {
+			str = strdup(PyBytes_AS_STRING(tmp));
+			if (str == NULL) {
+				PyErr_NoMemory();
+				return (-1);
+			}
+			Py_DECREF(tmp);
+		} else {
+			PyErr_SetString(PyExc_TypeError,
+                            "Can't decode last_mount");
 			return (-1);
 		}
 	}
@@ -497,11 +515,7 @@ TgtSlice_set_offset(TgtSlice *self, PyObject *value, void *closure)
 	if (PyLong_Check(value)) {
 		newoff = (uint64_t)PyLong_AsUnsignedLong(value);
 	} else {
-		if (PyInt_Check(value)) {
-			newoff = (uint64_t)PyInt_AsLong(value);
-		} else {
-			goto TgtSlice_set_offset_TYPE_ERROR;
-		}
+		goto TgtSlice_set_offset_TYPE_ERROR;
 	}
 	self->offset = newoff;
 	return (0);
@@ -528,11 +542,7 @@ TgtSlice_set_blocks(TgtSlice *self, PyObject *value, void *closure)
 	if (PyLong_Check(value)) {
 		newblk = (uint64_t)PyLong_AsUnsignedLong(value);
 	} else {
-		if (PyInt_Check(value)) {
-			newblk = (uint64_t)PyInt_AsLong(value);
-		} else {
-			goto TgtSlice_set_blocks_TYPE_ERROR;
-		}
+		goto TgtSlice_set_blocks_TYPE_ERROR;
 	}
 	self->blocks = newblk;
 	return (0);
@@ -546,7 +556,7 @@ PyDoc_STRVAR(TgtSlice_doc_blocks, "size in blocks");
 static PyObject *
 TgtSlice_get_number(TgtSlice *self, void *closure)
 {
-	PyObject *result = PyInt_FromLong((long)self->number);
+	PyObject *result = PyLong_FromLong((long)self->number);
 	return (result);
 }
 static int
@@ -560,11 +570,7 @@ TgtSlice_set_number(TgtSlice *self, PyObject *value, void *closure)
 	if (PyLong_Check(value)) {
 		newid = (uint8_t)PyLong_AsUnsignedLong(value);
 	} else {
-		if (PyInt_Check(value)) {
-			newid = (uint8_t)PyInt_AsLong(value);
-		} else {
-			goto TgtSlice_set_id_TYPE_ERROR;
-		}
+		goto TgtSlice_set_id_TYPE_ERROR;
 	}
 
 	if (newid > MAXNUM) {
@@ -605,12 +611,22 @@ TgtSlice_set_tag(TgtSlice *self, PyObject *value, void *closure)
 {
 	char *str;
 	uint8_t newtag;
-	if (value == NULL || (PyString_Check(value) == 0)) {
+	PyObject *tmp;
+
+	if (value == NULL || (PyUnicode_Check(value) == 0)) {
 		PyErr_SetString(PyExc_TypeError, "\"tag\" must be a str");
 		return (-1);
 	}
 
-	str = PyString_AsString(value);
+	tmp = PyUnicode_AsEncodedString(value, "UTF-8", "strict");
+	if (tmp) {
+		str = PyBytes_AS_STRING(tmp);
+		Py_DECREF(tmp);
+	} else {
+		PyErr_SetString(PyExc_TypeError,
+                            "Can't decode type");
+		return (-1);
+	}
 	while (1) {
 #define		CONSTANT(v, cname, pyname, value) \
 		if (strcmp(str, value) == 0) { \
@@ -652,12 +668,23 @@ TgtSlice_set_type(TgtSlice *self, PyObject *value, void *closure)
 {
 	char *str;
 	uint8_t newtype;
-	if (value == NULL || (PyString_Check(value) == 0)) {
+	PyObject *tmp;
+
+	if (value == NULL || (PyUnicode_Check(value) == 0)) {
 		PyErr_SetString(PyExc_TypeError, "\"type\" must be a str");
 		return (-1);
 	}
 
-	str = PyString_AsString(value);
+	tmp = PyUnicode_AsEncodedString(value, "UTF-8", "strict");
+	if (tmp) {
+		str = PyBytes_AS_STRING(tmp);
+		Py_DECREF(tmp);
+	} else {
+		PyErr_SetString(PyExc_TypeError,
+                            "Can't decode type");
+		return (-1);
+	}
+
 	while (1) {
 #define		CONSTANT(v, cname, pyname, value) \
 		if (strcmp(str, value) == 0) { \
@@ -671,6 +698,7 @@ TgtSlice_set_type(TgtSlice *self, PyObject *value, void *closure)
 		return (-1);
 	}
 	self->type = newtype;
+			
 
 	return (0);
 }
@@ -803,7 +831,6 @@ SLICE_USED_BY_CONSTANTS
 
 PyTypeObject TgtSliceType = {
 	PyObject_HEAD_INIT(NULL)
-	.ob_size = 0,
 	.tp_name = "tgt.Slice",
 	.tp_basicsize = sizeof (TgtSlice),
 	.tp_dealloc = (destructor)TgtSlice_Deallocate,

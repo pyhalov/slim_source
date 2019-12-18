@@ -35,9 +35,10 @@
 #include "installation-profile.h"
 #include "error-logging.h"
 
-/* Uncomment these 2 lines to simulate Sparc behaviour on X86 */
+/* Uncomment these lines to simulate Sparc behaviour on X86 */
 /* #define __sparc */
 /* #undef __i386 */
+/* #undef __amd64__ */
 
 #define	ONE_DECIMAL(x)	((round((x) * 10)) / 10.0)
 
@@ -326,7 +327,7 @@ get_extended_partition_min_size(disk_parts_t *partitions);
 void
 installationdisk_wholediskradio_toggled(GtkWidget *widget, gpointer user_data)
 {
-#if defined(__i386)
+#if defined(__i386) || defined(__amd64__)
 	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)) == FALSE)
 		return;
 
@@ -342,7 +343,7 @@ void
 installationdisk_partitiondiskradio_toggled(GtkWidget *widget,
 	gpointer user_data)
 {
-#if defined(__i386)
+#if defined(__i386) || defined(__amd64__)
 	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)) == FALSE)
 		return;
 
@@ -1389,7 +1390,7 @@ static void
 logical_partition_combo_changed(GtkWidget *widget,
 	gpointer user_data)
 {
-#if defined(__i386)
+#if defined(__i386) || defined(__amd64__)
 	LogicalPartition *logicalpart = (LogicalPartition *)user_data;
 	GtkSpinButton *spinner = NULL;
 	GtkComboBox *combo = GTK_COMBO_BOX(widget);
@@ -1518,7 +1519,7 @@ primary_partition_combo_changed(GtkWidget *widget,
     gint partindex,
     gpointer user_data)
 {
-#if defined(__i386)
+#if defined(__i386) || defined(__amd64__)
 	GtkSpinButton *spinner = NULL;
 	GtkComboBox *combo = GTK_COMBO_BOX(widget);
 	GtkLabel *avail = NULL;
@@ -2612,7 +2613,7 @@ logical_partition_spinner_focus_in_handler(GtkWidget *widget,
 	GdkEventFocus *event,
 	gpointer user_data)
 {
-#if defined(__i386)
+#if defined(__i386) || defined(__amd64__)
 	logical_partition_spinner_focus_handler(
 	    widget, event, FALSE, user_data);
 #endif
@@ -2624,7 +2625,7 @@ logical_partition_spinner_focus_out_handler(GtkWidget *widget,
 	GdkEventFocus *event,
 	gpointer user_data)
 {
-#if defined(__i386)
+#if defined(__i386) || defined(__amd64__)
 	logical_partition_spinner_focus_handler(
 	    widget, event, TRUE, user_data);
 #endif
@@ -2635,7 +2636,7 @@ static void
 logical_partition_spinner_value_changed(GtkWidget *widget,
 	gpointer user_data)
 {
-#if defined(__i386)
+#if defined(__i386) || defined(__amd64__)
 	LogicalPartition *logicalpart = (LogicalPartition *)user_data;
 	partition_info_t *modpartinfo = NULL;
 	gfloat spinval = 0;
@@ -2692,7 +2693,7 @@ primary_partition_spinner_value_changed(GtkWidget *widget,
 	gint index,
 	gpointer user_data)
 {
-#if defined(__i386)
+#if defined(__i386) || defined(__amd64__)
 	partition_info_t *modpartinfo = NULL;
 	GtkSpinButton *spinner = NULL;
 	gfloat spinval = 0;
@@ -2785,7 +2786,7 @@ primary_partition_spinner_focus_handler(GtkWidget *widget,
 	gboolean sensitivity,
 	gpointer user_data)
 {
-#if defined(__i386)
+#if defined(__i386) || defined(__amd64__)
 	partition_info_t *modpartinfo;
 	gint parttype;
 
@@ -2981,7 +2982,7 @@ reset_primary_partitions(gboolean block_handlers)
 void
 disk_partitioning_reset_button_clicked(GtkWidget *widget, gpointer user_data)
 {
-#if defined(__i386)
+#if defined(__i386) || defined(__amd64__)
 	gint i = 0;
 
 	if (activedisk < 0)
@@ -3579,7 +3580,7 @@ disk_selection_set_active_disk(int disknum)
 			break;
 	}
 
-#if defined(__i386)
+#if defined(__i386) || defined(__amd64__)
 	/* Create a default, single partition layout for the disk */
 	if (defaultpartitions[disknum] == NULL) {
 		defaultpartitions[disknum] =
@@ -4674,7 +4675,7 @@ init_disk_status(void)
 			*status = DISK_STATUS_CANT_PRESERVE;
 			continue;
 		}
-#if defined(__i386)
+#if defined(__i386) || defined(__amd64__)
 		partitions = orchestrator_om_get_disk_partitions(omhandle,
 		    diskinfo->disk_name);
 		if (!partitions) {
@@ -4689,7 +4690,7 @@ init_disk_status(void)
 #else /* (__sparc) */
 		/* On SPARC, the disk always gets wiped */
 		*status = DISK_STATUS_CANT_PRESERVE;
-#endif /* (__i386) */
+#endif /* (__i386 ||__amd64)) */
 	}
 }
 
@@ -4893,7 +4894,7 @@ partition_discovery_monitor(gpointer user_data)
 		    MainWindow.InstallationDiskWindow.diskselectiontoplevel))
 			gtk_widget_grab_focus(diskbuttons[chosendisk]);
 
-#if defined(__i386)
+#if defined(__i386) || defined(__amd64__)
 		/* Show partitioning options on X86 only */
 		gtk_widget_show(glade_xml_get_widget(
 		    MainWindow.installationdiskwindowxml,
@@ -5837,7 +5838,7 @@ installationdisk_validate()
 	}
 
 /* Partitioning related errors are not applicable to SPARC - yet */
-#if defined(__i386)
+#if defined(__i386) || defined(__amd64__)
 
 	g_assert(proposedpartitions != NULL);
 	g_assert(proposedpartitions[activedisk] != NULL);
@@ -5952,7 +5953,7 @@ errors:
 	}
 
 /* Partitioning related errors are not applicable to SPARC - yet */
-#if defined(__i386)
+#if defined(__i386) || defined(__amd64__)
 	/* Non fatal test for solaris partition size < recommended */
 	/* Perform test regardless of using whole disk or not */
 	if (solarispartitionsize >=
@@ -5987,7 +5988,7 @@ warnings:
 
 	/* Now check for non-fatal warning conditions */
 	/* For X86 - unallocated disk space */
-#if defined(__i386)
+#if defined(__i386) || defined(__amd64__)
 	g_debug("Original partitioning on device %s:",
 	    partitions->disk_name ? partitions->disk_name : "NULL");
 	for (i = 0; i < OM_NUMPART; i++) {
@@ -6182,7 +6183,7 @@ installation_disk_store_data()
 	    orchestrator_om_get_disk_type(alldiskinfo[activedisk]);
 	InstallationProfile.disksize =
 	    orchestrator_om_get_disk_sizegb(alldiskinfo[activedisk]);
-#if defined(__i386)
+#if defined(__i386) || defined(__amd64__)
 	for (i = 0; i < OM_NUMPART; i++) {
 		partition = &partitions->pinfo[i];
 		if (IS_SOLARIS_PAR(partition->partition_type,

@@ -227,7 +227,7 @@ class HelpScreen(BaseScreen):
         also the entry used in the help topics menu.
         
         '''
-        for key in self.help_dict.keys():
+        for key in list(self.help_dict.keys()):
             if key in name_classes:
                 return self.help_dict[key][1]
         return ""

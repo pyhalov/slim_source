@@ -25,7 +25,7 @@
 # Basic mapfile to hide all symbols but inittgt() which Python expects
 {
 	global:
-		inittgt;
+		PyInit_tgt;
 
 	local:
 		*;

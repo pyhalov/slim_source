@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.5
 
 #
 # CDDL HEADER START
@@ -62,16 +62,16 @@ def query_local(mfest_obj):
     """
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     key_mode = False
-    print ""
+    print("")
     while (True):
 
         if (key_mode):
-            print "Please enter a key or "
-            print ("\"-key\" to search an element or " +
-                   "attribute path:")
+            print("Please enter a key or ")
+            print(("\"-key\" to search an element or " +
+                   "attribute path:"))
         else:
             print ("Please enter an element or attribute path")
-            print "or \"+key\" to search for keys:"
+            print("or \"+key\" to search for keys:")
 
         try:
             path = sys.stdin.readline()
@@ -83,26 +83,26 @@ def query_local(mfest_obj):
 
         if (path == "+key"):
             key_mode = True
-            print "key mode set to " + str(key_mode)
+            print("key mode set to " + str(key_mode))
             continue
         elif (path == "-key"):
             key_mode = False
-            print "key mode set to " + str(key_mode)
+            print("key mode set to " + str(key_mode))
             continue
 
         try:
             results = mfest_obj.get_values(path, key_mode)
-        except StandardError, err:
-            print >> sys.stderr, ("Exception caught when retrieving values")
-            print >> sys.stderr, "    request: " + path
-            print >> sys.stderr, "    " + str(err)
+        except Exception as err:
+            print(("Exception caught when retrieving values"), file=sys.stderr)
+            print("    request: " + path, file=sys.stderr)
+            print("    " + str(err), file=sys.stderr)
             continue
 			
         for result in results:
             if (result.strip() == ""):
-                print "(empty string / no value)"
+                print("(empty string / no value)")
             else:
-                print result
+                print(result)
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -118,26 +118,26 @@ def usage(msg_fd):
 
     """
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    print >> msg_fd, ("Usage: %s [-d] [-h|-?] [-s] [-t] [-v] " +
-                      "[-f <validation_file_base> ]") % sys.argv[0]
-    print >> msg_fd, ("    [-o <out_manifest.xml file> ] <manifest.xml file>")
-    print >> msg_fd, "where:"
-    print >> msg_fd, ("  -d: turn on socket debug output (valid when " +
-                      "-s also specified)")
-    print >> msg_fd, ("  -f <validation_file_base>: give basename " +
-                      "for schema and defval files")
-    print >> msg_fd, ("      Defaults to basename of manifest " +
-                      "(name less .xml suffix) when not provided")
-    print >> msg_fd, "  -h or -?: print this message"
-    print >> msg_fd, ("  -o <out_manifest.xml file>: write resulting " +
-                      "XML after defaults and")
-    print >> msg_fd, "      validation processing"
-    print >> msg_fd, "  -t: save temporary file"
-    print >> msg_fd, ("      Temp file is \"/tmp/" +
-                      "<manifest_basename>_temp_<pid>")
-    print >> msg_fd, "  -v: verbose defaults/validation output"
-    print >> msg_fd, ("  -s: start socket server for use by ManifestRead")
-    print >> msg_fd, ("  --dtd: use DTD validation (default is RelaxNG)")
+    print(("Usage: %s [-d] [-h|-?] [-s] [-t] [-v] " +
+                      "[-f <validation_file_base> ]") % sys.argv[0], file=msg_fd)
+    print(("    [-o <out_manifest.xml file> ] <manifest.xml file>"), file=msg_fd)
+    print("where:", file=msg_fd)
+    print(("  -d: turn on socket debug output (valid when " +
+                      "-s also specified)"), file=msg_fd)
+    print(("  -f <validation_file_base>: give basename " +
+                      "for schema and defval files"), file=msg_fd)
+    print(("      Defaults to basename of manifest " +
+                      "(name less .xml suffix) when not provided"), file=msg_fd)
+    print("  -h or -?: print this message", file=msg_fd)
+    print(("  -o <out_manifest.xml file>: write resulting " +
+                      "XML after defaults and"), file=msg_fd)
+    print("      validation processing", file=msg_fd)
+    print("  -t: save temporary file", file=msg_fd)
+    print(("      Temp file is \"/tmp/" +
+                      "<manifest_basename>_temp_<pid>"), file=msg_fd)
+    print("  -v: verbose defaults/validation output", file=msg_fd)
+    print(("  -s: start socket server for use by ManifestRead"), file=msg_fd)
+    print(("  --dtd: use DTD validation (default is RelaxNG)"), file=msg_fd)
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -182,10 +182,10 @@ def main():
     # See usage method for option explanations.
     try:
         (opt_pairs, other_args) = getopt.getopt(sys.argv[1:], "df:ho:stv?", "dtd")
-    except getopt.GetoptError, err:
-        print >> sys.stderr, "ManifestServ: " + str(err)
-    except IndexError, err:
-        print >> sys.stderr, "ManifestServ: Insufficient arguments"
+    except getopt.GetoptError as err:
+        print("ManifestServ: " + str(err), file=sys.stderr)
+    except IndexError as err:
+        print("ManifestServ: Insufficient arguments", file=sys.stderr)
     if (err):
         usage(sys.stderr)
         sys.exit (errno.EINVAL)
@@ -236,9 +236,9 @@ def main():
         # well (if enabled).
         query_local(mfest_obj)
     except (SystemExit, KeyboardInterrupt):
-        print >> sys.stderr, "Caught SystemExit exception"
-    except Exception, err:
-        print >> sys.stderr, "Error running Manifest Server"
+        print("Caught SystemExit exception", file=sys.stderr)
+    except Exception as err:
+        print("Error running Manifest Server", file=sys.stderr)
 
     if (err is not None):
         ret = err.args[0]

@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.5
 #
 # CDDL HEADER START
 #
@@ -65,7 +65,7 @@ Note: This assumes a populated pkg_image area exists at the location
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 if (len(sys.argv) != 7): # Don't forget sys.argv[0] is the script itself.
-    raise Exception, (sys.argv[0] + ": Requires 6 args:\n" +
+    raise Exception(sys.argv[0] + ": Requires 6 args:\n" +
     "    Reader socket, pkg_image area, temp dir,\n" +
     "    boot archive build area, media area, loader setup type.")
 
@@ -83,8 +83,8 @@ if TIMEOUT is not None and TIMEOUT != DEFAULT_TIMEOUT:
 	# Open loader.conf file.
 	try:
 	    LOADER_CONF_FILE = open(PKG_IMG_PATH + "/boot/loader.conf", "a")
-	except IOError, err:
-	    print >> sys.stderr, "Error opening loader.conf for writing"
+	except IOError as err:
+	    print("Error opening loader.conf for writing", file=sys.stderr)
 	    raise
 
 	LOADER_CONF_FILE.write("autoboot_delay=" + TIMEOUT + "\n")
@@ -98,14 +98,14 @@ if (LOADER_SETUP_TYPE == "ai"):
 	try:
 	    os.system(CMD)
 	except OSError:
-	    print >> sys.stderr, "WARNING: Error while copying loader files"
+	    print("WARNING: Error while copying loader files", file=sys.stderr)
 
 elif (LOADER_SETUP_TYPE == "livecd"):
 	# The following entries are the standard "hardwired" entries for livecd.
 	try:
 	    os.system(CMD)
 	except OSError:
-	    print >> sys.stderr, "WARNING: Error while copying loader files"
+	    print("WARNING: Error while copying loader files", file=sys.stderr)
 
 elif (LOADER_SETUP_TYPE == "text-install"):
 	# The following entries are the standard "hardwired" entries for
@@ -115,6 +115,6 @@ elif (LOADER_SETUP_TYPE == "text-install"):
 	try:
 	    os.system(CMD)
 	except OSError:
-	    print >> sys.stderr, "WARNING: Error while copying loader files"
+	    print("WARNING: Error while copying loader files", file=sys.stderr)
 
 sys.exit(0)

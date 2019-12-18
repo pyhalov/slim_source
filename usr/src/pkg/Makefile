@@ -196,7 +196,7 @@ sparc_ARCH64= sparcv9
 # complete reprocessing of all manifests because they'll fail command
 # dependency checking.
 #
-PM_TRANSFORMS= publish restart_fmri defaults extract_metadata
+PM_TRANSFORMS= publish restart_fmri defaults extract_metadata autopyc
 PM_INC= transforms
 
 PKGMOG_DEFINES= \
@@ -210,6 +210,7 @@ PKGMOG_DEFINES= \
 	PKGVERS_BUILTON=$(PKGVERS_BUILTON) \
 	PKGVERS_BRANCH=$(PKGVERS_BRANCH) \
 	PKGVERS=$(PKGVERS) \
+	PYVER=$(PYTHON3_VERSION) \
 	SRC=$(SRC) \
 	CLOSED_BUILD=$(CLOSED_BUILD) \
 	OPEN_BUILD=$(OPEN_ONLY_BUILD) \

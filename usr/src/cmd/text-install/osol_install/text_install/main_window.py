@@ -253,7 +253,7 @@ class MainWindow(object):
         
         # Add the header, a border, and the question to the window
         self.popup_win.window.border()
-        header_x = (self.popup_win.area.columns - textwidth(header)) / 2
+        header_x = int((self.popup_win.area.columns - textwidth(header)) / 2)
         self.popup_win.add_text(header, 0, header_x)
         y_loc = 2
         y_loc += self.popup_win.add_paragraph(question, y_loc, 2)
@@ -276,11 +276,11 @@ class MainWindow(object):
         button_len = textwidth(left_btn_txt) + 1
         win_size = self.popup_win.window.getmaxyx()
         left_area = WindowArea(1, button_len, y_loc,
-                               (win_size[1] / 2) - (button_len + 2))
+                               int(win_size[1] / 2) - (button_len + 2))
         left_button = ListItem(left_area, window=self.popup_win,
                                text=left_btn_txt, color=color,
                                highlight_color=highlight_color)
-        right_area = WindowArea(1, button_len, y_loc, win_size[1] / 2 + 2)
+        right_area = WindowArea(1, button_len, y_loc, int(win_size[1] / 2) + 2)
         right_button = ListItem(right_area, window=self.popup_win,
                                 text=right_btn_txt, color=color,
                                 highlight_color=highlight_color)

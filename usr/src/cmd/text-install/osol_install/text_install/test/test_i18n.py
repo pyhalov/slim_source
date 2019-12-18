@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.5
 #
 # CDDL HEADER START
 #
@@ -26,11 +26,11 @@
 To run these tests:
 
 1) nightly -n developer.sh # build the gate
-2) export PYTHONPATH=${WS}/proto/root_i386/usr/snadm/lib:${WS}/proto/root_i386/usr/lib/python2.7/vendor-packages
-3) python2.7 test_i18n.py
+2) export PYTHONPATH=${WS}/proto/root_i386/usr/snadm/lib:${WS}/proto/root_i386/usr/lib/python3.5/vendor-packages
+3) python3.5 test_i18n.py
 
 A single test may be run by specifying the test as an argument to step 3:
-python2.7 test_i18n.py I18nTestCase.test_charwidth
+python3.5 test_i18n.py I18nTestCase.test_charwidth
 
 Since the proto area is used for the PYTHONPATH, the gate must be rebuilt for
 these tests to pick up any changes in the tested code.
@@ -52,15 +52,15 @@ from osol_install.text_install.i18n import get_encoding, \
 
 class I18nTestCase(unittest.TestCase):
     def setUp(self):
-        # save current locale
-        self.save_locale = locale.getlocale(locale.LC_ALL)
         # set locale
         locale.setlocale(locale.LC_ALL, "")
+        # save current locale
+        self.save_locale = locale.getlocale(locale.LC_ALL)
         # if not in UTF-8 locale, fallback to en_US.UTF-8
         enc = locale.getlocale(locale.LC_CTYPE)[1]
         if enc is None or enc.upper() != "UTF-8" and enc.upper() != "UTF8":
-            print "This test script uses hard-coded Unicode characters and "
-            print "needs to run in a UTF-8 locale. Fallback to en_US.UTF-8."
+            print("This test script uses hard-coded Unicode characters and ")
+            print("needs to run in a UTF-8 locale. Fallback to en_US.UTF-8.")
             locale.setlocale(locale.LC_ALL, "en_US.UTF-8")
 
     def tearDown(self):
@@ -70,32 +70,32 @@ class I18nTestCase(unittest.TestCase):
     def test_charwidth(self):
         ''' test charwidth() '''
         # example of 1-column character (ASCII)
-        self.assertEqual(charwidth(u'A'), 1)
-        self.assertEqual(charwidth(u'A'.encode(get_encoding())), 1)
+        self.assertEqual(charwidth('A'), 1)
+        self.assertEqual(charwidth('A'.encode(get_encoding())), 1)
         # example of 1-column character (non-ASCII)
-        self.assertEqual(charwidth(u'\u00c0'), 1)
-        self.assertEqual(charwidth(u'\u00c0'.encode(get_encoding())), 1)
+        self.assertEqual(charwidth('\u00c0'), 1)
+        self.assertEqual(charwidth('\u00c0'.encode(get_encoding())), 1)
         # example of 2-column character
-        self.assertEqual(charwidth(u'\u3042'), 2)
-        self.assertEqual(charwidth(u'\u3042'.encode(get_encoding())), 2)
+        self.assertEqual(charwidth('\u3042'), 2)
+        self.assertEqual(charwidth('\u3042'.encode(get_encoding())), 2)
 
     def test_textwidth(self):
         ''' test textwidth() '''
         # without tab
-        self.assertEqual(textwidth(u'A\u00c0\u3042'), 1 + 1 + 2)
-        self.assertEqual(textwidth(u'A\u00c0\u3042'.encode(get_encoding())),
+        self.assertEqual(textwidth('A\u00c0\u3042'), 1 + 1 + 2)
+        self.assertEqual(textwidth('A\u00c0\u3042'.encode(get_encoding())),
                          1 + 1 + 2)
         # with tab
-        self.assertEqual(textwidth(u'\tA\u00c0\u3042'), 4 + 1 + 1 + 2)
-        self.assertEqual(textwidth(u'\tA\u00c0\u3042'.encode(get_encoding())),
+        self.assertEqual(textwidth('\tA\u00c0\u3042'), 4 + 1 + 1 + 2)
+        self.assertEqual(textwidth('\tA\u00c0\u3042'.encode(get_encoding())),
                          4 + 1 + 1 + 2)
 
     def test_fit_text_truncate(self):
         ''' test fit_text_truncate() '''
-        c0 = u'\u3042' # 2 columns
-        c1 = u'\u3044' # 2 columns
-        c2 = u'\u3046' # 2 columns
-        c3 = u'\u3048' # 2 columns
+        c0 = '\u3042' # 2 columns
+        c1 = '\u3044' # 2 columns
+        c2 = '\u3046' # 2 columns
+        c3 = '\u3048' # 2 columns
         s = c0 + c1 + c2 + c3
         # no justification
         self.assertEqual(fit_text_truncate(s, 9), s[:4])
@@ -109,43 +109,43 @@ class I18nTestCase(unittest.TestCase):
         self.assertEqual(fit_text_truncate(s, 1), s[:0])
         self.assertEqual(fit_text_truncate(s, 0), s[:0])
         # justify to left
-        self.assertEqual(fit_text_truncate(s, 9, just=LEFT), s[:4] + u' ')
+        self.assertEqual(fit_text_truncate(s, 9, just=LEFT), s[:4] + ' ')
         self.assertEqual(fit_text_truncate(s, 8, just=LEFT), s[:4])
-        self.assertEqual(fit_text_truncate(s, 7, just=LEFT), s[:3] + u' ')
+        self.assertEqual(fit_text_truncate(s, 7, just=LEFT), s[:3] + ' ')
         self.assertEqual(fit_text_truncate(s, 6, just=LEFT), s[:3])
-        self.assertEqual(fit_text_truncate(s, 5, just=LEFT), s[:2] + u' ')
+        self.assertEqual(fit_text_truncate(s, 5, just=LEFT), s[:2] + ' ')
         self.assertEqual(fit_text_truncate(s, 4, just=LEFT), s[:2])
-        self.assertEqual(fit_text_truncate(s, 3, just=LEFT), s[:1] + u' ')
+        self.assertEqual(fit_text_truncate(s, 3, just=LEFT), s[:1] + ' ')
         self.assertEqual(fit_text_truncate(s, 2, just=LEFT), s[:1])
-        self.assertEqual(fit_text_truncate(s, 1, just=LEFT), s[:0] + u' ')
+        self.assertEqual(fit_text_truncate(s, 1, just=LEFT), s[:0] + ' ')
         self.assertEqual(fit_text_truncate(s, 0, just=LEFT), s[:0])
         # justify to right
-        self.assertEqual(fit_text_truncate(s, 9, just=RIGHT), u' ' + s[:4])
+        self.assertEqual(fit_text_truncate(s, 9, just=RIGHT), ' ' + s[:4])
         self.assertEqual(fit_text_truncate(s, 8, just=RIGHT), s[:4])
-        self.assertEqual(fit_text_truncate(s, 7, just=RIGHT), u' ' + s[:3])
+        self.assertEqual(fit_text_truncate(s, 7, just=RIGHT), ' ' + s[:3])
         self.assertEqual(fit_text_truncate(s, 6, just=RIGHT), s[:3])
-        self.assertEqual(fit_text_truncate(s, 5, just=RIGHT), u' ' + s[:2])
+        self.assertEqual(fit_text_truncate(s, 5, just=RIGHT), ' ' + s[:2])
         self.assertEqual(fit_text_truncate(s, 4, just=RIGHT), s[:2])
-        self.assertEqual(fit_text_truncate(s, 3, just=RIGHT), u' ' + s[:1])
+        self.assertEqual(fit_text_truncate(s, 3, just=RIGHT), ' ' + s[:1])
         self.assertEqual(fit_text_truncate(s, 2, just=RIGHT), s[:1])
-        self.assertEqual(fit_text_truncate(s, 1, just=RIGHT), u' ' + s[:0])
+        self.assertEqual(fit_text_truncate(s, 1, just=RIGHT), ' ' + s[:0])
         self.assertEqual(fit_text_truncate(s, 0, just=RIGHT), s[:0])
         # justify to center
         self.assertEqual(fit_text_truncate(s, 12, just=CENTER),
-                         u' ' * 2 + s[:4] + u' ' * 2)
+                         ' ' * 2 + s[:4] + ' ' * 2)
         self.assertEqual(fit_text_truncate(s, 11, just=CENTER),
-                         u' ' + s[:4] + u' ' * 2)
+                         ' ' + s[:4] + ' ' * 2)
         self.assertEqual(fit_text_truncate(s, 10, just=CENTER),
-                         u' ' + s[:4] + u' ')
-        self.assertEqual(fit_text_truncate(s, 9, just=CENTER), s[:4] + u' ')
+                         ' ' + s[:4] + ' ')
+        self.assertEqual(fit_text_truncate(s, 9, just=CENTER), s[:4] + ' ')
         self.assertEqual(fit_text_truncate(s, 8, just=CENTER), s[:4])
-        self.assertEqual(fit_text_truncate(s, 7, just=CENTER), s[:3] + u' ')
+        self.assertEqual(fit_text_truncate(s, 7, just=CENTER), s[:3] + ' ')
         self.assertEqual(fit_text_truncate(s, 6, just=CENTER), s[:3])
-        self.assertEqual(fit_text_truncate(s, 5, just=CENTER), s[:2] + u' ')
+        self.assertEqual(fit_text_truncate(s, 5, just=CENTER), s[:2] + ' ')
         self.assertEqual(fit_text_truncate(s, 4, just=CENTER), s[:2])
-        self.assertEqual(fit_text_truncate(s, 3, just=CENTER), s[:1] + u' ')
+        self.assertEqual(fit_text_truncate(s, 3, just=CENTER), s[:1] + ' ')
         self.assertEqual(fit_text_truncate(s, 2, just=CENTER), s[:1])
-        self.assertEqual(fit_text_truncate(s, 1, just=CENTER), s[:0] + u' ')
+        self.assertEqual(fit_text_truncate(s, 1, just=CENTER), s[:0] + ' ')
         self.assertEqual(fit_text_truncate(s, 0, just=CENTER), s[:0])
 
     def test_fit_text_truncate_multicolumn_fillchar(self):
@@ -153,19 +153,19 @@ class I18nTestCase(unittest.TestCase):
             expecting ValueError is raised
         '''
         self.assertRaises(ValueError, fit_text_truncate,
-                          u"\u3042", 9, just=LEFT, fillchar=u'\u3042')
+                          "\u3042", 9, just=LEFT, fillchar='\u3042')
         self.assertRaises(ValueError, fit_text_truncate,
-                          u"\u3042", 9, just=RIGHT, fillchar=u'\u3042')
+                          "\u3042", 9, just=RIGHT, fillchar='\u3042')
         self.assertRaises(ValueError, fit_text_truncate,
-                          u"\u3042", 9, just=CENTER, fillchar=u'\u3042')
+                          "\u3042", 9, just=CENTER, fillchar='\u3042')
 
     def test_convert_paragraph(self):
         ''' test convert_paragraph() '''
-        c0 = u'\u3042' # 2 columns
-        c1 = u'\u3044' # 2 columns
-        c2 = u' ' # 1 column (white space)
-        c3 = u'\u3046' # 2 columns
-        c4 = u'\u3048' # 2 columns
+        c0 = '\u3042' # 2 columns
+        c1 = '\u3044' # 2 columns
+        c2 = ' ' # 1 column (white space)
+        c3 = '\u3046' # 2 columns
+        c4 = '\u3048' # 2 columns
         s = c0 + c1 + c2 + c3 + c4
 
         if if_wrap_on_whitespace():

@@ -176,7 +176,7 @@ class EditField(ScrollWindow):
         '''Used internally to bypass the the public
         interface's numeric_pad functionality'''
         if text is None:
-            text = u""
+            text = ""
         self.clear_text()
         logging.log(LOG_LEVEL_INPUT,
                     "_set_text textwidth=%s, columns=%s, text=%s",
@@ -218,7 +218,7 @@ class EditField(ScrollWindow):
             # isprint: ASCII characters
             # ismeta and < curses.KEY_MIN: Remaining UTF-8 characters
             # > curses.KEY_MIN: Special key such as down arrow, backspace, etc.
-            self.text.append(unichr(input_key))
+            self.text.append(chr(input_key))
             if not self.is_valid():
                 if len(self.text) > 0:
                     self.text.pop()
@@ -291,7 +291,7 @@ class EditField(ScrollWindow):
     
     def get_text(self):
         '''Join the array of characters as a unicode string'''
-        return u"".join(self.text)
+        return "".join(self.text)
     
     def is_special_char(self, input_key):
         '''Check to see if this is a keystroke that should break us out of
@@ -328,7 +328,7 @@ class EditField(ScrollWindow):
                 self.validate(self, **self.validate_kwargs)
             except UIMessage as error_str:
                 if self.error_win is not None:
-                    self.error_win.display_err(unicode(error_str))
+                    self.error_win.display_err(str(error_str))
                 return False
         if self.error_win is not None and self.error_win.visible:
             self.error_win.clear_err()
@@ -347,7 +347,7 @@ class EditField(ScrollWindow):
                 return True
             except UIMessage as error_str:
                 if self.error_win is not None:
-                    self.error_win.display_err(unicode(error_str))
+                    self.error_win.display_err(str(error_str))
                 return False
         return True
     

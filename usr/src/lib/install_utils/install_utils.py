@@ -70,13 +70,13 @@ __QST_CHAR,	# Most chars and whitespace
 __QST_ESC,	# escape (first backslash character)
 __QST_SQT,	# Unescaped single quote
 __QST_DQT	# Unescaped double quote
-) = range(5)
+) = list(range(5))
 
 # State table indices.
 (
 __QST_NONESC,	# Index used by start, char, sqt and dqt states
 __QST_BSESC	# Index used by esc state
- ) = range(2)
+ ) = list(range(2))
 
 # Next state indices.  These correspond to the current char which determines
 # the next state.
@@ -85,7 +85,7 @@ __QST_CHAR_CHAR,	# Index in the tables corresp to char or whtsp recd
 __QST_CHAR_BS,		# Index in the tables corresp to a backslash recd
 __QST_CHAR_SQT,		# Index in the tables corresp to a single quote recd
 __QST_CHAR_DQT		# Index in the tables corresp to a double quote recd
- ) = range(4)
+ ) = list(range(4))
 
 # The state table
 
@@ -206,17 +206,17 @@ def space_parse(input_str):
                         word = ""
 
         elif (next_state != __QST_ESC):
-            print >> sys.stderr, (
+            print((
                                   "space_parse: Shouldn't get here!!!! " +
                                   "Char:%s, state:%d, next:%d" % (char, state,
-                                  next_state))
+                                  next_state)), file=sys.stderr)
 
         state = next_state
 
     # Done looping.  Handle the case of residual mismatched quotes or
     # double-quotes.
     if ((squoteon) or (dquoteon)):
-        raise Exception, "Unexpected unescaped quote found: " + input_str
+        raise Exception("Unexpected unescaped quote found: " + input_str)
 
     # Handle the case where the \ is the last character of the input_str.
     if (state == __QST_ESC):
@@ -304,7 +304,7 @@ def canaccess(filename, mode):
     elif (mode == "w"):
         mode = "a"
     elif (mode != "r"):
-        raise IOError, (errno.EINVAL, os.strerror(errno.EINVAL) +
+        raise IOError(errno.EINVAL, os.strerror(errno.EINVAL) +
                         ": " + "mode")
 
     dummy = os.stat(filename)		# Check for file existance.
@@ -357,10 +357,10 @@ def exec_cmd_outputs_to_log(cmd, log,
     # to separate the message from subsequent log messages in order
     # to keep the log file readable.
     #
-    log_msg = "exec command: " + string.join(cmd)
+    log_msg = "exec command: " + " ".join(cmd)
 
     if len(log_msg) > 200:
-	log_msg += "\n"
+        log_msg += "\n"
 
     if log is not None:
         log.log(stdout_log_level, log_msg)
@@ -368,7 +368,8 @@ def exec_cmd_outputs_to_log(cmd, log,
         logsvc.write_log(TRANSFER_ID, log_msg + "\n")
 
     pipe = Popen(cmd, stdout=PIPE, stderr=PIPE, stdin=PIPE,
-              shell=False, close_fds=True)
+                 universal_newlines=True,
+                 shell=False, close_fds=True)
     (child_stdout, child_stderr) = (pipe.stdout, pipe.stderr)
 
     out_fd = child_stdout.fileno()
@@ -398,13 +399,13 @@ def exec_cmd_outputs_to_log(cmd, log,
             # Examine the buffer and if it contains whole lines,
             # extract and log them right now, so that smooth
             # progress report from invoked command is provided.
-            stderr_buf = stderr_buf + output
+            stderr_buf = stderr_buf + output.decode()
 
             if not output:
                 fl_cmd_finished = True
 
-            while string.find(stderr_buf, "\n") != -1:
-                new_line_pos = string.find(stderr_buf, "\n")
+            while stderr_buf.find("\n") != -1:
+                new_line_pos = stderr_buf.find("\n")
 
                 if log is not None:
                     log.log(stderr_log_level,
@@ -441,10 +442,10 @@ def exec_cmd_outputs_to_log(cmd, log,
             # Examine the buffer and if it contains whole lines,
             # extract and log them right now, so that smooth
             # progress report from invoked command is provided.
-            stdout_buf = stdout_buf + output
+            stdout_buf = stdout_buf + output.decode()
 
-            while string.find(stdout_buf, "\n") != -1:
-                new_line_pos = string.find(stdout_buf, "\n")
+            while stdout_buf.find("\n") != -1:
+                new_line_pos = stdout_buf.find("\n")
 
                 if log is not None:
                     log.log(stdout_log_level,
@@ -518,7 +519,7 @@ def find(rootpaths, path_type=None, raise_errors=False):
 
     if ((path_type is not None) and (path_type != "dir") and
         (path_type != "file")):
-        raise Exception, ("find: \"path_type\" must be None, " +
+        raise Exception("find: \"path_type\" must be None, " +
                           "\"dir\" or \"file\"")
 
     if (raise_errors):
@@ -651,7 +652,7 @@ def dir_size(rootpath):
     size += file_size(rootpath)
     if (size == 0):
         # This indicates the root directory is not valid
-        raise Exception, (rootpath + "is not valid")
+        raise Exception(rootpath + "is not valid")
 
     for root, subdirs, files in os.walk(rootpath):
         # There's no need to distinguish between directories and
@@ -664,9 +665,8 @@ def dir_size(rootpath):
             except OSError:
                 # No need to exit because can't get size of
                 # a file/dir, just print an error and continue
-                print >> sys.stderr, \
-                    ("Error getting information about "
-                     + abs_filename)
+                print(("Error getting information about "
+                     + abs_filename), file=sys.stderr)
                 continue
 
     return (size)

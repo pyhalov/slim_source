@@ -281,6 +281,7 @@ def create_build_area(ckp, manifest_server_obj):
                   + build_area
             try:
                 mntpt = Popen(cmd, shell=True,
+                              universal_newlines=True,
                               stdout=PIPE).communicate()[0].strip()
             except OSError:
                 dc_log.error("Error determining if the build " \
@@ -293,6 +294,7 @@ def create_build_area(ckp, manifest_server_obj):
                   + build_area
             try:
                 dataset = Popen(cmd, shell=True,
+                                universal_newlines=True,
                                 stdout=PIPE).communicate()[0].strip()
             except OSError:
                 dc_log.error("Error finding the build area dataset")
@@ -380,6 +382,7 @@ def create_build_area(ckp, manifest_server_obj):
         cmd = "/usr/sbin/zfs list -H -o \"mountpoint\" " + build_area
         try:
             mntpt = Popen(cmd, shell=True,
+                          universal_newlines=True,
                           stdout=PIPE).communicate()[0].strip()
         except OSError:
             dc_log.error("Unable to get the mountpoint for the "

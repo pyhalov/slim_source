@@ -54,19 +54,19 @@ extern int	TgtPartition_add_child(PyObject *, PyObject *);
 
 extern PyTypeObject TgtGeometryType;
 #define	TgtGeometry_Check(op) PyObject_TypeCheck(op, &TgtGeometryType)
-#define	TgtGeometry_CheckExact(op) ((op)->ob_type == &TgtGeometryType)
+#define	TgtGeometry_CheckExact(op) (Py_TYPE(op) == &TgtGeometryType)
 
 extern PyTypeObject TgtDiskType;
 #define	TgtDisk_Check(op) PyObject_TypeCheck(op, &TgtDiskType)
-#define	TgtDisk_CheckExact(op) ((op)->ob_type == &TgtDiskType)
+#define	TgtDisk_CheckExact(op) (Py_TYPE(op) == &TgtDiskType)
 
 extern PyTypeObject TgtPartitionType;
 #define	TgtPartition_Check(op) PyObject_TypeCheck(op, &TgtPartitionType)
-#define	TgtPartition_CheckExact(op) ((op)->ob_type == &TgtPartitionType)
+#define	TgtPartition_CheckExact(op) (Py_TYPE(op) == &TgtPartitionType)
 
 extern PyTypeObject TgtSliceType;
 #define	TgtSlice_Check(op) PyObject_TypeCheck(op, &TgtSliceType)
-#define	TgtSlice_CheckExact(op) ((op)->ob_type == &TgtSliceType)
+#define	TgtSlice_CheckExact(op) (Py_TYPE(op) == &TgtSliceType)
 
 extern PyTypeObject TgtZpoolType;
 #define	TgtZpool_Check(op) PyObject_TypeCheck(op, &TgtZpoolType)

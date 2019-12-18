@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.5
 #
 # CDDL HEADER START
 #
@@ -61,7 +61,7 @@ Note: This assumes a populated pkg_image area exists at the location
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 if (len(sys.argv) != 6): # Don't forget sys.argv[0] is the script itself.
-    raise Exception, (sys.argv[0] + ": Requires 5 args:\n" +
+    raise Exception(sys.argv[0] + ": Requires 5 args:\n" +
                                     "    Reader socket, pkg_image area, " +
                                     "temp dir,\n" +
                                     "    boot archive build area, " +
@@ -76,6 +76,7 @@ PKG_IMG_PATH = sys.argv[2]	# package image area mountpoint
 try:
     os.symlink("../.." + BA_FILENAME_SUN4U,
                PKG_IMG_PATH + BA_FILENAME_SUN4V)
-except OSError, (errno, strerror):
-    print >> sys.stderr, "Error creating symlink for sun4v boot_archive"
+except OSError as e:
+    (errno, strerror) = e.args
+    print("Error creating symlink for sun4v boot_archive", file=sys.stderr)
     raise

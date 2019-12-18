@@ -36,12 +36,12 @@ HDRS		= $(EXPHDRS) $(PRIVHDRS)
 
 include ../Makefile.lib
 
-INCLUDE		= -I/usr/include/python2.7 -I../liblogsvc
+INCLUDE		= -I$(PYINCDIR) -I../liblogsvc
 
 CPPFLAGS	+= ${INCLUDE} $(CPPFLAGS.master) -D_FILE_OFFSET_BITS=64
 CFLAGS		+= $(DEBUG_CFLAGS)  ${CPPFLAGS}
 SOFLAGS		+= -L$(ROOTADMINLIB) -R$(ROOTADMINLIB:$(ROOT)%=%) \
-		-llogsvc -lpython2.7 -lnvpair
+		-llogsvc $(LIBPYTHON3) -lnvpair
 
 static:	
 

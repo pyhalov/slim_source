@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.5
 #
 # CDDL HEADER START
 #
@@ -124,24 +124,24 @@ def compress(src, dst):
 
             try:
                 stat_out = os.lstat(nc_file)
-            except OSError, err:
-                print >> sys.stderr, (sys.argv[0] +
+            except OSError as err:
+                print((sys.argv[0] +
                     ": Couldn't stat %s to mark as " +
                     "uncompressed in boot_archive: %s") % (
-                    nc_file, err.strerror)
+                    nc_file, err.strerror), file=sys.stderr)
                 status = 1
                 continue
             mode = stat_out.st_mode
             if (stat.S_ISREG(mode) and not (stat_out.st_size == 0)):
                 uc_list.append(nc_file)
             else:
-                print >> sys.stderr, (sys.argv[0] + ": " +
+                print((sys.argv[0] + ": " +
                     "Couldn't mark " + nc_file +
                     " as uncompressed in boot_archive: " +
-                    "not a non-zero-sized regular file")
+                    "not a non-zero-sized regular file"), file=sys.stderr)
                 status = 1
         if (status != 0):
-            raise Exception, (sys.argv[0] + ": Error building "
+            raise Exception(sys.argv[0] + ": Error building "
                 "list of uncompressed boot_archive files.")
 
     # Get expanded uncompressed list
@@ -175,13 +175,13 @@ def compress(src, dst):
                     " " + dst + "/" + cpio_file
                 status = os.system(cmd)
                 if (status != 0):
-                    print >> sys.stderr, (sys.argv[0] +
+                    print((sys.argv[0] +
                         ": error compressing file " +
                         cpio_file + ": " +
-                        os.strerror(status >> 8))
+                        os.strerror(status >> 8)), file=sys.stderr)
                     errors = True
     if (errors):
-        raise Exception, (sys.argv[0] + ": Error processing " +
+        raise Exception(sys.argv[0] + ": Error processing " +
                           "compressed boot_archive files")
 
 
@@ -207,8 +207,8 @@ def get_boot_archive_nbpi(size, rootpath):
     
     # Get total number of inodes needed for boot archive
     for root, subdirs, files in os.walk(rootpath):
-	for f in (files + subdirs):
-	    fcount += 1
+        for f in (files + subdirs):
+            fcount += 1
 
     # Add inode overhead for multiple disk systems using 500 disks as a target
     # upper bound. For sparc we need 16 inodes per target device:
@@ -226,12 +226,12 @@ def get_boot_archive_nbpi(size, rootpath):
     # round the nbpi value to the largest power of 2
     # which is less than or equal to calculated value
     if (nbpi != 0):
-	nbpi = pow(2,floor(log(nbpi,2)))
+        nbpi = pow(2,floor(log(nbpi,2)))
 
     if (nbpi != 0):
-	print "Calculated number of bytes per inode: %d." % (nbpi)
+        print("Calculated number of bytes per inode: %d." % (nbpi))
     else:
-	print "Calculation of nbpi failed, default will be used."
+        print("Calculation of nbpi failed, default will be used.")
 
     return nbpi
 
@@ -273,7 +273,7 @@ def create_target_intr_handler(signum, frame):
 
     """
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    print "^C detected.  Cleaning up..."
+    print("^C detected.  Cleaning up...")
     release_archive()
     sys.exit(0)
 # pylint: enable-msg=W0613
@@ -300,7 +300,7 @@ Args:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 if (len(sys.argv) != 7): # Don't forget sys.argv[0] is the script itself.
-    raise Exception, (sys.argv[0] + ": Requires 6 args:\n" +
+    raise Exception(sys.argv[0] + ": Requires 6 args:\n" +
         "    Reader socket, pkg_image area, tmp dir,\n"
         "    boot archive build area, media area, machine type")
 
@@ -335,13 +335,13 @@ BA_COMPR_LEVEL = get_manifest_value(MANIFEST_READER_OBJ,
 
 # compression level is not applicable to Sparc platform
 if not IS_SPARC and BA_COMPR_LEVEL is None:
-    raise Exception, (sys.argv[0] +
+    raise Exception(sys.argv[0] +
         ": boot archive compression level missing from manifest")
 
 BA_COMPR_TYPE = get_manifest_value(MANIFEST_READER_OBJ,
     BOOT_ARCHIVE_COMPRESSION_TYPE)
 if BA_COMPR_TYPE is None:
-    raise Exception, (sys.argv[0] +
+    raise Exception(sys.argv[0] +
         ": boot archive compression type missing from manifest")
 
 PADDING = -1
@@ -353,7 +353,7 @@ if BA_PAD_SIZE_STR is not None:
     except ValueError:
         pass
 if (PADDING < 0):
-    raise Exception, (sys.argv[0] +
+    raise Exception(sys.argv[0] +
                       ": Boot archive padding size is missing from manifest "
                       "or invalid.")
 
@@ -361,12 +361,12 @@ BA_BYTES_PER_INODE_STR = get_manifest_value(MANIFEST_READER_OBJ,
     BOOT_ARCHIVE_BYTES_PER_INODE)
 if BA_BYTES_PER_INODE_STR is not None:
     try:
-	BA_BYTES_PER_INODE = int(BA_BYTES_PER_INODE_STR)
+        BA_BYTES_PER_INODE = int(BA_BYTES_PER_INODE_STR)
     except ValueError:
-	pass
+        pass
     if (BA_BYTES_PER_INODE == 0):
-	print "Boot archive nbpi has not been specified in manifest, " \
-	    "it will be calculated"
+        print("Boot archive nbpi has not been specified in manifest, " \
+              "it will be calculated")
 
 # Remove any old stale archive.
 GZ_ARCH_FILE = BA_ARCHFILE + ".gz"
@@ -377,10 +377,10 @@ if (os.path.exists(BA_ARCHFILE)):
 if not (os.path.exists(os.path.dirname(BA_ARCHFILE))):
     os.mkdir(os.path.dirname(BA_ARCHFILE))
 
-print "Sizing boot archive requirements..."
+print("Sizing boot archive requirements...")
 # dir_size() returns size in bytes, need to convert to KB
 BOOT_ARCHIVE_SIZE = (dir_size(BA_BUILD)) / 1024
-print "    Raw uncompressed: %d MB." % (BOOT_ARCHIVE_SIZE / 1024)
+print("    Raw uncompressed: %d MB." % (BOOT_ARCHIVE_SIZE / 1024))
 
 # Add 10% to the reported size for overhead (20% for smaller archives),
 # and add padding size, if specified. Padding size needs to be converted to KB.
@@ -397,8 +397,8 @@ if (BA_BYTES_PER_INODE == 0):
     BA_BYTES_PER_INODE = get_boot_archive_nbpi(
 	BOOT_ARCHIVE_SIZE * 1024, BA_BUILD) 
 
-print "Creating boot archive with padded size of %d MB..." % (
-    (BOOT_ARCHIVE_SIZE / 1024))
+print("Creating boot archive with padded size of %d MB..." % (
+    (BOOT_ARCHIVE_SIZE / 1024)))
 
 # Create the file for the boot archive and mount it
 signal.signal (signal.SIGINT, create_target_intr_handler)
@@ -412,7 +412,7 @@ STATUS = ti_create_target({
 signal.signal (signal.SIGINT, signal.SIG_DFL)
 if (STATUS != 0):
     release_archive()
-    raise Exception, (sys.argv[0] +
+    raise Exception(sys.argv[0] +
         ": Unable to create boot archive: ti_create_target returned: " +
         os.strerror(STATUS))
 
@@ -429,7 +429,7 @@ CMD += FIND + " . | " + CPIO + " -pdum " + BA_LOFI_MNT_PT
 COPY_STATUS = os.system(CMD)
 if (COPY_STATUS != 0):
     release_archive()
-    raise Exception, (sys.argv[0] + ": Error copying files to boot_archive " +
+    raise Exception(sys.argv[0] + ": Error copying files to boot_archive " +
         "container; find/cpio command returns: " +
         os.strerror(COPY_STATUS >> 8))
 
@@ -438,16 +438,16 @@ os.rmdir(BA_LOFI_MNT_PT + "/lost+found")
 
 if IS_SPARC:
     if (BA_COMPR_TYPE == "none"):
-        print "Skipping compression..."
+        print("Skipping compression...")
     elif (BA_COMPR_TYPE == "dcfs"):
-        print "Doing compression..."
+        print("Doing compression...")
         try:
             compress(BA_BUILD, BA_LOFI_MNT_PT)
         except Exception:
             release_archive()
             raise
     else:
-        raise Exception, (sys.argv[0] + \
+        raise Exception(sys.argv[0] + \
             ": Unrecognized boot archive " +
             "compression type: " + BA_COMPR_TYPE)
 
@@ -455,11 +455,11 @@ if IS_SPARC:
     CMD = PKG_IMG_MNT_PT + LOFIADM + " " + PKG_IMG_MNT_PT + \
           BA_FILENAME_SUN4U + " | " + PKG_IMG_MNT_PT + SED + " s/lofi/rlofi/"
     try:
-        PHYS_DEV = Popen(CMD, shell=True,
+        PHYS_DEV = Popen(CMD, shell=True, universal_newlines=True,
                          stdout=PIPE).communicate()[0]
     except OSError:
         release_archive()
-        raise Exception, (sys.argv[0] + ": Error finding the " +
+        raise Exception(sys.argv[0] + ": Error finding the " +
             "lofi mountpoint for the boot archive")
 
     CMD = PKG_IMG_MNT_PT + INSTALLBOOT + " " + PKG_IMG_MNT_PT + \
@@ -468,43 +468,43 @@ if IS_SPARC:
     STATUS = os.system(CMD)
     if (STATUS != 0):
         release_archive()
-        raise Exception, (sys.argv[0] + ": Error installing " +
+        raise Exception(sys.argv[0] + ": Error installing " +
             "the boot blocks in the boot archive")
 
 # Unmount the boot archive file and delete the lofi device
 STATUS = release_archive()
 if (STATUS != 0):
-    raise Exception, (sys.argv[0] +
+    raise Exception(sys.argv[0] +
         ": Unable to release boot archive: ti_release_target returned: " +
         os.strerror(STATUS))
 
 # We did the sparc compression above, now do it for x86
 if not IS_SPARC:
     if (BA_COMPR_TYPE == "none"):
-        print "Skipping compression..."
+        print("Skipping compression...")
     else:
-        print "Doing compression..."
+        print("Doing compression...")
 
-	CMD = DIGEST + " -a sha1 " + BA_ARCHFILE + " > " + BA_ARCHFILE + ".hash"
+        CMD = DIGEST + " -a sha1 " + BA_ARCHFILE + " > " + BA_ARCHFILE + ".hash"
         STATUS = os.system(CMD)
         if (STATUS != 0):
-            raise Exception, (sys.argv[0] +
+            raise Exception(sys.argv[0] +
                 ": digest error on boot archive: " +
                 "digest command returns: " + os.strerror(STATUS >> 8))
-	os.chmod(BA_ARCHFILE + ".hash", 0644)
+        os.chmod(BA_ARCHFILE + ".hash", 0o644)
 
         # archive file using 7zip command and gzip compression
         CMD = CMD7ZA + " a "
         if (BA_COMPR_TYPE == "gzip"):
             CMD += "-tgzip -mx=" + BA_COMPR_LEVEL + " "
         else:
-            raise Exception, (sys.argv[0] + \
+            raise Exception(sys.argv[0] + \
                 ": Unrecognized boot archive" +
                 "compression type: " + BA_COMPR_TYPE)
         CMD += BA_ARCHFILE + ".gz " + BA_ARCHFILE
         STATUS = os.system(CMD)
         if (STATUS != 0):
-            raise Exception, (sys.argv[0] +
+            raise Exception(sys.argv[0] +
                 ": Error compressing boot archive: " +
                 "7za command returns: " + os.strerror(STATUS >> 8))
 
@@ -512,11 +512,11 @@ if not IS_SPARC:
         MVCMD = MV + " " + BA_ARCHFILE + ".gz " + BA_ARCHFILE
         STATUS = os.system(MVCMD)
         if (STATUS != 0):
-            raise Exception, (sys.argv[0] + ": Error moving " +
+            raise Exception(sys.argv[0] + ": Error moving " +
                 "boot archive from %s to %s: %s" %
                 (BA_ARCHFILE + '.gz', BA_ARCHFILE,
                 os.strerror(STATUS >> 8)))
 
-os.chmod(BA_ARCHFILE, 0644)
+os.chmod(BA_ARCHFILE, 0o644)
 
 sys.exit(0)

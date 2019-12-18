@@ -39,7 +39,7 @@ import socket
 import stat
 import subprocess
 
-from install_utils import exec_cmd_outputs_to_log
+from .install_utils import exec_cmd_outputs_to_log
 
 class DCFinalizer(object):
     """Script driver.  Call queued scripts and programs.
@@ -60,7 +60,7 @@ class DCFinalizer(object):
     #		The _EP_TYPE field of these items are set to
     #		_TYPE_EXEC_PRM
     #
-    _TYPE_FUNC, _TYPE_EXEC_PRM = range(2)
+    _TYPE_FUNC, _TYPE_EXEC_PRM = list(range(2))
 
     # Items specifying modules to execute have the following fields:
     #
@@ -70,7 +70,7 @@ class DCFinalizer(object):
     #
     #   _FS_ARGLIST: list of arguments.  An empty list or None is acceptable
     #
-    _FS_TYPE, _FS_MODULE, _FS_ARGLIST = range(3)
+    _FS_TYPE, _FS_MODULE, _FS_ARGLIST = list(range(3))
 
     #
     # Items specifying stdout and stderr rerouting have the following
@@ -95,7 +95,7 @@ class DCFinalizer(object):
     #	all the output and error are logged to the logger
     #
     _EP_TYPE, _EP_OUT_FILENAME, _EP_ERR_FILENAME, _EP_STOP_ON_ERR, \
-        _EP_LOGGER_NAME = range(5)
+        _EP_LOGGER_NAME = list(range(5))
     #
     # Items regarding file descriptors and sockets
     #
@@ -105,7 +105,7 @@ class DCFinalizer(object):
     #
     #   _file_socket: Socket, if specified
     #
-    _file_fd, _file_name, _file_socket = range(3)
+    _file_fd, _file_name, _file_socket = list(range(3))
 
     # Indices for _fileinfo
     STDOUT = 0
@@ -226,10 +226,10 @@ class DCFinalizer(object):
                     info[DCFinalizer._file_socket] = None
             except (IOError, socket.error):
                 pass
-            except StandardError, err:
-                print >> sys.__stderr__, ("Couldn't close fd " +
-                                          str(info[DCFinalizer._file_fd]))
-                print >> sys.__stderr__, str(err)
+            except Exception as err:
+                print(("Couldn't close fd " +
+                                          str(info[DCFinalizer._file_fd])), file=sys.__stderr__)
+                print(str(err), file=sys.__stderr__)
 
         # If new file is stdout or stderr, just return.
         # Calling function will open.
@@ -246,10 +246,10 @@ class DCFinalizer(object):
             stat_ok = True
         except OSError:
             pass
-        except StandardError, err:	# Will probably never see this...
-            print >> sys.__stderr__, ("set_file: stat error when checking " +
-                                      "filetype")
-            print >> sys.__stderr__, str(err)
+        except Exception as err:	# Will probably never see this...
+            print(("set_file: stat error when checking " +
+                                      "filetype"), file=sys.__stderr__)
+            print(str(err), file=sys.__stderr__)
             info[DCFinalizer._file_fd] = None
             info[DCFinalizer._file_name] = stdfile
             return DCFinalizer.GENERAL_ERR
@@ -270,25 +270,25 @@ class DCFinalizer(object):
                 info[DCFinalizer._file_fd] = open(filename, "a")
             info[DCFinalizer._file_name] = filename
 
-        except socket.error, err:
-            print >> sys.__stderr__, (("Error opening socket for " +
+        except socket.error as err:
+            print((("Error opening socket for " +
                                       "%s; socket is stale or otherwise " +
-                                      "unusable") % filename)
-            print >>sys.stderr, str(err)
+                                      "unusable") % filename), file=sys.__stderr__)
+            print(str(err), file=sys.stderr)
             if (info[DCFinalizer._file_socket] is not None):
                 info[DCFinalizer._file_socket].close()
                 info[DCFinalizer._file_socket] = None
             rval = DCFinalizer.GENERAL_ERR
 
-        except StandardError, err:
+        except Exception as err:
         # Includes OSError in case the file could not be opened
 
             rval = DCFinalizer.GENERAL_ERR
 
         if (rval == DCFinalizer.GENERAL_ERR):
-            print >> sys.__stderr__, ("set_file: Error opening %s for writing" %
-                  filename)
-            print >> sys.__stderr__, str(err)
+            print(("set_file: Error opening %s for writing" %
+                  filename), file=sys.__stderr__)
+            print(str(err), file=sys.__stderr__)
             info[DCFinalizer._file_fd] = None
             info[DCFinalizer._file_name] = stdfile
 
@@ -336,13 +336,13 @@ class DCFinalizer(object):
 
         # Do some limited sanity argument typechecking
         if (((output is not None) and
-            (not isinstance(output, basestring))) or
+            (not isinstance(output, str))) or
             ((error is not None) and
-            (not isinstance(error, basestring))) or
+            (not isinstance(error, str))) or
             ((stop_on_err is not None) and
             (not isinstance(stop_on_err, bool))) or
             ((logger_name is not None) and
-            (not isinstance(logger_name, basestring)))):
+            (not isinstance(logger_name, str)))):
             return DCFinalizer.GENERAL_ERR
 
         # if a logger is specified, will not allow to specify
@@ -450,16 +450,16 @@ class DCFinalizer(object):
                 if (logger is not None):
                     logger.error(err_str)
                 else:
-                    print >> err_fd, (err_str)
+                    print((err_str), file=err_fd)
             elif rval > 0:
                 err_str = "Child returned err " + str(rval)
                 if (logger is not None):
                     logger.error(err_str)
                 else:
-                    print >> err_fd, (err_str)
+                    print((err_str), file=err_fd)
             if rval != 0:
                 rval = DCFinalizer.GENERAL_ERR
-        except OSError, exception_obj:
+        except OSError as exception_obj:
             err_str1 = "Error starting or running shell:" + str(exception_obj)
             err_str2 = "shell_list = " + str(shell_list)
 
@@ -467,8 +467,8 @@ class DCFinalizer(object):
                 logger.error(err_str1)
                 logger.error(err_str2)
             else:
-                print >> err_fd, (err_str1)
-                print >> err_fd, (err_str2)
+                print((err_str1), file=err_fd)
+                print((err_str2), file=err_fd)
 
             # Set rval to a non-zero value.  Save the first
             # exception we get, to make it easier to trace the pblm.

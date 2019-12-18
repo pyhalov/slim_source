@@ -26,7 +26,7 @@
 # NOTE: This module is inherently posix specific.  Care is taken in the modules
 # that use this module to not use it on other operating systems.
 
-from __future__ import print_function
+
 import datetime
 import errno
 import os
@@ -49,7 +49,7 @@ class CfgFile(object):
         self.continuation_lines = continuation_lines
         self.needswriting = False
 
-        l = [(v[1][0], v[1][1], v[0]) for v in column_names.items()]
+        l = [(v[1][0], v[1][1], v[0]) for v in list(column_names.items())]
         l.sort()
         self.column_names = [e[2] for e in l]
         self.default_values = dict((e[2], e[1]) for e in l)
@@ -105,7 +105,7 @@ class CfgFile(object):
                 else:
                     cols = self.splitline(line)
                     if len(cols) == len(self.column_names):
-                        dic = dict(zip(self.column_names, cols))
+                        dic = dict(list(zip(self.column_names, cols)))
                         self.index[tuple(dic[k] for k in self.keys)] = \
                             (line, dic, lineno)
                     else:

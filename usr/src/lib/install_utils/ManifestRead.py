@@ -74,15 +74,15 @@ class ManifestRead(object):
             self.client_sock = socket.socket(socket.AF_UNIX,
                                              socket.SOCK_STREAM)
         except socket.error:
-            print >> sys.stderr, ("Error creating listener socket " +
-                                  sock_name)
+            print(("Error creating listener socket " +
+                                  sock_name), file=sys.stderr)
             raise
 
         try:
             self.client_sock.connect(sock_name)
         except socket.error:
-            print >> sys.stderr, ("Error connecting to listener socket " +
-                                  sock_name)
+            print(("Error connecting to listener socket " +
+                                  sock_name), file=sys.stderr)
             raise
 
 
@@ -102,7 +102,9 @@ class ManifestRead(object):
         """
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         try:
-            self.client_sock.send(SocketServProtocol.TERM_LINK)
+            # We can't use SocketServProtocol.TERM_LINK here as it can already be
+            # destroted at this point
+            self.client_sock.send(b'\x05')
             self.client_sock.close()
         except socket.error:
             pass
@@ -152,53 +154,53 @@ class ManifestRead(object):
 
         # Sending the pre-request
         if (self.debug):
-            print "Sending pre-request: " + pre_request
+            print("Sending pre-request: " + pre_request)
         try:
-            self.client_sock.send(pre_request)
+            self.client_sock.send(pre_request.encode())
         except socket.error:
-            print >> sys.stderr, ("Error sending pre-request to server")
+            print(("Error sending pre-request to server"), file=sys.stderr)
             raise
 
         # Wait for server to return the pre-request acknowledge
         try:
-            pre_req_ack = self.client_sock.recv(1)
+            pre_req_ack = self.client_sock.recv(1).decode()
         except socket.error:
-            print >> sys.stderr, ("Protocol error: Did not " +
-                                  "receive pre_request acknowledge.")
+            print(("Protocol error: Did not " +
+                                  "receive pre_request acknowledge."), file=sys.stderr)
             raise
 
         if (pre_req_ack[0] != SocketServProtocol.PRE_REQ_ACK):
-            raise socket.error, (errno.EPROTO, "Protocol error: " +
+            raise socket.error(errno.EPROTO, "Protocol error: " +
                                  "pre_request acknowledge is incorrect")
 
         # Send the request
         if (self.debug):
-            print "Sending request: " + request
+            print("Sending request: " + request)
         try:
-            self.client_sock.send(request)
+            self.client_sock.send(request.encode())
         except socket.error:
-            print >> sys.stderr, "Error sending request to server"
+            print("Error sending request to server", file=sys.stderr)
             raise
 
         # Wait for server to return the result count and size first.
         try:
-            count_size_list = self.client_sock.recv(1024).split(",")
+            count_size_list = self.client_sock.recv(1024).decode().split(",")
             count = int(count_size_list[0])
             size = int(count_size_list[1])
         except (socket.error, IndexError, ValueError):
-            print >> sys.stderr, ("Protocol error: Did not receive request " +
-                                  "count and size.")
+            print(("Protocol error: Did not receive request " +
+                                  "count and size."), file=sys.stderr)
             raise
 
         # Acknowledge to server the receipt of count and size.
         try:
-            self.client_sock.send(SocketServProtocol.RECV_PARAMS_RECVD)
+            self.client_sock.send(SocketServProtocol.RECV_PARAMS_RECVD.encode())
         except socket.error:
-            print >> sys.stderr, "Error sending params-rcvd message to server"
+            print("Error sending params-rcvd message to server", file=sys.stderr)
             raise
 
         if (self.debug):
-            print "Receiving %d results..." % (count)
+            print("Receiving %d results..." % (count))
 
         # No results.  Done with this transaction.
         if (count == 0):
@@ -208,10 +210,10 @@ class ManifestRead(object):
         size_to_recv = size
         try:
             while (size_to_recv > 0): 
-                results += self.client_sock.recv(size_to_recv)
+                results += self.client_sock.recv(size_to_recv).decode()
                 size_to_recv = size - len(results)
         except socket.error:
-            print >> sys.stderr, ("Error receiving results from server")
+            print(("Error receiving results from server"), file=sys.stderr)
             raise
         results = results.split(SocketServProtocol.STRING_SEP)
 
@@ -224,15 +226,15 @@ class ManifestRead(object):
                 results_list.append(results[i])
             else:
                 if (self.debug):
-                    print "(empty string)"
+                    print("(empty string)")
                 results_list.append("")
 
         # Last result should be REQ_COMPLETE.
         if (results[count] != SocketServProtocol.REQ_COMPLETE):
-            print >> sys.stderr, ("Protocol error: " +
-                                  "Improper request termination.")
+            print(("Protocol error: " +
+                                  "Improper request termination."), file=sys.stderr)
         elif (self.debug):
-            print "Proper Termination protocol seen"
+            print("Proper Termination protocol seen")
 
         return results_list
 

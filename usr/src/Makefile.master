@@ -36,6 +36,12 @@ SFWREF_GATE=
 ONREF_PROTO=$(ONREF_GATE:%=%/proto/root_$(MACH))
 SFWREF_PROTO=$(SFWREF_GATE:%=%/proto/root_$(MACH))
 
+PYTHON3_VERSION=        3.5
+PYTHON3_PKGVERS=        -35
+PYTHON3_SUFFIX=         m
+PYTHON3=		/usr/bin/python$(PYTHON3_VERSION)
+LIBPYTHON3=		-lpython$(PYTHON3_VERSION)$(PYTHON3_SUFFIX)
+
 # Locations of the main build tools.  Can be overridden in the environment.
 BUILD_TOOLS=		/opt
 ONBLD_TOOLS=            $(BUILD_TOOLS)/onbld
@@ -62,7 +68,7 @@ TOUCH=			/usr/bin/touch
 SED=			/usr/bin/sed
 TAR=			/usr/bin/tar
 ECHO=			/usr/bin/echo
-PYTHON=			/usr/bin/python2.7
+PYTHON=			$(PYTHON3)
 CAT=			/usr/bin/cat
 GENCAT=			/usr/bin/gencat
 XGETTEXT=		xgettext
@@ -71,6 +77,9 @@ GNUXGETTEXT=		/usr/gnu/bin/xgettext
 GNUXGETFLAGS=		--keyword=_ --strict --no-location --omit-header
 CSTYLE=			cstyle -pP
 NAWK=			/usr/bin/nawk
+
+# Python includes
+PYINCDIR=		/usr/include/python$(PYTHON3_VERSION)$(PYTHON3_SUFFIX)
 
 # Reference paths for ON
 ONLIBDIR=		$(ONREF_PROTO)/lib
@@ -91,7 +100,7 @@ ROOTMAN1M=		$(ROOTMAN)/man1m
 ROOTMAN4=		$(ROOTMAN)/man4
 ROOTMAN=		$(ROOT)/usr/share/man
 ROOTOPTINSTALLTESTBIN=	$(ROOT)/opt/install-test/bin
-ROOTPYTHON=		$(ROOTUSRLIB)/python2.7
+ROOTPYTHON=		$(ROOTUSRLIB)/python3.5
 ROOTPYTHONVENDOR=	$(ROOTPYTHON)/vendor-packages
 ROOTPYTHONVENDORINSTALL=	$(ROOTPYTHONVENDOR)/osol_install
 ROOTPYTHONVENDORINSTALLDC=	$(ROOTPYTHONVENDORINSTALL)/distro_const
@@ -190,7 +199,12 @@ $(RELEASE_BUILD)CCFLAGS:sh =if [ "`uname -p`" = "sparc" ]; then \
 		echo "-O -Qoption fbe -xcg92" ; \
           else  echo "-O"; \
           fi
-#CCFLAGS += -norunpath -compat=4
+
+BITS = 64
+CFLAGS += -m$(BITS)
+
+CFLAGS_WERROR = -Werror
+CFLAGS += $(CFLAGS_WERROR)
 
 # CPPFLAGS.master allows values to be prepended to CPPFLAGS.
 CPPFLAGS.master= -I$(ROOT)/usr/include -I$(ONINCDIR)

@@ -318,7 +318,7 @@ def shell_cmd(cmd, log_handler):
     """
     try:
         ret = call(cmd, shell=True)
-    except OSError, err:
+    except OSError as err:
         log_handler.error(cmd + " execution failed:", str(err))
     return ret
 
@@ -373,7 +373,7 @@ def snapshot_list(cp):
            "@.step_"
 
     try:
-        snap_list = Popen(cmd, shell=True,
+        snap_list = Popen(cmd, shell=True, universal_newlines=True,
                               stdout=PIPE).communicate()[0].rsplit("\n")
     except OSError:
         dc_log.error("Failed to obtain the list of zfs snapshots")

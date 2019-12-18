@@ -73,8 +73,8 @@ class UserScreen(BaseScreen):
     
     def __init__(self, main_win):
         super(UserScreen, self).__init__(main_win)
-        self.max_text_len = (self.win_size_x - UserScreen.PASS_SCREEN_LEN -
-                             UserScreen.ITEM_OFFSET) / 2
+        self.max_text_len = int((self.win_size_x - UserScreen.PASS_SCREEN_LEN -
+                             UserScreen.ITEM_OFFSET) / 2)
         max_field = max(textwidth(UserScreen.ROOT_LABEL),
                         textwidth(UserScreen.CONFIRM_LABEL),
                         textwidth(UserScreen.NAME_LABEL),
@@ -267,11 +267,11 @@ class UserScreen(BaseScreen):
         color = self.main_win.theme.header
 
         if self.root_pass_edit.get_text() != self.root_confirm_edit.get_text():
-            raise UIMessage, _("Root passwords don't match")
+            raise UIMessage(_("Root passwords don't match"))
         if not self.install_profile.install_to_pool:
             user_pass = self.user_pass_edit.get_text()
             if user_pass != self.user_confirm_edit.get_text():
-                raise UIMessage, _("User passwords don't match")
+                raise UIMessage(_("User passwords don't match"))
             login_name = self.username_edit.get_text()
             logging.debug("login_name=%s", login_name)
             username_valid(self.username_edit)
@@ -282,8 +282,8 @@ class UserScreen(BaseScreen):
             
             if not login_name:
                 if real_name or user_pass:
-                    raise UIMessage, _("Enter username or clear all user "
-                                        "account fields")
+                    raise UIMessage(_("Enter username or clear all user "
+                                        "account fields"))
 
             if login_name and not user_pass:
                 continue_anyway = self.main_win.pop_up(UserScreen.NO_USER_HEADER,
@@ -313,18 +313,18 @@ def username_valid_alphanum(edit_field):
         if user_str.isalnum():
             return True
         else:
-            raise UIMessage, _("Username must be alphanumeric")
+            raise UIMessage(_("Username must be alphanumeric"))
     else:
-        raise UIMessage, _("First character must be a-zA-Z")
+        raise UIMessage(_("First character must be a-zA-Z"))
 
 
 def username_valid(edit_field):
     '''Ensure the username is not "root" or "jack"'''
     user_str = edit_field.get_text()
     if user_str == "root":
-        raise UIMessage, _("'root' cannot be used")
+        raise UIMessage(_("'root' cannot be used"))
     elif user_str == "jack": 
-        raise UIMessage, _("'jack' cannot be used")
+        raise UIMessage(_("'jack' cannot be used"))
     return True
 
 
@@ -336,4 +336,4 @@ def pass_match(edit_field, linked_win=None):
     else:
         edit_field.clear_text()
         linked_win.clear_text()
-        raise UIMessage, _("Passwords don't match")
+        raise UIMessage(_("Passwords don't match"))

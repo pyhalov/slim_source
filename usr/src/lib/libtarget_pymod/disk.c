@@ -52,7 +52,7 @@ void
 init_disk(PyObject *unknown)
 {
 #define	CONSTANT(v, cname, pyname, value) \
-	DiskConst.cname = PyString_FromString(value);
+	DiskConst.cname = PyUnicode_FromString(value);
 	CONTROLLER_CONSTANTS
 #undef	CONSTANT
 	DiskConst.unknown = unknown; /* add the shared constant. */
@@ -137,8 +137,8 @@ TgtDisk_Init(TgtDisk *self, PyObject *args, PyObject *kwds)
 	if (PyLong_Check(blocks)) {
 		self->blocks = PyLong_AsUnsignedLongLong(blocks);
 	} else {
-		if (PyInt_Check(blocks)) {
-			self->blocks = (uint64_t)PyInt_AsLong(blocks);
+		if (PyLong_Check(blocks)) {
+			self->blocks = (uint64_t)PyLong_AsLong(blocks);
 		} else {
 			PyErr_SetString(PyExc_TypeError,
 				"tgt.Disk() \"blocks\" an integer is required");
@@ -163,7 +163,7 @@ TgtDisk_Init(TgtDisk *self, PyObject *args, PyObject *kwds)
 		CONTROLLER_CONSTANTS
 #undef		CONSTANT
 		if (strcmp(controller,
-		    PyString_AsString(DiskConst.unknown)) == 0) {
+		    PyUnicode_AsUTF8(DiskConst.unknown)) == 0) {
 			constantref = DiskConst.unknown;
 			break;
 		}
@@ -276,7 +276,7 @@ TgtDisk_Deallocate(TgtDisk *self)
 	FREE_STR(serialno)
 #undef	FREE_STR
 
-	self->ob_type->tp_free((PyObject*)self);
+	Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 static int
@@ -514,7 +514,7 @@ TgtDisk_get_vendor(TgtDisk *self, void *closure)
 		Py_INCREF(DiskConst.unknown);
 		return (DiskConst.unknown);
 	}
-	return (PyString_FromString(self->vendor));
+	return (PyUnicode_FromString(self->vendor));
 }
 PyDoc_STRVAR(TgtDisk_doc_vendor, "disk manufacturer or tgt.Disk.unknown");
 
@@ -525,7 +525,7 @@ TgtDisk_get_serialno(TgtDisk *self, void *closure)
 		Py_INCREF(DiskConst.unknown);
 		return (DiskConst.unknown);
 	}
-	return (PyString_FromString(self->serialno));
+	return (PyUnicode_FromString(self->serialno));
 }
 PyDoc_STRVAR(TgtDisk_doc_serialno,
 "manufacturer assigned serialno or tgt.Disk.unknown");
@@ -661,7 +661,6 @@ CONTROLLER_CONSTANTS
 
 PyTypeObject TgtDiskType = {
 	PyObject_HEAD_INIT(NULL)
-	.ob_size = 0,
 	.tp_name = "tgt.Disk",
 	.tp_basicsize = sizeof (TgtDisk),
 	.tp_dealloc = (destructor)TgtDisk_Deallocate,

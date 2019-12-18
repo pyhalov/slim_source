@@ -181,7 +181,7 @@ class FDiskPart(BaseScreen):
                if self.disk_info.boot:
                    bootable = FDiskPart.BOOT_TEXT
                else:
-                   bootable = u""
+                   bootable = ""
                header_text = self.header_text % \
                                {"size" : self.disk_info.size.size_as("gb"),
                                 "type" : self.disk_info.type,
@@ -189,29 +189,29 @@ class FDiskPart(BaseScreen):
                self.main_win.set_header_text(header_text)
 
         if len(self.install_profile.disks) == 1:
-	       y_loc = 1
-	       y_loc += self.center_win.add_paragraph(self.paragraph, start_y=y_loc)
+               y_loc = 1
+               y_loc += self.center_win.add_paragraph(self.paragraph, start_y=y_loc)
 
-	       y_loc += 1
-	       if self.is_x86 and not self.x86_slice_mode:
-	           found_parts = bool(self.disk_info.partitions)
-	       else:
-	           found_parts = bool(self.disk_info.slices)
-	       if found_parts:
-	           next_line = self.found
-	       else:
-	           next_line = self.proposed
-	       y_loc += self.center_win.add_paragraph(next_line, start_y=y_loc)
-
-	       y_loc += 1
-	       disk_win_area = WindowArea(6, 70, y_loc, 0)
-	       self.disk_win = DiskWindow(disk_win_area, disp_disk,
-	                                  window=self.center_win)
-	       y_loc += disk_win_area.lines
+               y_loc += 1
+               if self.is_x86 and not self.x86_slice_mode:
+                   found_parts = bool(self.disk_info.partitions)
+               else:
+                   found_parts = bool(self.disk_info.slices)
+               if found_parts:
+                   next_line = self.found
+               else:
+                   next_line = self.proposed
+               y_loc += self.center_win.add_paragraph(next_line, start_y=y_loc)
+        
+               y_loc += 1
+               disk_win_area = WindowArea(6, 70, y_loc, 0)
+               self.disk_win = DiskWindow(disk_win_area, disp_disk,
+                                          window=self.center_win)
+               y_loc += disk_win_area.lines
 
                y_loc += 3
                whole_disk_width = textwidth(self.use_whole) + 3
-               cols = (self.win_size_x - whole_disk_width) / 2
+               cols = int((self.win_size_x - whole_disk_width) / 2)
                whole_disk_item_area = WindowArea(1, whole_disk_width, y_loc, cols)
                self.whole_disk_item = ListItem(whole_disk_item_area,
                                                window=self.center_win,
@@ -220,7 +220,7 @@ class FDiskPart(BaseScreen):
 
                y_loc += 1
                partial_width = textwidth(self.use_part) + 3
-               cols = (self.win_size_x - partial_width) / 2
+               cols = int((self.win_size_x - partial_width) / 2)
                partial_item_area = WindowArea(1, partial_width, y_loc, cols)
                self.partial_disk_item = ListItem(partial_item_area,
                                                  window=self.center_win,

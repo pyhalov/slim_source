@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.5
 #
 # CDDL HEADER START
 #
@@ -135,8 +135,8 @@ class TestNoUtRefresh(unittest.TestCase):
         abs_x = 15
         scroll_win.latest_yx = (abs_y, abs_x)
         scroll_win.no_ut_refresh()
-        self.assertEquals(myscroll.latest_yx[0], scroll_win.area.y_loc + abs_y)
-        self.assertEquals(myscroll.latest_yx[1], scroll_win.area.x_loc + abs_x)
+        self.assertEqual(myscroll.latest_yx[0], scroll_win.area.y_loc + abs_y)
+        self.assertEqual(myscroll.latest_yx[1], scroll_win.area.x_loc + abs_x)
 
 class TestScrollCreated(TestScrollWindow):
     '''Class to test Scrollbar created or not appropriately'''
@@ -174,7 +174,7 @@ class TestScroll(TestScrollWindow):
                                   scrollable_lines=75),
                                   color_theme=ColorTheme(force_bw=True))
         self.assertTrue(scroll_win.get_use_vert_scroll_bar())
-        self.assertEquals(scroll_win.current_line[0], 0)
+        self.assertEqual(scroll_win.current_line[0], 0)
         self.assertRaises(ValueError, scroll_win.scroll)
 
     def test_scroll_one_line(self):
@@ -183,9 +183,9 @@ class TestScroll(TestScrollWindow):
                                   scrollable_lines=75),
                                   color_theme=ColorTheme(force_bw=True))
         self.assertTrue(scroll_win.get_use_vert_scroll_bar())
-        self.assertEquals(scroll_win.current_line[0], 0)
+        self.assertEqual(scroll_win.current_line[0], 0)
         scroll_win.scroll(lines=1)
-        self.assertEquals(scroll_win.current_line[0], 1)
+        self.assertEqual(scroll_win.current_line[0], 1)
 
     def test_scroll_to_bottom(self):
         '''Test to scroll multiple lines to bottom of scrollarea'''
@@ -203,9 +203,9 @@ class TestScroll(TestScrollWindow):
                                   scrollable_columns=75),
                                   color_theme=ColorTheme(force_bw=True))
         self.assertTrue(scroll_win.get_use_horiz_scroll_bar())
-        self.assertEquals(scroll_win.current_line[1], 0)
+        self.assertEqual(scroll_win.current_line[1], 0)
         scroll_win.scroll(columns=1)
-        self.assertEquals(scroll_win.current_line[1], 1)
+        self.assertEqual(scroll_win.current_line[1], 1)
 
     def test_scroll_to_right(self):
         '''Test to scroll multiple columns to right of scrollarea'''
@@ -345,8 +345,8 @@ class TestOnArrowKey(TestScrollWindow):
         scroll_win.active_object = 0
         scroll_win.objects.append(object())
         key = scroll_win.on_arrow_key(curses.KEY_UP)
-        self.assertEquals(scroll_win.current_line[0], 0)
-        self.assertEquals(key, curses.KEY_UP)
+        self.assertEqual(scroll_win.current_line[0], 0)
+        self.assertEqual(key, curses.KEY_UP)
 
     def test_act_obj_indexerr_not_edge(self):
         '''Test arrow key, active object, IndexError, not at edge'''
@@ -358,8 +358,8 @@ class TestOnArrowKey(TestScrollWindow):
         scroll_win.active_object = 0
         scroll_win.objects.append(object())
         key = scroll_win.on_arrow_key(curses.KEY_DOWN)
-        self.assertEquals(scroll_win.current_line[0], 1)
-        self.assertEquals(key, None)
+        self.assertEqual(scroll_win.current_line[0], 1)
+        self.assertEqual(key, None)
 
     def test_active_object(self):
         '''Test that arrow key changes active object'''
@@ -381,8 +381,8 @@ class TestOnArrowKey(TestScrollWindow):
         scroll_win.objects.append(myobj1)
 
         key = scroll_win.on_arrow_key(curses.KEY_DOWN)
-        self.assertEquals(key, None)
-        self.assertEquals(scroll_win.active_object, 1)
+        self.assertEqual(key, None)
+        self.assertEqual(scroll_win.active_object, 1)
 
 
 if __name__ == '__main__':

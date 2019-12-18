@@ -105,7 +105,7 @@ $(ROOTPYTHONVENDORINSTALLMODS):=	GROUP = bin
 LORDER=		lorder
 TSORT=		tsort
 AWK=		awk
-LD=		ld
+LD=		ld -$(BITS)
 
 LIBS=		$(LIBRARY:%=objs/${ARCH}/%)
 PLIB=		libp/$(LIBRARY)
@@ -137,7 +137,7 @@ BUILD.AR=	$(AR) $(ARFLAGS) $@ $(AROBJS)
 
 SOLIBNAME	= $(DYNLIB:pics/$(ARCH)/%=%)
 COSSOLIBNAME	= $(COSDYNLIB:pics/$(ARCH)/%=%)
-SOFLAGS =       -h $(SOLIBNAME) -YP,/usr/lib
+SOFLAGS =       -h $(SOLIBNAME)
 COSSOFLAGS =    -h $(COSSOLIBNAME)
 
 # conditional assignments

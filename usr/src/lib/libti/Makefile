@@ -79,7 +79,7 @@ test_ti_static:	static test_ti.o
 		-Wl,-Bstatic \
 		-lti -llogsvc \
 		-Wl,-Bdynamic \
-		-ladm -lbe -lnvpair -lgen -lzfs -lpython2.7 -luuid \
+		-ladm -lbe -lnvpair -lgen -lzfs $(LIBPYTHON3) -luuid \
 		-linstzones -lzonecfg -lcontract -lefi
 
 static: $(LIBS)

@@ -75,9 +75,9 @@ init_partition(PyObject *unknown)
 
 	/* Add all our unique keys */
 #define	CONSTANT(key, val) \
-	v = PyString_FromString(val); \
+	v = PyUnicode_FromString(val); \
 	assert(v != NULL); \
-	k = PyInt_FromLong(key); \
+	k = PyLong_FromLong(key); \
 	assert(k != NULL); \
 	rc = PyDict_SetItem(dict, k, v); \
 	assert(rc == 0); \
@@ -88,53 +88,53 @@ init_partition(PyObject *unknown)
 
 	/* add non-unique keys */
 #define	CONSTANT(key, val) \
-	k = PyInt_FromLong(key); \
+	k = PyLong_FromLong(key); \
 	assert(k != NULL); \
 	rc = PyDict_SetItem(dict, k, v); \
 	assert(rc == 0); \
 	Py_DECREF(k);
 
-	v = PyString_FromString(TP_EUMEL_ELAN);
+	v = PyUnicode_FromString(TP_EUMEL_ELAN);
 	assert(v != NULL);
 	EUMEL_ELAN_PARTITION_TYPE
 	Py_DECREF(v);
 
-	v = PyString_FromString(TP_NOVEL);
+	v = PyUnicode_FromString(TP_NOVEL);
 	assert(v != NULL);
 	NOVEL_PARTITION_TYPE
 	Py_DECREF(v);
 
-	v = PyString_FromString(TP_FAULT_TOLERANT_FAT32);
+	v = PyUnicode_FromString(TP_FAULT_TOLERANT_FAT32);
 	assert(v != NULL);
 	FAULT_TOLERANT_FAT32_PARTITION_TYPE
 	Py_DECREF(v);
 
-	v = PyString_FromString(TP_FREE_FDISK_HDN_DOS_EXT);
+	v = PyUnicode_FromString(TP_FREE_FDISK_HDN_DOS_EXT);
 	assert(v != NULL);
 	FREE_FDISK_HDN_DOS_EXT_PARTITION_TYPE
 	Py_DECREF(v);
 
-	v = PyString_FromString(TP_HP_SPEEDSTOR);
+	v = PyUnicode_FromString(TP_HP_SPEEDSTOR);
 	assert(v != NULL);
 	HP_SPEEDSTOR_PARTITION_TYPE
 	Py_DECREF(v);
 
-	v = PyString_FromString(TP_DRDOS8);
+	v = PyUnicode_FromString(TP_DRDOS8);
 	assert(v != NULL);
 	DRDOS8_PARTITION_TYPE
 	Py_DECREF(v);
 
-	v = PyString_FromString(TP_SPEEDSTOR);
+	v = PyUnicode_FromString(TP_SPEEDSTOR);
 	assert(v != NULL);
 	SPEEDSTOR_PARTITION_TYPE
 	Py_DECREF(v);
 
-	v = PyString_FromString(TP_RESERVED);
+	v = PyUnicode_FromString(TP_RESERVED);
 	assert(v != NULL);
 	RESERVED_PARTITION_TYPE
 	Py_DECREF(v);
 
-	v = PyString_FromString(TP_UNUSED);
+	v = PyUnicode_FromString(TP_UNUSED);
 	assert(v != NULL);
 	UNUSED_PARTITION_TYPE
 	Py_DECREF(v);
@@ -268,7 +268,7 @@ TgtPartition_Deallocate(TgtPartition *self)
 {
 	Py_XDECREF(self->geometry);
 	Py_XDECREF(self->children);
-	self->ob_type->tp_free((PyObject*)self);
+	Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 /* XXX Temporarily leave this in, but better implemented in Python */
@@ -283,9 +283,9 @@ TgtPartition_type_as_string(TgtPartition *self)
 	 */
 	PyObject *key = NULL;
 	PyObject *result = NULL;
-	PyTypeObject *type = PartConst.type->ob_type;
+	PyTypeObject *type = Py_TYPE(PartConst.type);
 
-	key = PyInt_FromLong(self->type);
+	key = PyLong_FromLong(self->type);
 
 	result = type->tp_as_mapping->mp_subscript(PartConst.type, key);
 	assert(result != NULL);
@@ -491,7 +491,7 @@ PyDoc_STRVAR(TgtPartition_doc_children, "tuple of tgt.Slice objects");
 static PyObject *
 TgtPartition_get_offset(TgtPartition *self, void *closure)
 {
-	PyObject *result = PyInt_FromSize_t((size_t)self->offset);
+	PyObject *result = PyLong_FromSize_t((size_t)self->offset);
 	if (result == NULL)
 		return (PyErr_NoMemory());
 	return (result);
@@ -510,11 +510,7 @@ TgtPartition_set_offset(TgtPartition *self, PyObject *value, void *closure)
 	if (PyLong_Check(value)) {
 		newoff = (uint32_t)PyLong_AsUnsignedLong(value);
 	} else {
-		if (PyInt_Check(value)) {
-			newoff = (uint32_t)PyInt_AsLong(value);
-		} else {
-			goto TgtPartition_set_offset_TYPE_ERROR;
-		}
+		goto TgtPartition_set_offset_TYPE_ERROR;
 	}
 
 	self->offset = newoff;
@@ -529,7 +525,7 @@ PyDoc_STRVAR(TgtPartition_doc_offset, "partition offset in disk blocks");
 static PyObject *
 TgtPartition_get_blocks(TgtPartition *self, void *closure)
 {
-	PyObject *result = PyInt_FromSize_t((size_t)self->blocks);
+	PyObject *result = PyLong_FromSize_t((size_t)self->blocks);
 	if (result == NULL)
 		return (PyErr_NoMemory());
 	return (result);
@@ -548,11 +544,7 @@ TgtPartition_set_blocks(TgtPartition *self, PyObject *value, void *closure)
 	if (PyLong_Check(value)) {
 		newblk = (uint32_t)PyLong_AsUnsignedLong(value);
 	} else {
-		if (PyInt_Check(value)) {
-			newblk = (uint32_t)PyInt_AsLong(value);
-		} else {
-			goto TgtPartition_set_blocks_TYPE_ERROR;
-		}
+		goto TgtPartition_set_blocks_TYPE_ERROR;
 	}
 
 	self->blocks = newblk;
@@ -567,7 +559,7 @@ PyDoc_STRVAR(TgtPartition_doc_blocks, "partition size in disk blocks");
 static PyObject *
 TgtPartition_get_type(TgtPartition *self, void *closure)
 {
-	PyObject *result = PyInt_FromLong((long)self->type);
+	PyObject *result = PyLong_FromLong((long)self->type);
 	if (result == NULL)
 		return (PyErr_NoMemory());
 	return (result);
@@ -583,11 +575,7 @@ TgtPartition_set_type(TgtPartition *self, PyObject *value, void *closure)
 	if (PyLong_Check(value)) {
 		newtype = (uint16_t)PyLong_AsUnsignedLong(value);
 	} else {
-		if (PyInt_Check(value)) {
-			newtype = (uint16_t)PyInt_AsLong(value);
-		} else {
-			goto TgtPartition_set_type_TYPE_ERROR;
-		}
+		goto TgtPartition_set_type_TYPE_ERROR;
 	}
 
 	if (newtype > 0xFF) {
@@ -612,7 +600,7 @@ PyDoc_STRVAR(TgtPartition_doc_type, "0-255 or 386, partition type");
 static PyObject *
 TgtPartition_get_id(TgtPartition *self, void *closure)
 {
-	PyObject *result = PyInt_FromLong((long)self->id);
+	PyObject *result = PyLong_FromLong((long)self->id);
 	if (result == NULL)
 		return (PyErr_NoMemory());
 	return (result);
@@ -628,11 +616,7 @@ TgtPartition_set_id(TgtPartition *self, PyObject *value, void *closure)
 	if (PyLong_Check(value)) {
 		newid = (uint8_t)PyLong_AsUnsignedLong(value);
 	} else {
-		if (PyInt_Check(value)) {
-			newid = (uint8_t)PyInt_AsLong(value);
-		} else {
-			goto TgtPartition_set_id_TYPE_ERROR;
-		}
+		goto TgtPartition_set_id_TYPE_ERROR;
 	}
 
 	if (newid > MAXID || newid < 1) {
@@ -748,7 +732,6 @@ PyDoc_STRVAR(TgtPartitionTypeDoc,
 
 PyTypeObject TgtPartitionType = {
 	PyObject_HEAD_INIT(NULL)
-	.ob_size = 0,
 	.tp_name = "tgt.Partition",
 	.tp_basicsize = sizeof (TgtPartition),
 	.tp_dealloc = (destructor)TgtPartition_Deallocate,

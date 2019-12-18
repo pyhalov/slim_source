@@ -101,15 +101,26 @@ static struct attr_node attr_table[] = {
 	{TI_ATTR_ZFS_VOL_NUM, DATA_TYPE_UINT16}
 };
 
-static char *empty_argv[1] = { "" };
+wchar_t *empty_argv[1] = { L"" };
+
+static struct PyModuleDef libti_module = {
+	PyModuleDef_HEAD_INIT,
+	"libti",
+	"Python wrapper for libti",
+	-1,
+	libtiMethods 
+};
 
 /*
  * Initialize libti module.
  */
 PyMODINIT_FUNC
-initlibti(void)
+PyInit_libti(void)
 {
-	(void) Py_InitModule("libti", libtiMethods);
+	PyObject *module = NULL;
+
+	module = PyModule_Create(&libti_module);
+	return module;
 }
 
 /*
@@ -148,7 +159,7 @@ add_uint8_array(nvlist_t *attrs, char *attribute, PyObject *pvalue)
 	 * to uint8_t and put into the array.
 	 */
 	for (index = 0; index < len; index++) {
-		val_array[index] = (uint8_t)PyInt_AsLong(
+		val_array[index] = (uint8_t)PyLong_AsLong(
 		    PyList_GetItem(pvalue, index));
 	}
 
@@ -201,7 +212,7 @@ add_uint16_array(nvlist_t *attrs, char *attribute, PyObject *pvalue)
 	 * to uint16_t and put into the array.
 	 */
 	for (index = 0; index < len; index++) {
-		val_array[index] = (uint16_t)PyInt_AsLong(
+		val_array[index] = (uint16_t)PyLong_AsLong(
 		    PyList_GetItem(pvalue, index));
 	}
 
@@ -364,9 +375,16 @@ add_string_array(nvlist_t *attrs, char *attribute, PyObject *pvalue)
 	 * to string and put into the array.
 	 */
 	for (index = 0; index < len; index++) {
-		value = PyString_AsString(
-		    PyList_GetItem(pvalue, index));
-		val_array[index] = value;
+		PyObject *tmp;
+		
+		tmp = PyUnicode_AsEncodedString(PyList_GetItem(pvalue, index), "UTF-8", "strict");
+		if (tmp) {
+			value = PyBytes_AS_STRING(tmp);
+			Py_DECREF(tmp);
+			val_array[index] = value;
+		} else {
+			return (B_FALSE);
+		}
 	}
 
 	/*
@@ -485,7 +503,8 @@ ti_setup_nvlist(nvlist_t *attrs, PyObject *ti_properties)
 {
 	PyObject	*pkey = NULL;
 	PyObject	*pvalue = NULL;
-	int		pos = 0;
+	PyObject	*tmp = NULL;
+	Py_ssize_t	pos = 0;
 	boolean_t	value;
 	struct attr_node	*node_ptr, node;
 
@@ -494,7 +513,14 @@ ti_setup_nvlist(nvlist_t *attrs, PyObject *ti_properties)
 	 * for each entry in the list.
 	 */
 	while (PyDict_Next(ti_properties, &pos, &pkey, &pvalue)) {
-		node.attribute = PyString_AsString(pkey);
+		
+		tmp = PyUnicode_AsEncodedString(pkey, "UTF-8", "strict");
+		if (tmp) {
+			node.attribute = PyBytes_AS_STRING(tmp);
+			Py_DECREF(tmp);
+		} else {
+			return (TI_E_PY_INVALID_ARG);
+		}
 
 		node_ptr = bsearch(&node, attr_table,
 		    sizeof (attr_table) / sizeof (struct attr_node),
@@ -509,7 +535,7 @@ ti_setup_nvlist(nvlist_t *attrs, PyObject *ti_properties)
 				 * Place the uint32 properties into the nvlist
 				 */
 				if (nvlist_add_uint32(attrs,
-				    node.attribute, (uint32_t)PyInt_AsLong(
+				    node.attribute, (uint32_t)PyLong_AsLong(
 				    pvalue)) != 0) {
 					return (TI_E_PY_INVALID_ARG);
 				}
@@ -518,8 +544,14 @@ ti_setup_nvlist(nvlist_t *attrs, PyObject *ti_properties)
 				/*
 				 * Place the string properties into the nvlist
 				 */
-				if (nvlist_add_string(attrs, node.attribute,
-				    PyString_AsString(pvalue)) != 0) {
+				tmp = PyUnicode_AsEncodedString(pvalue, "UTF-8", "strict");
+				if (tmp) {
+					if (nvlist_add_string(attrs, node.attribute,
+					    PyBytes_AS_STRING(tmp)) != 0) {
+						return (TI_E_PY_INVALID_ARG);
+					}
+					Py_DECREF(tmp);
+				} else {
 					return (TI_E_PY_INVALID_ARG);
 				}
 				break;
@@ -528,7 +560,7 @@ ti_setup_nvlist(nvlist_t *attrs, PyObject *ti_properties)
 				 * Place the uint 16 properties into the nvlist
 				 */
 				if (nvlist_add_uint16(attrs, node.attribute,
-				    (uint16_t)PyInt_AsLong(pvalue)) != 0) {
+				    (uint16_t)PyLong_AsLong(pvalue)) != 0) {
 					return (TI_E_PY_INVALID_ARG);
 				}
 				break;

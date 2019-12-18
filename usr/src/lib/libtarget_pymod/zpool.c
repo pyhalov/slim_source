@@ -51,7 +51,7 @@ TgtZFSDataset_Init(TgtZFSDataset *self, PyObject *args, PyObject *kwds)
 	PyObject *zfs_swap;
 	PyObject *zfs_dump;
 	char *mountpoint = NULL;
-	int swap_size, dump_size;
+	uint32_t swap_size, dump_size;
 	char *be_name = NULL;
 
 	static char *kwlist[] = {
@@ -263,7 +263,7 @@ TgtZpool_Deallocate(TgtZpool *self)
 	FREE_STR(device);
 #undef	FREE_STR
 
-	self->ob_type->tp_free((PyObject*)self);
+	Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 /*
@@ -341,7 +341,7 @@ static PyMemberDef TgtZFSDatasetMembers[] = {
 		.doc = "Boolean to indicate whether to create a swap device"
 	}, {
 		.name = "swap_size",
-		.type = T_OBJECT,
+		.type = T_UINT,
 		.offset = offsetof(TgtZFSDataset, swap_size),
 		.doc = "size of zfs dataset to be used for swap"
 	}, {
@@ -351,7 +351,7 @@ static PyMemberDef TgtZFSDatasetMembers[] = {
 		.doc = "Boolean to indicate whether to create a dump device"
 	}, {
 		.name = "dump_size",
-		.type = T_OBJECT,
+		.type = T_UINT,
 		.offset = offsetof(TgtZFSDataset, dump_size),
 		.doc = "size of zfs dataset to be used for dump"
 	}, { NULL } /* Sentinel */
@@ -359,7 +359,6 @@ static PyMemberDef TgtZFSDatasetMembers[] = {
 
 PyTypeObject TgtZpoolType = {
 	PyObject_HEAD_INIT(NULL)
-	.ob_size = 0,
 	.tp_name = "tgt.Zpool",
 	.tp_basicsize = sizeof (TgtZpool),
 	.tp_dealloc = (destructor)TgtZpool_Deallocate,
@@ -372,7 +371,6 @@ PyTypeObject TgtZpoolType = {
 
 PyTypeObject TgtZFSDatasetType = {
 	PyObject_HEAD_INIT(NULL)
-	.ob_size = 0,
 	.tp_name = "tgt.ZFSDataset",
 	.tp_basicsize = sizeof (TgtZFSDataset),
 	.tp_dealloc = (destructor)TgtZFSDataset_Deallocate,
