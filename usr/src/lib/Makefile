@@ -39,9 +39,6 @@ SUBDIRS=	install_utils \
 		libtransfer_pymod \
 		libzoneinfo_pymod
 
-COMSUBDIRS=	liberrsvc_pymod \
-		liberrsvc \
-
 .PARALLEL:	$(SUBDIRS)
 
 ROOTINC=	$(ROOT)/usr/include
@@ -59,11 +56,11 @@ lint:=		TARGET= lint
 
 all check clean clobber lint: $(COMSUBDIRS) $(SUBDIRS)
 
-install: .WAIT $(COMSUBDIRS) $(SUBDIRS)
+install: .WAIT $(SUBDIRS)
 
 headers: install_h
 
-install_h:	$(COMSUBDIRS) $(SUBDIRS)
+install_h: $(SUBDIRS)
 
 # library dependencies
 liblogsvc_pymod:	liblogsvc

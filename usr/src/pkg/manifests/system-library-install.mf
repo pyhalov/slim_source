@@ -23,23 +23,4 @@
 #
 
 set name=pkg.fmri value=pkg:/system/library/install@$(PKGVERS)
-set name=pkg.description value="Core software libraries used for system installation"
-set name=pkg.summary value="System install libraries"
-set name=info.classification value=org.opensolaris.category.2008:System/Libraries
-set name=variant.arch value=$(ARCH)
-set name=variant.opensolaris.zone value=global value=nonglobal
-dir path=usr group=sys
-dir path=usr/lib
-dir path=usr/lib/python2.7
-dir path=usr/lib/python2.7/vendor-packages
-dir path=usr/lib/python2.7/vendor-packages/osol_install
-dir path=usr/snadm
-dir path=usr/snadm/lib
-file path=usr/lib/liberrsvc.so.1
-file path=usr/lib/python2.7/vendor-packages/osol_install/_liberrsvc.so
-file path=usr/lib/python2.7/vendor-packages/osol_install/errsvc.py
-file path=usr/lib/python2.7/vendor-packages/osol_install/errsvc.pyc
-file path=usr/lib/python2.7/vendor-packages/osol_install/liberrsvc.py
-file path=usr/lib/python2.7/vendor-packages/osol_install/liberrsvc.pyc
-license cr_Sun license=cr_Sun
-link path=usr/lib/liberrsvc.so target=liberrsvc.so.1
+set name=pkg.obsolete value=true
