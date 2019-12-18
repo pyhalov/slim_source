@@ -57,10 +57,10 @@ class UsageError(Exception):
 def usage():
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     """usage for the DC. Command should be of the form:
-          distro_const build -R <manifest-file>
-          distro_const build -r <step name or number> <manifest-file>
-          distro-const build -p <step name or number> <manifest-file>
-          distro_const build -l <manifest-file>
+          distro_const build -R [-d] <manifest-file>
+          distro_const build -r [-d] <step name or number> <manifest-file>
+          distro-const build -p [-d] <step name or number> <manifest-file>
+          distro_const build -l [-d] <manifest-file>
 
     Raises: UsageError
 
@@ -68,10 +68,10 @@ def usage():
     dc_log = logging.getLogger(DC_LOGGER_NAME)
     dc_log.error("""
 Usage:
-    distro_const build -R <manifest-file>
-    distro_const build -r <step name or number> <manifest-file>
-    distro_const build -p <step name or number> <manifest-file>
-    distro_const build -l <manifest-file>
+    distro_const build -R [-d] <manifest-file>
+    distro_const build -r [-d] <step name or number> <manifest-file>
+    distro_const build -p [-d] <step name or number> <manifest-file>
+    distro_const build -l [-d] <manifest-file>
     """)
 
     raise UsageError
@@ -88,6 +88,8 @@ def get_manifest_server_obj(cp):
 
     """
 
+    socket_debug = False
+
     dc_log = logging.getLogger(DC_LOGGER_NAME)
     if len(sys.argv) < 3:
         usage()
@@ -99,19 +101,24 @@ def get_manifest_server_obj(cp):
 
     # Read the manifest file from the command line
     try:
-        pargs2 = getopt.getopt(sys.argv[2:], "r:p:hRl?")[1]
+        opts, pargs2 = getopt.getopt(sys.argv[2:], "r:p:hRld?")
     except getopt.GetoptError:
         usage()
 
     if len(pargs2) == 0:
         usage()
 
+    for opt, arg in opts:
+        if (opt == "-d"):
+            socket_debug = True
+            break
+
     manifest_file = pargs2[0]
     err = dc_ckp.verify_manifest_filename(manifest_file)
     if err != 0:
         raise Exception, ""
     cp.set_manifest(manifest_file)
-    return  ManifestServ(manifest_file, DC_MANIFEST_DATA)
+    return  ManifestServ(manifest_file, DC_MANIFEST_DATA, socket_debug=socket_debug)
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -132,14 +139,15 @@ def parse_command_line(cp, manifest_server_obj):
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     """Parse the command line options.
     usage: dist_const build [-R] manifest-file
-        dist_const build [-r <integer or string>] manifest-file
-        dist_const build [-p <integer or string>] manifest-file
-        dist_const build [-l] manifest-file
+        dist_const build [-r <integer or string>] [-d] manifest-file
+        dist_const build [-p <integer or string>] [-d] manifest-file
+        dist_const build [-l] [-d] manifest-file
 
         -R will resume from the last executed step
         -r will resume from the specified step
         -p will pause at the specified step
         -l will list the valid steps to resume/pause at
+        -d turns on ManifestServer socket debug mode
 
     Also, verify that the pause step and the resume step are valid. The
     pause step must be one of the steps. The resume step must be less than
@@ -171,7 +179,7 @@ def parse_command_line(cp, manifest_server_obj):
 
     # Read the command line arguments and parse them.
     try:
-        opts2 = getopt.getopt(sys.argv[2:], "r:p:hRl?")[0]
+        opts2 = getopt.getopt(sys.argv[2:], "r:p:hRld?")[0]
     except getopt.GetoptError:
         usage()
     if subcommand == "build":
@@ -184,7 +192,10 @@ def parse_command_line(cp, manifest_server_obj):
             if (opt == "-h") or (opt == "-?"):
                 usage()
 
-            # Since all command line opts have to do with
+            if opt == "-d":
+                continue
+
+            # Since all other command line opts have to do with
             # checkpointing, check here to see
             # if checkpointing is available.
             if not cp.get_checkpointing_avail():

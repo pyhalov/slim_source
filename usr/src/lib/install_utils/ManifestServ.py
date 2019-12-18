@@ -83,7 +83,7 @@ class ManifestServ(object):
     def __init__(self, manifest_name, valfile_base=None,
                  out_manifest_name=None, verbose=False,
                  keep_temp_files=False, full_init=True,
-                 dtd_schema=False):
+                 dtd_schema=False, socket_debug=False):
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         """ Constructor.  Initialize the in-memory data tree.  Take care
             of other initialization tasks if full_init = True.
@@ -213,7 +213,7 @@ class ManifestServ(object):
         self.listen_sock_name = ("/tmp/ManifestServ." + self.strpid)
         self.listen_sock = None    # Filled in by start_server()
         self.server_run = False
-        self.socket_debug = False
+        self.socket_debug = socket_debug
 
         # Preprocess if full_init is specified.
         if (full_init):
@@ -518,7 +518,7 @@ class ManifestServ(object):
 
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def start_socket_server(self, debug=False):
+    def start_socket_server(self):
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         """ Start socket server.
 
@@ -538,7 +538,6 @@ class ManifestServ(object):
 
         """
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        self.socket_debug = debug
         self.server_run = True
         try:
             thread.start_new_thread(self.__socket_server_main, ())

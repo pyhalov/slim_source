@@ -220,12 +220,13 @@ def main():
     try:
         # Create the object used to extract the data.
         mfest_obj = ManifestServ(other_args[0], valfile_root,
-                                 out_manifest, v_flag, t_flag, dtd_schema=dtd_flag)
+                                 out_manifest, v_flag, t_flag,
+                                 dtd_schema=dtd_flag, socket_debug=d_flag)
 
         # Start the socket server if requested.
         if (s_flag):
-            mfest_obj.start_socket_server(d_flag)
-            print "Connect to socket with name " + mfest_obj.get_sockname()
+            mfest_obj.start_socket_server()
+            print("Connect to socket with name " + mfest_obj.get_sockname())
 
             # Set up to shut down the socket server at exit.
             atexit.register(exit_handler, mfest_obj)
