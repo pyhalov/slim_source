@@ -24,6 +24,7 @@
 import errno
 import operator
 import sys
+import tempfile
 import time
 import os
 import stat as st
@@ -32,8 +33,8 @@ import tempfile
 import threading
 import traceback
 import re
-import liblogsvc as logsvc
-import libtransfer as tmod
+from osol_install import liblogsvc as logsvc
+from osol_install import libtransfer as tmod
 from osol_install.install_utils import exec_cmd_outputs_to_log
 from osol_install.transfer_defs import TRANSFER_ID, \
     TM_ATTR_IMAGE_INFO, \
@@ -665,7 +666,7 @@ class TransferCpio(object):
                              " terminated with signal", -retval)
             elif retval > 0:
                 raise TAbort("Command " + cmd + " failed", retval)
-        except OSError, err:
+        except OSError as err:
             raise TAbort("Execution of " + cmd + " failed", err)
 		
     def cpio_transfer_entire_directory(self):
@@ -718,7 +719,7 @@ class TransferCpio(object):
                 self.dst_mntpt + " < " + fent.name
             self.dbg_msg("Executing: " + cmd + " CWD: " +
                          fent.chdir_prefix)
-            err_file = os.tmpfile()
+            err_file = tempfile.TemporaryFile()
             if self.log_handler is not None:
                 retval = exec_cmd_outputs_to_log(cmd.split(),
                                              self.log_handler)
@@ -882,7 +883,7 @@ class TransferIps(object):
         self._prop_value = ""
         self._log_handler = None
         self._verbose_mode = ""
-	self._init_retry_timeout = 0
+        self._init_retry_timeout = 0
 		
     @staticmethod
     def prerror(msg):
@@ -910,10 +911,10 @@ class TransferIps(object):
             (self._image_create_force_flag, self._image_type,
              self._pkg_auth, self._pkg_url, self._init_mntpt)
 
-	if self._init_retry_timeout != '':
-		retry_timeout = int(self._init_retry_timeout)
-	else: 
-		retry_timeout = 0
+        if self._init_retry_timeout != '':
+            retry_timeout = int(self._init_retry_timeout)
+        else: 
+            retry_timeout = 0
 
         while True:
                 try:
@@ -1425,12 +1426,12 @@ def tm_perform_transfer(args, callback=None):
             logsvc.write_log(TRANSFER_ID, "IOERROR\n")
             retval = TM_E_PYTHON_ERROR
 
-        except (TValueError, TAbort), val:
+        except (TValueError, TAbort) as val:
             tobj.prerror("Transfer aborted prematurely")
             logsvc.write_log(TRANSFER_ID, "TValueError or TAbort\n")
             retval = val.retcode
 
-        except TIPSPkgmissing, val:
+        except TIPSPkgmissing as val:
             logsvc.write_log(TRANSFER_ID, "pkg missing\n")
             retval = val.retcode
 

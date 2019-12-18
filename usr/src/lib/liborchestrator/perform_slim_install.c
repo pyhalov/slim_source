@@ -1128,7 +1128,8 @@ void *
 do_ti(void *args)
 {
 	struct ti_callback	*ti_args;
-	static int		status = 0;
+        /* status is used in pthread_exit(), so we need pointer-compatible type */
+	static intptr_t		status = 0;
 	ti_errno_t		ti_status;
 	nvlist_t		*attrs = (nvlist_t *)args;
 	om_callback_info_t	cb_data;
@@ -1484,20 +1485,24 @@ do_transfer(void *args)
 	struct transfer_callback	*tcb_args;
 	nvlist_t			**transfer_attr;
 	uint_t				transfer_attr_num;
-	int				i, status;
+	int				i;
+	/*
+         * status and exit_val are used as pointers
+         * in pthread_exit/pthread_join 
+	 */
+	intptr_t			status, exit_val;
 	int				transfer_mode = OM_CPIO_TRANSFER;
 	int				value;
-	void				*exit_val;
 	char				buf[20], arc[MAXPATHLEN];
 
-	(void) pthread_join(ti_thread, &exit_val);
+	(void) pthread_join(ti_thread, (void **)&exit_val);
 
-	ti_ret += (int)exit_val;
+	ti_ret += exit_val;
 	if (ti_ret != 0) {
 		om_set_error(OM_TARGET_INSTANTIATION_FAILED);
 		notify_error_status(OM_TARGET_INSTANTIATION_FAILED);
 		status = -1;
-		pthread_exit((void *)&status);
+		pthread_exit((void *)status);
 	}
 
 	om_log_print("Transfer process initiated\n");
@@ -1515,7 +1520,7 @@ do_transfer(void *args)
 		om_set_error(OM_NO_TARGET_ATTRS);
 		notify_error_status(OM_NO_TARGET_ATTRS);
 		status = -1;
-		pthread_exit((void *)&status);
+		pthread_exit((void *)status);
 	}
 
 	/*
@@ -1533,7 +1538,7 @@ do_transfer(void *args)
 			om_set_error(OM_NO_TARGET_ATTRS);
 			notify_error_status(OM_NO_TARGET_ATTRS);
 			status = -1;
-			pthread_exit((void *)&status);
+			pthread_exit((void *)status);
 		}
 		if (value == TM_PERFORM_IPS)
 			transfer_mode = OM_IPS_TRANSFER;
@@ -1544,7 +1549,7 @@ do_transfer(void *args)
 			om_set_error(OM_NO_SPACE);
 			notify_error_status(OM_NO_SPACE);
 			status = -1;
-			pthread_exit((void *)&status);
+			pthread_exit((void *)status);
 		}
 
 		if (nvlist_add_uint32(*transfer_attr, TM_ATTR_MECHANISM,
@@ -1556,7 +1561,7 @@ do_transfer(void *args)
 			om_set_error(OM_NO_SPACE);
 			notify_error_status(OM_NO_SPACE);
 			status = -1;
-			pthread_exit((void *)&status);
+			pthread_exit((void *)status);
 		}
 
 		if (nvlist_add_uint32(*transfer_attr, TM_CPIO_ACTION,
@@ -1568,7 +1573,7 @@ do_transfer(void *args)
 			om_set_error(OM_NO_SPACE);
 			notify_error_status(OM_NO_SPACE);
 			status = -1;
-			pthread_exit((void *)&status);
+			pthread_exit((void *)status);
 		}
 
 		if (nvlist_add_string(*transfer_attr, TM_CPIO_SRC_MNTPT,
@@ -1580,7 +1585,7 @@ do_transfer(void *args)
 			om_set_error(OM_NO_SPACE);
 			notify_error_status(OM_NO_SPACE);
 			status = -1;
-			pthread_exit((void *)&status);
+			pthread_exit((void *)status);
 		}
 
 		if (nvlist_add_string(*transfer_attr, TM_CPIO_DST_MNTPT,
@@ -1592,7 +1597,7 @@ do_transfer(void *args)
 			om_set_error(OM_NO_SPACE);
 			notify_error_status(OM_NO_SPACE);
 			status = -1;
-			pthread_exit((void *)&status);
+			pthread_exit((void *)status);
 		}
 	}
 
@@ -1609,7 +1614,7 @@ do_transfer(void *args)
 
 		if (status != OM_SUCCESS) {
 			notify_error_status(OM_TRANSFER_FAILED);
-			pthread_exit((void *)&status);
+			pthread_exit((void *)status);
 		}
 	} else {
 		om_log_print("CPIO transfer mechanism selected\n");
@@ -1633,7 +1638,7 @@ do_transfer(void *args)
 		if (status != TM_SUCCESS) {
 			om_log_print(NSI_TRANSFER_FAILED, status);
 			notify_error_status(OM_TRANSFER_FAILED);
-			pthread_exit((void *)&status);
+			pthread_exit((void *)status);
 		}
 	}
 
@@ -1774,7 +1779,7 @@ do_transfer(void *args)
 	else
 		notify_error_status(OM_ICT_FAILURE);
 
-	pthread_exit((void *)&status);
+	pthread_exit((void *)status);
 	/* LINTED [no return statement] */
 }
 

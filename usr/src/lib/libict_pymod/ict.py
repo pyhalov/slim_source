@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.5
 #
 # CDDL HEADER START
 #
@@ -121,7 +121,7 @@ import traceback
 import re
 import platform
 import signal
-import commands
+import subprocess
 
 from osol_install.cfgfiles import PasswordFile, UserattrFile
 
@@ -188,7 +188,7 @@ ICT_GENERATE_SC_PROFILE_FAILED,
 ICT_SETUP_RBAC_FAILED,
 ICT_SETUP_SUDO_FAILED,
 ICT_COPY_GENERATED_FILES_FAILED,
-) = range(200,255)
+) = list(range(200,255))
 
 # Global variables
 DEBUGLVL = LS_DBGLVL_ERR
@@ -233,7 +233,7 @@ def _move_in_updated_config_file(new, orig):
         prerror(traceback.format_exc())
         _delete_temporary_file(new)
         return False
-    except StandardError:
+    except Exception:
         prerror('Unrecognized error - failure to move file ' + new +
                 ' to ' + orig)
         prerror(traceback.format_exc())
@@ -271,7 +271,7 @@ def _cmd_out(cmd):
             dfout.append(rline)
             _dbg_msg('_cmd_out: stdout/stderr line=' + rline)
         status = fp.close()
-    except StandardError:
+    except Exception:
         prerror('system error in launching shell cmd (' + cmd + ')')
         status = 1
     #restore original signal handler for SIGPIPE
@@ -282,7 +282,7 @@ def _cmd_out(cmd):
         write_log(ICTID, 'shell cmd (' + cmd + ') returned status ' +
                   str(status) + "\n")
     if DEBUGLVL >= LS_DBGLVL_INFO:
-        print ICTID + ': _cmd_out status =', status, 'stdout/stderr=', dfout
+        print(ICTID + ': _cmd_out status =', status, 'stdout/stderr=', dfout)
 
     return status, dfout
 
@@ -307,7 +307,7 @@ def _cmd_status(cmd):
         if fp == None or fp == -1:
             return ICT_POPEN_FAILED
         exitstatus = fp.close()
-    except StandardError:
+    except Exception:
         prerror('unknown error in launching shell cmd (' + cmd + ')')
         prerror('Traceback:')
         prerror(traceback.format_exc())
@@ -350,7 +350,7 @@ def _delete_temporary_file(filename):
     '''
     try:
         os.unlink(filename)
-    except StandardError:
+    except Exception:
         pass # ignore failure to delete temp file
 
 def correct_rdsk(devname):
@@ -436,7 +436,7 @@ class ICT(object):
         global DEBUGLVL
         try:
             DEBUGLVL = int(os.getenv('LS_DBG_LVL', -1))
-        except StandardError:
+        except Exception:
             prerror('Could not parse enviroment variable LS_DBG_LVL to ' +
                     'integer')
             DEBUGLVL = -1
@@ -520,7 +520,7 @@ class ICT(object):
                 # Store the property name in field
                 # and the property value in value.
                 (field, value) = rline.split()[1:3]
-            except StandardError:
+            except Exception:
                 continue
             if field == property_id:
                 fp.close()
@@ -554,12 +554,13 @@ class ICT(object):
             fp.close()
             op.close()
             os.rename(new_rc, self.bootenvrc)
-        except OSError, (errno, strerror):
+        except OSError as e:
+            (errno, strerror) = e.args
             prerror('Error in deleting property in ' + self.bootenvrc +
                     ': ' + strerror)
             prerror('Failure. Returning: ICT_DELETE_BOOT_PROPERTY_FAILURE')
             return ICT_DELETE_BOOT_PROPERTY_FAILURE
-        except StandardError:
+        except Exception:
             prerror('Unexpected error when deleting property in ' +
                     self.bootenvrc)
             prerror(traceback.format_exc()) #traceback to stdout and log
@@ -598,13 +599,14 @@ class ICT(object):
             #add the line with the updated property_id
             op.write('setprop ' + property_id + ' ' + newvalue + '\n')
             os.rename(new_rc, self.bootenvrc)
-        except OSError, (errno, strerror):
+        except OSError as e:
+            (errno, strerror) = e.args
             prerror('Update boot property failed. ' + strerror + ' file=' +
                     self.bootenvrc + ' property=' + property_id +
                     ' value=' + newvalue)
             prerror('Failure. Returning: ICT_UPDATE_BOOTPROP_FAILED')
             return_status = ICT_UPDATE_BOOTPROP_FAILED
-        except StandardError:
+        except Exception:
             prerror('Unexpected error when updating boot property. file=' +
                     self.bootenvrc +
                     ' property=' + property_id + ' value=' + newvalue)
@@ -710,14 +712,16 @@ class ICT(object):
         try:
             (fop, fdisk_tempfile) = tempfile.mkstemp('.txt', 'fdisk', '/tmp')
             for ln in fdiskout:
-                os.write(fop, ln)
+                os.write(fop, ln.encode())
             os.close(fop)
-        except OSError, (errno, strerror):
+        except OSError as e:
+            (errno, strerror) = e.args
             prerror('Error in writing to temporary file. ' + strerror)
             prerror('Failure. Returning: ' +
                     'ICT_SET_BOOT_ACTIVE_TEMP_FILE_FAILURE')
             return ICT_SET_BOOT_ACTIVE_TEMP_FILE_FAILURE
-        except StandardError:
+        except Exception as e:
+            (strerror,) = e.args
             prerror('Unexpected error in writing to temporary file. ' +
                     strerror)
             prerror(traceback.format_exc()) #traceback to stdout and log
@@ -824,7 +828,7 @@ class ICT(object):
         this mapping for us - RFE.'''
         try:
             fh = open(self.kbd_layout_file, "r")
-        except StandardError:
+        except Exception:
             prerror('keyboard layout file open failure: filename=' +
                 self.kbd_layout_file)
             return ''
@@ -941,7 +945,7 @@ class ICT(object):
         _dbg_msg("Opening keyboard device: " + self.kbd_device)
         try:
             kbd = open(self.kbd_device, "r+")
-        except StandardError:
+        except Exception:
             prerror('Failure to open keyboard device ' + self.kbd_device)
             prerror('Failure. Returning: ICT_OPEN_KEYBOARD_DEVICE_FAILED')
             return ICT_OPEN_KEYBOARD_DEVICE_FAILED
@@ -960,7 +964,7 @@ class ICT(object):
                 kbd.close()
                 info_msg("Failed to read keyboard device ioctl; Ignoring")
                 return 0
-        except StandardError:
+        except Exception:
             status = 1
         
         if status != 0:
@@ -1022,7 +1026,7 @@ class ICT(object):
             
         status = _cmd_status('/usr/bin/sed -e s/US-English/' + \
                              self.keyboard_layout + '/ ' + \
-	                     ' -e s/gdm/' + display_manager + '/ ' + \
+                             ' -e s/gdm/' + display_manager + '/ ' + \
                              sc_profile_src + ' > ' + sc_profile_dst)
         if status != 0:
             try:
@@ -1057,12 +1061,13 @@ class ICT(object):
             shutil.copyfile(src, dst)
             os.chmod(dst, S_IRUSR | S_IWUSR)
             os.chown(dst, 0, 3) # chown root:sys
-        except OSError, (errno, strerror):
+        except OSError as e:
+            (errno, strerror) = e.args
             prerror('Cannot create smf repository due to error in copying ' +
                     src + ' to ' + dst + ': ' + strerror)
             prerror('Failure. Returning: ICT_CREATE_SMF_REPO_FAILED')
             return ICT_CREATE_SMF_REPO_FAILED
-        except StandardError:
+        except Exception:
             prerror('Unrecognized error - cannot create smf repository. ' +
                     'source=' + src + ' destination=' + dst)
             prerror(traceback.format_exc()) #traceback to stdout and log
@@ -1079,11 +1084,12 @@ class ICT(object):
         try:
             open(mnttab, 'w').close() # equivalent to touch(1)
             os.chmod(mnttab, S_IREAD | S_IRGRP | S_IROTH)
-        except OSError, (errno, strerror):
+        except OSError as e:
+            (errno, strerror) = e.args
             prerror('Cannot create ' + mnttab + ': ' + strerror)
             prerror('Failure. Returning: ICT_CREATE_MNTTAB_FAILED')
             return ICT_CREATE_MNTTAB_FAILED
-        except StandardError:
+        except Exception:
             prerror('Unrecognized error - Cannot create ' + mnttab)
             prerror(traceback.format_exc()) #traceback to stdout and log
             prerror('Failure. Returning: ICT_CREATE_MNTTAB_FAILED')
@@ -1120,12 +1126,13 @@ class ICT(object):
 
             fp.write('timeout 30\n')
             fp.close()
-        except OSError, (errno, strerror):
+        except OSError as e:
+            (errno, strerror) = e.args
             prerror('Error in appending splash image grub commands to ' +
                     grubmenu + ': ' + strerror)
             prerror('Failure. Returning: ICT_ADD_SPLASH_IMAGE_FAILED')
             return ICT_ADD_SPLASH_IMAGE_FAILED
-        except StandardError:
+        except Exception:
             prerror('Unrecognized error in appending splash image grub ' +
                     'commands to ' + grubmenu)
             prerror(traceback.format_exc()) #traceback to stdout and log
@@ -1151,11 +1158,12 @@ class ICT(object):
             fnode = open(nodename, 'r')
             na = fnode.readlines()
             fnode.close()
-        except OSError, (errno, strerror):
+        except OSError as e:
+            (errno, strerror) = e.args
             prerror('Error in accessing ' + nodename + ': ' + strerror)
             prerror('Failure. Returning: ICT_UPDATE_DUMPADM_NODENAME_FAILED')
             return ICT_UPDATE_DUMPADM_NODENAME_FAILED
-        except StandardError:
+        except Exception:
             prerror('Unrecognized error in accessing ' + nodename)
             prerror(traceback.format_exc()) #traceback to stdout and log
             prerror('Failure. Returning: ICT_UPDATE_DUMPADM_NODENAME_FAILED')
@@ -1212,12 +1220,13 @@ class ICT(object):
         try:
             shutil.copyfile(newgrubmenu, self.grubmenu)
             os.remove(newgrubmenu)
-        except OSError, (errno, strerror):
+        except OSError as e:
+            (errno, strerror) = e.args
             prerror('Moving GRUB menu ' + newgrubmenu + ' to ' +
                     self.grubmenu + ' failed. ' + strerror)
             prerror('Failure. Returning: ICT_EXPLICIT_BOOTFS_FAILED')
             return ICT_EXPLICIT_BOOTFS_FAILED
-        except StandardError:
+        except Exception:
             prerror('Unrecognized error - cannot move GRUB menu ' +
                     newgrubmenu + ' to ' + self.grubmenu)
             prerror(traceback.format_exc())
@@ -1272,12 +1281,13 @@ class ICT(object):
         try:
             shutil.copyfile(newgrubmenu, self.grubmenu)
             os.remove(newgrubmenu)
-        except OSError, (errno, strerror):
+        except OSError as e:
+            (errno, strerror) = e.args
             prerror('Moving GRUB menu ' + newgrubmenu + ' to ' +
                 self.grubmenu + ' failed. ' + strerror)
             prerror('Failure. Returning: ICT_ENABLE_HAPPY_FACE_BOOT_FAILED')
             return ICT_ENABLE_HAPPY_FACE_BOOT_FAILED
-        except StandardError:
+        except Exception:
             prerror('Unrecognized error - cannot move GRUB menu ' +
                 newgrubmenu + ' to ' + self.grubmenu)
             prerror(traceback.format_exc())
@@ -1340,12 +1350,13 @@ class ICT(object):
         dst = '/' + self.rootpool + '/boot/grub/splash.xpm.gz'
         try:
             shutil.copy(src, dst)
-        except OSError, (errno, strerror):
+        except OSError as e:
+            (errno, strerror) = e.args
             prerror('Copy splash file ' + src + ' to ' + dst +
                     ' failed. ' + strerror)
             prerror('Failure. Returning: ICT_COPY_SPLASH_XPM_FAILED')
             return ICT_COPY_SPLASH_XPM_FAILED
-        except StandardError:
+        except Exception:
             prerror('Unrecognized error - Could not copy splash file ' +
                     src + ' to ' + dst)
             prerror(traceback.format_exc())
@@ -1373,14 +1384,15 @@ class ICT(object):
 
             try:
                 os.unlink(dst)
-            except OSError, (errno, strerror):
+            except OSError as e:
+                (errno, strerror) = e.args
                 if errno != 2: #file not found
                     prerror('Error deleting file ' + dst +
                         ' for smf profile. ' + strerror)
                     prerror('Failure. Returning: ' +
                             'ICT_SMF_CORRECT_SYS_PROFILE_FAILED')
                     return_status = ICT_SMF_CORRECT_SYS_PROFILE_FAILED
-            except StandardError:
+            except Exception:
                 prerror('Unrecognized error - could not delete file ' +
                     dst + ' for smf profile. ')
                 prerror(traceback.format_exc())
@@ -1389,14 +1401,15 @@ class ICT(object):
                 return_status = ICT_SMF_CORRECT_SYS_PROFILE_FAILED
             try:
                 os.symlink(src, dst)
-            except OSError, (errno, strerror):
+            except OSError as e:
+                (errno, strerror) = e.args
                 prerror('Error making symlinks for system profile. ' +
                         strerror)
                 prerror('source=' + src + ' destination=' + dst)
                 prerror('Failure. Returning: ' +
                         'ICT_SMF_CORRECT_SYS_PROFILE_FAILED')
                 return_status = ICT_SMF_CORRECT_SYS_PROFILE_FAILED
-            except StandardError:
+            except Exception:
                 prerror('Unrecognized error making symlinks for ' +
                         'system profile.')
                 prerror('source=' + src + ' destination=' + dst)
@@ -1419,7 +1432,7 @@ class ICT(object):
         cmd = "/usr/sbin/ifconfig -au | /usr/bin/grep '[0-9]:' " \
             "| /usr/bin/grep -v 'LOOPBACK'"
 
-        (status, output) = commands.getstatusoutput(cmd)
+        (status, output) = subprocess.getstatusoutput(cmd)
         if status != 0:
             prerror('ifconfig command to determine preferred network ' +
                 'interface failed. command=' + cmd)
@@ -1449,7 +1462,7 @@ class ICT(object):
             os.chown(llp_file, 0, 0)
             # chmod 644
             os.chmod(llp_file, S_IREAD | S_IWRITE | S_IRGRP | S_IROTH)
-        except IOError, errno:
+        except IOError as errno:
             # Unable to open the file
             prerror('Unexpected error writing to <target>/etc/nwam/llp' +
                 ' to configure nwam. ' +
@@ -1578,7 +1591,7 @@ class ICT(object):
             return (ICT_SVCCFG_FAILURE)
 
         sysding_cf="" + self.basedir + "/etc/sysding.conf"
-	try:
+        try:
             fp = open(sysding_cf,"w")
             if(ifname != ""):
                 if(netmask !="" and ip !=""):
@@ -1602,12 +1615,12 @@ class ICT(object):
         live CD environment. Also remove unneeded loader files.
         return 0 for success, error code otherwise
         '''
-	loaderfile = self.basedir + '/boot/loader.rc.local'
-	if os.path.exists(loaderfile):
-	    os.unlink(loaderfile)
-	loaderfile = self.basedir + '/boot/menu.rc.local'
-	if os.path.exists(loaderfile):
-	    os.unlink(loaderfile)
+        loaderfile = self.basedir + '/boot/loader.rc.local'
+        if os.path.exists(loaderfile):
+            os.unlink(loaderfile)
+        loaderfile = self.basedir + '/boot/menu.rc.local'
+        if os.path.exists(loaderfile):
+            os.unlink(loaderfile)
         savedir = self.basedir + '/save'
         if not os.path.exists(savedir):
             info_msg('saved configuration files directory is missing')
@@ -1698,7 +1711,8 @@ class ICT(object):
         filename = self.basedir + '/etc/coreadm.conf'
         try:
             os.unlink(filename)
-        except OSError, (errno, strerror):
+        except OSError as e:
+            (errno, strerror) = e.args
             if errno != 2: #file does not exist
                 prerror('I/O error - cannot delete file ' + filename +
                         ': ' + strerror)
@@ -1707,7 +1721,7 @@ class ICT(object):
                 return ICT_REMOVE_LIVECD_COREADM_CONF_FAILURE
             else:
                 _dbg_msg('coreadm config file already removed ' + filename)
-        except StandardError:
+        except Exception:
             prerror('Unrecognized error - cannot delete file ' + filename)
             prerror(traceback.format_exc())
             prerror('Failure. Returning: ' +
@@ -1749,7 +1763,7 @@ class ICT(object):
             _dbg_msg('Opening prom device: ' + prom_device)
             try:
                 prom = open(prom_device, "r")
-            except StandardError:
+            except Exception:
                 prom = None
 
             if prom == None:
@@ -1777,7 +1791,7 @@ class ICT(object):
             # use ioctl to query the prom device.
             try:
                 status = fcntl.ioctl(prom, opromdev2promname, buf, True)
-            except StandardError:
+            except Exception:
                 status = 1 # Force bad status for check below
 
             if status != 0:
@@ -1892,7 +1906,7 @@ class ICT(object):
                         title_string = grub_title_line.split("=")
                         grub_title = title_string[1]
                         break
-            except StandardError:
+            except Exception:
                 # Should not get into this situation, but
                 # it is harmless to continue, so, just
                 # log it.
@@ -1998,12 +2012,13 @@ class ICT(object):
             os.chmod(self.bootmenu_sparc,
                      S_IREAD | S_IWRITE | S_IRGRP | S_IROTH)
             os.chown(self.bootmenu_sparc, 0, 3)  # chown root:sys
-        except OSError, (errno, strerror):
+        except OSError as e:
+            (errno, strerror) = e.args
             prerror('Error when creating sparc boot menu.lst file ' +
                 self.bootmenu_sparc + ': ' + strerror)
             prerror('Failure. Returning: ICT_CREATE_SPARC_BOOT_MENU_FAILED')
             return ICT_CREATE_SPARC_BOOT_MENU_FAILED
-        except StandardError:
+        except Exception:
             prerror('Unexpected error when creating sparc boot ' +
                     ' menu.lst file ' + self.bootmenu_sparc)
             prerror(traceback.format_exc())  # traceback to stdout and log
@@ -2050,12 +2065,13 @@ class ICT(object):
             os.chmod(bootlst_dst, S_IREAD | S_IWRITE | S_IRGRP | S_IROTH)
             os.chown(bootlst_dst, 0, 3)  # chown root:sys
 
-        except OSError, (errno, strerror):
+        except OSError as e:
+            (errno, strerror) = e.args
             prerror('Error when copying the sparc bootlst file ' +
                     bootlst_src + ': ' + strerror)
             prerror('Failure. Returning: ICT_COPY_SPARC_BOOTLST_FAILED')
             return ICT_COPY_SPARC_BOOTLST_FAILED
-        except StandardError:
+        except Exception:
             prerror('Unexpected error when copying the sparc bootlst file ' +
                     self.bootmenu_sparc)
             prerror(traceback.format_exc())  # traceback to stdout and log
@@ -2108,12 +2124,13 @@ class ICT(object):
         try:
             fh = open(flist_file, 'r')
             os.chdir(self.basedir)
-        except OSError, (errno, strerror):
+        except OSError as e:
+            (errno, strerror) = e.args
             prerror('I/O error - cannot access clobber list file ' +
                     flist_file + ': ' + strerror)
             prerror('Failure. Returning: ICT_CLOBBER_FILE_FAILED')
             return ICT_CLOBBER_FILE_FAILED
-        except StandardError:
+        except Exception:
             prerror('Unrecognized error processing clobber list file ' +
                     flist_file)
             prerror(traceback.format_exc())
@@ -2127,7 +2144,8 @@ class ICT(object):
                 if S_ISLNK(mst.st_mode):
                     _dbg_msg("Unlink: " + line)
                     os.unlink(line)
-            except OSError, (errno, strerror):
+            except OSError as e:
+                (errno, strerror) = e.args
                 if errno == 2:  # file does not exist
                     _dbg_msg('Pathname ' + line +
                              ' not found - nothing deleted')
@@ -2138,7 +2156,7 @@ class ICT(object):
 
                     # one or more items fail processing
                     return_status = ICT_CLOBBER_FILE_FAILED
-            except StandardError:
+            except Exception:
                 prerror('Unrecognized error during file ' + line + ' clobber')
                 prerror(traceback.format_exc())
         fh.close()
@@ -2199,14 +2217,15 @@ class ICT(object):
             _dbg_msg('Removing file ' + fname)
             try:
                 os.remove(fname)
-            except OSError, (errno, strerror):
+            except OSError as e:
+                (errno, strerror) = e.args
                 if errno == 2:  # file not found
                     _dbg_msg('File to delete was not found: ' + fname)
                 else:
                     prerror('Error deleting file ' + fname + ': ' + strerror)
                     prerror('Failure. Returning: ICT_CLEANUP_FAILED')
                     return_status = ICT_CLEANUP_FAILED
-            except StandardError:
+            except Exception:
                 prerror('Unexpected error deleting directory.')
                 prerror(traceback.format_exc())
 
@@ -2231,7 +2250,8 @@ class ICT(object):
             _dbg_msg('removing directory' + dname)
             try:
                 os.rmdir(dname)
-            except OSError, (errno, strerror):
+            except OSError as e:
+                (errno, strerror) = e.args
                 if errno == 2:  # file not found
                     _dbg_msg('Path to delete was not found: ' + dname)
                 else:
@@ -2239,7 +2259,7 @@ class ICT(object):
                             ': ' + strerror)
                     prerror('Failure. Returning: ICT_CLEANUP_FAILED')
                     return_status = ICT_CLEANUP_FAILED
-            except StandardError:
+            except Exception:
                 prerror('Unexpected error deleting file.')
                 prerror(traceback.format_exc())
         return return_status
@@ -2337,7 +2357,7 @@ class ICT(object):
             pf.setvalue(nu)
             pf.writefile()
 
-        except StandardError:
+        except Exception:
             prerror('Failure to modify the root password')
             prerror(traceback.format_exc())
             prerror('Failure. Returning: ICT_CREATE_NU_FAILED')
@@ -2394,7 +2414,7 @@ class ICT(object):
                 ru['lastchg'] = 0
             pf.setvalue(ru)
             pf.writefile()
-        except StandardError:
+        except Exception:
             prerror('Failure to modify the root password')
             prerror(traceback.format_exc())
             prerror('Failure. Returning: ICT_SET_ROOT_PW_FAILED')
@@ -2444,13 +2464,14 @@ class ICT(object):
             os.chmod(sc_profile_dst, S_IRUSR)  # read-only by user (root)
             os.chown(sc_profile_dst, 0, 3)  # chown root:sys
 
-        except OSError, (errno, strerror):
+        except OSError as e:
+            (errno, strerror) = e.args
             prerror('Error when copying System Configuration profile ' +
                     sc_profile_src + ' to ' + sc_profile_dst + ' : ' +
                     strerror)
             prerror('Failure. Returning: ICT_APPLY_SYSCONFIG_FAILED')
             return ICT_APPLY_SYSCONFIG_FAILED
-        except StandardError:
+        except Exception:
             prerror('Unexpected error when copying System Configuration ' +
                     ' profile ' + sc_profile_src + ' to ' + sc_profile_dst)
             prerror(traceback.format_exc())  # traceback to stdout and log
@@ -2498,7 +2519,7 @@ class ICT(object):
             # Write the resulting file
             f.writefile()
 
-        except StandardError:
+        except Exception:
             prerror('Failure to edit user_attr file')
             prerror(traceback.format_exc())
             prerror('Failure. Returning: ICT_SETUP_RBAC_FAILED')
@@ -2532,7 +2553,8 @@ class ICT(object):
                 shutil.move(temp_file, self.sudoers)
                 os.chmod(self.sudoers, S_IREAD | S_IRGRP)
                 os.chown(self.sudoers, 0, 0) # chown root:root
-        except IOError, (errno, strerror):
+        except IOError as e:
+            (errno, strerror) = e.args
             prerror('Failure to edit sudoers file')
             prerror(traceback.format_exc())
             prerror('Failure. Returning: ICT_SETUP_SUDO_FAILED')

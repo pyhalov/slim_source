@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.5
 #
 # CDDL HEADER START
 #
@@ -38,7 +38,7 @@ class TestScrollProperties(unittest.TestCase):
 
     def test_scrollable_lines(self):
         '''Test scrollable_lines getter and setter '''
-        print "\nhello"
+        print("\nhello")
         num_lines = 70
         my_win = WindowArea(num_lines, 60, 0, 0)
         self.assertEqual(my_win.scrollable_lines, num_lines)

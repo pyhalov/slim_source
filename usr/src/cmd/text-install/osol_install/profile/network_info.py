@@ -57,8 +57,9 @@ class NetworkInfo(object):
         
         try:
             (nic_list, dladm_err) = Popen(argslist, stdout=PIPE,
+                                          universal_newlines=True,
                                           stderr=PIPE).communicate()
-        except OSError, err:
+        except OSError as err:
             logging.warn("OSError occurred: %s", err)
             return []
         if dladm_err:
@@ -150,8 +151,9 @@ class NetworkInfo(object):
         argslist = ['/sbin/ifconfig', self.nic_name]
         try:
             (ifconfig_out, ifconfig_err) = Popen(argslist, stdout=PIPE,
+                                                 universal_newlines=True,
                                                  stderr=PIPE).communicate()
-        except OSError, err:
+        except OSError as err:
             logging.warn("Failed to call ifconfig: %s", err)
             return None
         if ifconfig_err:
@@ -164,7 +166,7 @@ class NetworkInfo(object):
         link_data = {}
         link_data['flags'] = ifconfig_out[1]
         ifconfig_out = ifconfig_out[2:]
-        for i in range(len(ifconfig_out) / 2):
+        for i in range(int(len(ifconfig_out) / 2)):
             link_data[ifconfig_out[2*i]] = ifconfig_out[2*i+1]
         return link_data
     
@@ -181,8 +183,9 @@ class NetworkInfo(object):
                     code]
         try:
             (dhcpout, dhcperr) = Popen(argslist, stdout=PIPE,
+                                       universal_newlines=True,
                                        stderr=PIPE).communicate()
-        except OSError, err:
+        except OSError as err:
             logging.warn("OSError ocurred during dhcpinfo call: %s", err)
             return None
         

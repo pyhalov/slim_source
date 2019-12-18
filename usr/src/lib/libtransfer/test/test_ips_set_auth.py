@@ -25,10 +25,10 @@
 from libtransfer import *
 from transfer_mod import *
 
-execfile('./transfer_defs.py')
+exec(compile(open('./transfer_defs.py', "rb").read(), './transfer_defs.py', 'exec'))
 num_failed = 0
 
-print "Testing valid alt-auth, valid mountpoint. Should PASS"
+print("Testing valid alt-auth, valid mountpoint. Should PASS")
 tm_perform_transfer([(TM_ATTR_MECHANISM, TM_PERFORM_IPS),
 	    (TM_IPS_ACTION, TM_IPS_SET_AUTH),
 	    (TM_IPS_ALT_AUTH, 'http://indiana-build.central:10000'),
@@ -37,43 +37,43 @@ status = tm_perform_transfer([(TM_ATTR_MECHANISM, TM_PERFORM_IPS),
 	    (TM_IPS_ACTION, TM_IPS_REFRESH),
 	    (TM_IPS_INIT_MNTPT, '/export/home/test1')])
 if status == TM_E_SUCCESS:
-	print "PASS"
+	print("PASS")
 else:
 	num_failed += 1
-	print "FAIL"
+	print("FAIL")
 
-print "Testing missing TM_IPS_ALT_AUTH. Should FAIL"
+print("Testing missing TM_IPS_ALT_AUTH. Should FAIL")
 status = tm_perform_transfer([(TM_ATTR_MECHANISM, TM_PERFORM_IPS),
 	    (TM_IPS_ACTION, TM_IPS_SET_AUTH),
 	    (TM_IPS_INIT_MNTPT, '/export/home/test1')])
 if status == TM_E_SUCCESS:
 	num_failed += 1
-	print "PASS"
+	print("PASS")
 else:
-	print "FAIL"
+	print("FAIL")
 
-print "Testing missing TM_IPS_INIT_MNTPT. Should FAIL"
+print("Testing missing TM_IPS_INIT_MNTPT. Should FAIL")
 status = tm_perform_transfer([(TM_ATTR_MECHANISM, TM_PERFORM_IPS),
 	    (TM_IPS_ACTION, TM_IPS_SET_AUTH),
 	    (TM_IPS_ALT_AUTH, 'http://indiana-build.central:10000')]) 
 if status == TM_E_SUCCESS:
 	num_failed += 1
-	print "PASS"
+	print("PASS")
 else:
-	print "FAIL"
+	print("FAIL")
 
-print "Testing invalid attribute, Should FAIL"
+print("Testing invalid attribute, Should FAIL")
 status = tm_perform_transfer([(TM_ATTR_MECHANISM, TM_PERFORM_IPS),
 	    (TM_IPS_ACTION, TM_IPS_SET_AUTH),
 	    (TM_IPS_ALT_AUTH, 'http://indiana-build.central:10000'),
 	    ("tm_in", '/export/home/test1')])
 if status == TM_E_SUCCESS:
 	num_failed += 1
-	print "PASS"
+	print("PASS")
 else:
-	print "FAIL"
+	print("FAIL")
 
-print "Testing invalid alt-auth, Should FAIL"
+print("Testing invalid alt-auth, Should FAIL")
 tm_perform_transfer([(TM_ATTR_MECHANISM, TM_PERFORM_IPS),
 	    (TM_IPS_ACTION, TM_IPS_SET_AUTH),
 	    (TM_IPS_ALT_AUTH, 'http://jean:10000'),
@@ -83,22 +83,22 @@ status = tm_perform_transfer([(TM_ATTR_MECHANISM, TM_PERFORM_IPS),
 	    (TM_IPS_INIT_MNTPT, '/export/home/test2')])
 if status == TM_E_SUCCESS:
 	num_failed += 1
-	print "PASS"
+	print("PASS")
 else:
-	print "FAIL"
+	print("FAIL")
 
-print "Testing invalid mountpoint , Should FAIL"
+print("Testing invalid mountpoint , Should FAIL")
 status = tm_perform_transfer([(TM_ATTR_MECHANISM, TM_PERFORM_IPS),
 	    (TM_IPS_ACTION, TM_IPS_SET_AUTH),
 	    (TM_IPS_ALT_AUTH, 'http://ipkg.sfbay:29047'),
 	    (TM_IPS_INIT_MNTPT, '/export/home/testZ')])
 if status == TM_E_SUCCESS:
 	num_failed += 1
-	print "PASS"
+	print("PASS")
 else:
-	print "FAIL"
+	print("FAIL")
 
 if num_failed != 0:
-	print "Check your results %d tests didn't perform as expected" % num_failed
+	print("Check your results %d tests didn't perform as expected" % num_failed)
 else:
-	print "Tests performed as expected"
+	print("Tests performed as expected")

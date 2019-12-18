@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.5
 #
 # CDDL HEADER START
 #
@@ -99,8 +99,8 @@ def exit_text_installer(logname=None, errcode=0):
     logging.info("**** END ****")
     logging.shutdown()
     if logname is not None:
-        print _("Exiting Text Installer. Log is available at:\n%s") % logname
-    if isinstance(errcode, unicode):
+        print(_("Exiting Text Installer. Log is available at:\n%s") % logname)
+    if isinstance(errcode, str):
         errcode = errcode.encode(get_encoding())
     sys.exit(errcode)
 
@@ -158,10 +158,10 @@ if __name__ == '__main__':
         locale.setlocale(locale.LC_ALL, "en_US.UTF-8")
     else:
         locale.setlocale(locale.LC_ALL, "")
-    gettext.install("textinstall", "/usr/share/locale", unicode=True)
+    gettext.install("textinstall", "/usr/share/locale")
     if os.getuid() != 0:
-        print _("The %(release)s Text Installer must be run with "
-                "root privileges") % RELEASE
+        print(_("The %(release)s Text Installer must be run with "
+                "root privileges") % RELEASE)
         sys.exit(1)
     USAGE = "usage: %prog [-l FILE] [-v LEVEL] [-d] [-n]"
     PARSER = OptionParser(usage=USAGE, version="%prog 1.1")
@@ -197,7 +197,7 @@ if __name__ == '__main__':
             OPTIONS.log_level = DEFAULT_LOG_LEVEL
     try:
         setup_logging(OPTIONS.logname, OPTIONS.log_level)
-    except IOError, err:
+    except IOError as err:
         PARSER.error("%s '%s'" % (err.strerror, err.filename))
     logging.debug("CLI Options: log location = %s, verbosity = %s, debug "
                   "mode = %s, no install = %s, force_bw = %s",
@@ -254,12 +254,12 @@ if __name__ == '__main__':
         logging.error(str(INSTALL_PROFILE))
         logging.error(traceback.format_exc())
         EXC_TYPE, EXC_VALUE = sys.exc_info()[:2]
-        print _("An unhandled exception occurred.")
+        print(_("An unhandled exception occurred."))
         if str(EXC_VALUE):
-            print '\t%s: "%s"' % (EXC_TYPE.__name__, str(EXC_VALUE))
+            print('\t%s: "%s"' % (EXC_TYPE.__name__, str(EXC_VALUE)))
         else:
-            print "\t%s" % EXC_TYPE.__name__
-        print _("Full traceback data is in the installation log")
-        print _("Please file a bug at http://bugs.openindiana.org")
+            print("\t%s" % EXC_TYPE.__name__)
+        print(_("Full traceback data is in the installation log"))
+        print(_("Please file a bug at http://bugs.openindiana.org"))
         ERRCODE = 1
     exit_text_installer(OPTIONS.logname, ERRCODE)

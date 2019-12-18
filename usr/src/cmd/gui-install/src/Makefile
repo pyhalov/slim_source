@@ -109,7 +109,7 @@ CATALOGS =
 CATOBJEXT = .gmo
 #commented to allow inheritance CC = /ws/onnv-tools/SUNWspro/SS11/bin/cc
 CCDEPMODE = depmode=none
-CFLAGS = -Wno-deprecated-declarations
+CFLAGS += -Wno-deprecated-declarations
 CPP = ${CC} -E
 #CPP = /ws/onnv-tools/SUNWspro/SS11/bin/cc -E
 CPPFLAGS = -I${SRC}/lib/liborchestrator -I${SRC}/lib/liblogsvc -std=c99 -D__EXTENSIONS__
@@ -144,7 +144,7 @@ MSGFMT = /usr/bin/msgfmt
 OBJEXT = o
 PACKAGE = gui-install
 PACKAGE_BUGREPORT = 
-PACKAGE_CFLAGS = -DORBIT2=1 -D_REENTRANT -D_PTHREADS -I/usr/include/gtk-2.0 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/gconf/2 -I/usr/include/libbonoboui-2.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/orbit-2.0 -I/usr/include/libbonobo-2.0 -I/usr/include/bonobo-activation-2.0 -I/usr/include/pango-1.0 -I/usr/sfw/include/freetype2 -I/usr/sfw/include -I/usr/lib/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/libxml2 -I/usr/include/libglade-2.0
+PACKAGE_CFLAGS = -DORBIT2=1 -D_REENTRANT -D_PTHREADS -I/usr/include/gtk-2.0 -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/gconf/2 -I/usr/include/libbonoboui-2.0 -I/usr/include/glib-2.0 -I/usr/lib/64/glib-2.0/include -I/usr/include/orbit-2.0 -I/usr/include/libbonobo-2.0 -I/usr/include/bonobo-activation-2.0 -I/usr/include/pango-1.0 -I/usr/sfw/include/freetype2 -I/usr/sfw/include -I/usr/lib/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/libxml2 -I/usr/include/libglade-2.0
 PACKAGE_LIBS = -lSM -lICE -lpangoft2-1.0 -lbonobo-2 -lbonobo-activation -lpopt -lgconf-2 -lORBit-2 -lgthread-2.0 -lthread -lglade-2.0 -lgtk-x11-2.0 -lxml2 -lpthread -lz -lsocket -lnsl -lgdk-x11-2.0 -latk-1.0 -lgdk_pixbuf-2.0 -lm -lpangocairo-1.0 -lpango-1.0 -lcairo -lgobject-2.0 -lgmodule-2.0 -lglib-2.0  
 PACKAGE_NAME = 
 PACKAGE_STRING = 
@@ -212,7 +212,7 @@ INCLUDES = \
 	-DGLADEDIR=\""$(datadir)/$(PACKAGE)"\" \
 	-DTEXTDIR=\""$(datadir)/$(PACKAGE)"\" \
 	-DPIXMAPDIR=\""$(datadir)/$(PACKAGE)"\" \
-	-DORBIT2=1 -D_REENTRANT -D_PTHREADS -I/usr/include/gtk-2.0 -I/usr/include/gconf/2 -I/usr/include/libbonoboui-2.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/orbit-2.0 -I/usr/include/libbonobo-2.0 -I/usr/include/bonobo-activation-2.0 -I/usr/include/pango-1.0 -I/usr/sfw/include/freetype2 -I/usr/sfw/include -I/usr/lib/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/libxml2 -I/usr/include/libglade-2.0  -I/usr/include/gdk-pixbuf-2.0
+	-DORBIT2=1 -D_REENTRANT -D_PTHREADS -I/usr/include/gtk-2.0 -I/usr/include/gconf/2 -I/usr/include/libbonoboui-2.0 -I/usr/include/glib-2.0 -I/usr/lib/64/glib-2.0/include -I/usr/include/orbit-2.0 -I/usr/include/libbonobo-2.0 -I/usr/include/bonobo-activation-2.0 -I/usr/include/pango-1.0 -I/usr/sfw/include/freetype2 -I/usr/sfw/include -I/usr/lib/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/libxml2 -I/usr/include/libglade-2.0  -I/usr/include/gdk-pixbuf-2.0
 
 orchestrator_wrapper_SOURCES = \
 	orchestrator-wrappers.c \

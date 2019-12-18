@@ -41,9 +41,7 @@ static PyThreadState * mainThreadState = NULL;
 static tm_callback_t progress;
 static PyObject *py_callback = NULL;
 static int dbgflag = 0;
-static char *empty_argv[1] = { "" };
-
-void initlibtransfer();
+static wchar_t *empty_argv[1] = { L"" };
 
 /* Private python initialization structure */
 
@@ -55,18 +53,27 @@ static struct PyMethodDef libtransferMethods[] = {
 	{NULL, NULL, 0, NULL}
 };
 
+static struct PyModuleDef libtransfer_module = {
+       PyModuleDef_HEAD_INIT,
+       "libtransfer",
+       NULL,
+       -1,
+       libtransferMethods 
+};
+
 /* initialize module */
-void
-initlibtransfer()
+PyMODINIT_FUNC
+PyInit_libtransfer()
 {
 	PyObject *m;
 
 	/* PyMODINIT_FUNC; */
-	if ((m = Py_InitModule("libtransfer", libtransferMethods)) == NULL) {
-		return;
+	if ((m = PyModule_Create(&libtransfer_module)) == NULL) {
+		return NULL;
 	}
 
 	PyModule_AddIntConstant(m, "TM_E_SUCCESS", TM_E_SUCCESS);
+	return m;
 }
 
 /*
@@ -169,13 +176,17 @@ TM_perform_transfer(nvlist_t *nvl, tm_callback_t prog)
 	}
 
 	PyEval_InitThreads();
+
+	/* Avoid assert tlock.locked() AssertionError */
+	Py_XDECREF(PyImport_ImportModule("threading"));
+
 	mainThreadState = PyThreadState_Get();
 	myThreadState = PyThreadState_New(mainThreadState->interp);
 	PyThreadState_Swap(myThreadState);
 	progress = prog;
 
 	pModule = NULL;
-	if ((pName = PyString_FromString(TRANSFER_PY_SCRIPT)) != NULL) {
+	if ((pName = PyUnicode_FromString(TRANSFER_PY_SCRIPT)) != NULL) {
 		pModule = PyImport_Import(pName);
 		Py_DECREF(pName);
 	}
@@ -219,7 +230,7 @@ TM_perform_transfer(nvlist_t *nvl, tm_callback_t prog)
 			name = nvpair_name(curr);
 			pTuple = PyTuple_New(2);
 			PyTuple_SetItem(pTuple, 0,
-			    PyString_FromString(name));
+			    PyUnicode_FromString(name));
 
 			if (strcmp(name, TM_ATTR_MECHANISM) == 0 ||
 			    strcmp(name, TM_CPIO_ACTION) == 0 ||
@@ -228,7 +239,7 @@ TM_perform_transfer(nvlist_t *nvl, tm_callback_t prog)
 
 				nvpair_value_uint32(curr, &val);
 				PyTuple_SetItem(pTuple, 1,
-				    PyInt_FromLong(val));
+				    PyLong_FromLong(val));
 			} else if ((strcmp(name, TM_IPS_IMAGE_CREATE_FORCE) ==
 			    0) || (strcmp(name, TM_IPS_VERBOSE_MODE) == 0)) {
 				boolean_t val;
@@ -237,11 +248,11 @@ TM_perform_transfer(nvlist_t *nvl, tm_callback_t prog)
 				nvpair_value_boolean_value(curr, &val);
 				boolean_str = val ? "true" : "false";
 				PyTuple_SetItem(pTuple, 1,
-				    PyString_FromString(boolean_str));
+				    PyUnicode_FromString(boolean_str));
 			} else {
 				nvpair_value_string(curr, &val);
 				PyTuple_SetItem(pTuple, 1,
-				    PyString_FromString(val));
+				    PyUnicode_FromString(val));
 			}
 
 			if (!pTuple) {
@@ -261,7 +272,7 @@ TM_perform_transfer(nvlist_t *nvl, tm_callback_t prog)
 		pRet = PyObject_CallObject(pFunc, pArgs);
 		Py_DECREF(pArgs);
 		if (pRet != NULL) {
-			rv = PyInt_AsLong(pRet);
+			rv = PyLong_AsLong(pRet);
 			Py_DECREF(pRet);
 		} else {
 			Py_DECREF(pFunc);
@@ -322,7 +333,7 @@ TM_abort_transfer()
 		call_Py_Finalize = B_TRUE;
 	}
 
-	pName = PyString_FromString(TRANSFER_PY_SCRIPT);
+	pName = PyUnicode_FromString(TRANSFER_PY_SCRIPT);
 	if (pName == NULL) {
 		PyErr_Print();
 		ls_write_log_message(TRANSFER_ID,
@@ -417,13 +428,6 @@ main(void) {
 	nvlist_t *nvl;
 	tm_errno_t rv;
 
-	/*
-	 * Set PYTHONPATH to /tmp so python can find our script
-	 * Used only for testing.
-	 */
-	if (putenv("PYTHONPATH=/tmp") != 0) {
-		return (1);
-	}
 	TM_enable_debug();
 
 #if 0

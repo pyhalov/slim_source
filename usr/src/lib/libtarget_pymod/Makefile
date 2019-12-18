@@ -46,8 +46,7 @@ HDRS		= $(EXPHDRS) $(PRIVHDRS)
 
 include ../Makefile.lib
 
-PYVERSION=python2.7
-PYINCLUDE=-I/usr/include/$(PYVERSION) -I../libtd -I../libti
+PYINCLUDE=-I$(PYINCDIR) -I../libtd -I../libti
 
 INCLUDE		 = -I. \
 		   -I../libtd \
@@ -64,7 +63,7 @@ SOFLAGS		+= -L$(ROOTADMINLIB) -R$(ROOTADMINLIB:$(ROOT)%=%) \
 
 PYMODULES=	tgt_utils.py
 
-PYCMODULES=	$(PYMODULES:%.py=%.pyc)
+PYCMODULES=	$(PYMODULES:%.py=__pycache__/%.cpython$(PYTHON3_PKGVERS).pyc)
 ROOTPYMODULES=  $(PYMODULES:%=$(ROOTPYTHONVENDORINSTALL)/%)
 ROOTPYCMODULES= $(PYCMODULES:%=$(ROOTPYTHONVENDORINSTALL)/%)
 

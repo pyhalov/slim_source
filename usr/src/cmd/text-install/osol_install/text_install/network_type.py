@@ -197,7 +197,7 @@ def hostname_is_valid(edit_field):
     user_str = edit_field.get_text()
     if not user_str:
         return True
-    test_str = user_str.replace(u"-", "a")
+    test_str = user_str.replace("-", "a")
     if not test_str.isalnum():
         raise UIMessage(_("The Hostname can only contain letters, numbers, "
                             "and minus signs (-)."))

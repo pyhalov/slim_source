@@ -135,11 +135,11 @@ class DiskWindow(InnerWindow):
         
         '''
         if self.area.columns < 70:
-            raise ValueError, "Insufficient space - area.columns < 70"
+            raise ValueError("Insufficient space - area.columns < 70")
         if self.area.lines < 6:
-            raise ValueError, "Insufficient space - area.lines < 6"
-        self.win_width = (self.area.columns - DiskWindow.DEAD_ZONE
-                          + DiskWindow.SCROLL_PAD) / 2
+            raise ValueError("Insufficient space - area.lines < 6")
+        self.win_width = int((self.area.columns - DiskWindow.DEAD_ZONE
+                          + DiskWindow.SCROLL_PAD) / 2)
         
         super(DiskWindow, self)._init_win(window)
         
@@ -320,13 +320,13 @@ class DiskWindow(InnerWindow):
                                  self.left_win.area.lines)
         part_iter = iter(self.disk_info.get_parts())
         try:
-            next_part = part_iter.next()
+            next_part = next(part_iter)
             self.objects.append(self.left_win)
             for y_loc in range(max_left_parts):
                 self.list_area.y_loc = y_loc
                 self.create_list_item(next_part, self.left_win, self.list_area)
                 next_part.orig_type = next_part.type
-                next_part = part_iter.next()
+                next_part = next(part_iter)
             self.objects.append(self.right_win)
             for y_loc in range(self.right_win.area.scrollable_lines):
                 self.list_area.y_loc = y_loc
@@ -334,7 +334,7 @@ class DiskWindow(InnerWindow):
                                       self.list_area)
                 next_part.orig_offset = next_part.offset.size_as("gb")
                 next_part.orig_size = next_part.size.size_as("gb")
-                next_part = part_iter.next()
+                next_part = next(part_iter)
         except StopIteration:
             if len(self.right_win.all_objects) <= self.right_win.area.lines:
                 self.right_win.use_vert_scroll_bar = False

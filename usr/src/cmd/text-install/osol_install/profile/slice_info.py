@@ -27,7 +27,7 @@ Object to represent Slices
 '''
 
 from copy import deepcopy
-from UserString import UserString
+from collections import UserString
 import logging
 
 import osol_install.tgt as tgt

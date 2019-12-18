@@ -59,12 +59,16 @@ ROOT.BIN= \
 	/usr/lib/locale \
 	/usr/lib/locale/C \
 	/usr/lib/locale/C/LC_MESSAGES \
-	/usr/lib/python2.7 \
-	/usr/lib/python2.7/vendor-packages \
-	/usr/lib/python2.7/vendor-packages/osol_install \
-	/usr/lib/python2.7/vendor-packages/osol_install/distro_const \
-	/usr/lib/python2.7/vendor-packages/osol_install/profile \
-	/usr/lib/python2.7/vendor-packages/osol_install/text_install \
+	/usr/lib/python3.5 \
+	/usr/lib/python3.5/vendor-packages \
+	/usr/lib/python3.5/vendor-packages/osol_install \
+	/usr/lib/python3.5/vendor-packages/osol_install/__pycache__ \
+	/usr/lib/python3.5/vendor-packages/osol_install/distro_const \
+	/usr/lib/python3.5/vendor-packages/osol_install/distro_const/__pycache__ \
+	/usr/lib/python3.5/vendor-packages/osol_install/profile \
+	/usr/lib/python3.5/vendor-packages/osol_install/profile/__pycache__ \
+	/usr/lib/python3.5/vendor-packages/osol_install/text_install \
+	/usr/lib/python3.5/vendor-packages/osol_install/text_install/__pycache__ \
 	/usr/sbin \
 	/usr/share/distro_const \
 	/usr/share/distro_const/slim_cd \

@@ -27,7 +27,7 @@ Installation engine for Text Installer
 
 import os
 import logging
-import commands
+import subprocess
 import datetime
 import platform
 import shutil
@@ -192,7 +192,7 @@ def cleanup_existing_install_target(install_profile):
 
     cmd = "/usr/sbin/zpool list " + rootpool_name
     logging.debug("Executing: %s", cmd)
-    status = commands.getstatusoutput(cmd)[0]
+    status = subprocess.getstatusoutput(cmd)[0]
     if status != 0:
         logging.debug("Root pool %s does not exist", rootpool_name)
         return   # rpool doesn't exist, no need to clean up
@@ -204,7 +204,7 @@ def cleanup_existing_install_target(install_profile):
     cmd = "/usr/sbin/zfs get -H -o value org.openindiana.caiman:install " + \
           rootpool_name
     logging.debug("Executing: %s", cmd)
-    (status, pool_status) = commands.getstatusoutput(cmd)
+    (status, pool_status) = subprocess.getstatusoutput(cmd)
     logging.debug("Return code: %s", status)
     logging.debug("Pool status: %s", pool_status)
     if (status != 0) or (pool_status != "busy"):
@@ -219,7 +219,7 @@ def cleanup_existing_install_target(install_profile):
         rpool = tgt.Zpool(rootpool_name, "/dev/_placeholder_device_name")
         tgt.release_zfs_root_pool(rpool)
         logging.debug("Completed release_zfs_root_pool")
-    except TypeError, te:
+    except TypeError as te:
         logging.error("Failed to release existing rpool.")
         logging.exception(te)
         raise ti_utils.InstallationError
@@ -353,7 +353,7 @@ def do_ti(install_profile, swap_dump):
 
         logging.debug("Completed create_be_target")
         INSTALL_STATUS.update(InstallStatus.TI, 100, mesg)
-    except TypeError, te:
+    except TypeError as te:
         logging.error("Failed to initialize disk")
         logging.exception(te)
         raise ti_utils.InstallationError
@@ -371,7 +371,7 @@ def do_transfer():
     try:
         status = tm_perform_transfer(tm_argslist,
                                      callback=transfer_mod_callback)
-    except Exception, ex:
+    except Exception as ex:
         logging.exception(ex)
         status = 1
 
@@ -557,9 +557,9 @@ def post_install_cleanup(install_profile, rootpool_name):
     try:
         dirname=os.path.dirname(final_log_loc)
         if (not os.path.isdir(dirname)):
-            os.makedirs(dirname,0755) 
+            os.makedirs(dirname,0o755) 
         shutil.copyfile(install_profile.log_location, final_log_loc)
-    except (IOError, OSError), err: 
+    except (IOError, OSError) as err: 
         logging.error("Failed to copy %s to %s", install_profile.log_location,
                       install_profile.log_final)
         logging.exception(err)

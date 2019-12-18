@@ -31,7 +31,7 @@ ManifestServ.py - XML data access interface module
 
 import errno
 import sys
-import thread
+import _thread
 import os
 import socket
 import osol_install.SocketServProtocol as SocketServProtocol
@@ -52,7 +52,7 @@ from osol_install.install_utils import space_parse
 # Declare new classes for errors thrown from this file's classes.
 # =============================================================================
 
-class ManifestServError(StandardError):
+class ManifestServError(Exception):
     """Base Exception for ManifestServ errors"""
     pass
 
@@ -156,6 +156,9 @@ class ManifestServ(object):
         self.defval_tree = None
         self.manifest_tree = None
 
+        # The lock is acquired while server is accepting requests
+        self.lock = _thread.allocate_lock()
+
         # Set up defaults for ancillary files.
         manifest_name = manifest_name.strip()
         if (manifest_name.endswith(ManifestServ.XML_SUFFIX)):
@@ -173,7 +176,7 @@ class ManifestServ(object):
         try:
             self.manifest_tree = TreeAcc(manifest_name)
         except TreeAccError:
-            print >> sys.stderr, "Error instantiating manifest tree:"
+            print("Error instantiating manifest tree:", file=sys.stderr)
             raise
 
         # Initialize default for valfile_base, if necessary.
@@ -306,13 +309,13 @@ class ManifestServ(object):
                 try:
                     self.manifest_tree = TreeAcc(out_manifest_name)
                 except TreeAccError:
-                    print >> sys.stderr, "Error re-instantiating manifest tree:"
+                    print("Error re-instantiating manifest tree:", file=sys.stderr)
                     raise
 
-        except ManifestProcError, err:
-            print >> sys.stderr, ("Error validating " +
-                                  "manifest against schema " + schema_name)
-            print >> sys.stderr, str(err)
+        except ManifestProcError as err:
+            print(("Error validating " +
+                                  "manifest against schema " + schema_name), file=sys.stderr)
+            print(str(err), file=sys.stderr)
             raise
 
         # Check to delete the temporary file(s) whether or not an
@@ -320,12 +323,12 @@ class ManifestServ(object):
         finally:
             if (not keep_temp_files):
                 if (verbose):
-                    print ("Removing temporary file: " + temp_manifest_name)
+                    print(("Removing temporary file: " + temp_manifest_name))
                 os.unlink(temp_manifest_name)
 
                 if delete_out_manifest:
                     if verbose:
-                        print ("Removing temporary file: " + out_manifest_name)
+                        print(("Removing temporary file: " + out_manifest_name))
                     os.unlink(out_manifest_name)
 
 
@@ -352,10 +355,10 @@ class ManifestServ(object):
             # Initialize and validate the defaults/content-validation tree.
             try:
                 self.defval_tree = init_defval_tree(defval_manifest_name)
-            except ManifestProcError, err:
-                print >> sys.stderr, ("Error initializing defaults/" +
-                                     "content-validation tree")
-                print >> sys.stderr, str(err)
+            except ManifestProcError as err:
+                print(("Error initializing defaults/" +
+                                     "content-validation tree"), file=sys.stderr)
+                print(str(err), file=sys.stderr)
                 raise
 
 
@@ -397,8 +400,7 @@ class ManifestServ(object):
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         if (self.dtd_schema):
-            raise ManifestServError, \
-			    ("set_defaults() called for DTD manifest")
+            raise ManifestServError(("set_defaults() called for DTD manifest"))
 
         if (defval_manifest_name is None):
             defval_manifest_name = self.defval_manifest_name
@@ -415,9 +417,9 @@ class ManifestServ(object):
         # Add defaults to the project manifest data tree.
         try:
             add_defaults(self.manifest_tree, self.defval_tree, verbose)
-        except (KeyError, ManifestProcError), err:
-            print >> sys.stderr, "Error adding defaults to manifest tree"
-            print >> sys.stderr, str(err)
+        except (KeyError, ManifestProcError) as err:
+            print("Error adding defaults to manifest tree", file=sys.stderr)
+            print(str(err), file=sys.stderr)
 
             # Create temp manifest for debugging
             if (keep_temp_files):
@@ -463,8 +465,7 @@ class ManifestServ(object):
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         if (self.dtd_schema):
-            raise ManifestServError, \
-			    ("semantic_validate() called for DTD manifest")
+            raise ManifestServError(("semantic_validate() called for DTD manifest"))
 
         if (defval_manifest_name is None):
             defval_manifest_name = self.defval_manifest_name
@@ -482,9 +483,9 @@ class ManifestServ(object):
         # data tree.
         try:
             validate_content(self.manifest_tree, self.defval_tree, verbose)
-        except (KeyError, ManifestProcError), err:
-            print >> sys.stderr, "Error validating manifest tree content:"
-            print >> sys.stderr, str(err)
+        except (KeyError, ManifestProcError) as err:
+            print("Error validating manifest tree content:", file=sys.stderr)
+            print(str(err), file=sys.stderr)
 
             # Create temp manifest for debugging
             if (keep_temp_files):
@@ -510,10 +511,10 @@ class ManifestServ(object):
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         try:
             self.manifest_tree.save_tree(save_manifest)
-        except (FileOpenError, FileSaveError), err:
-            print >> sys.stderr, ("Error saving temporary manifest %s:" %
-                                  save_manifest)
-            print >> sys.stderr, str(err)
+        except (FileOpenError, FileSaveError) as err:
+            print(("Error saving temporary manifest %s:" %
+                                  save_manifest), file=sys.stderr)
+            print(str(err), file=sys.stderr)
             raise
 
 
@@ -540,10 +541,10 @@ class ManifestServ(object):
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         self.server_run = True
         try:
-            thread.start_new_thread(self.__socket_server_main, ())
-        except thread.error, err:
-            print >> sys.stderr, "Error starting socket server"
-            raise ManifestServError, ("Error starting socket server: %s" %
+            _thread.start_new_thread(self.__socket_server_main, ())
+        except _thread.error as err:
+            print("Error starting socket server", file=sys.stderr)
+            raise ManifestServError("Error starting socket server: %s" %
                                       (str(err)))
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -576,6 +577,10 @@ class ManifestServ(object):
             self.server_run = False
             client_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
             client_sock.connect(self.listen_sock_name)
+            # Wait for server to actually finish its work
+            self.lock.acquire()
+            # There's no point in holding the lock
+            self.lock.release()
         except OSError:
             pass
 
@@ -633,9 +638,9 @@ class ManifestServ(object):
                 strlist.extend(space_parse(value))
 
         if (verbose):
-            print "get_values: request = \"" + request + "\""
-            print (("   %d results found: " % len(strlist)) +
-                   str(strlist))
+            print("get_values: request = \"" + request + "\"")
+            print((("   %d results found: " % len(strlist)) +
+                   str(strlist)))
         return strlist
 
 
@@ -688,7 +693,7 @@ class ManifestServ(object):
         """
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # Receive a new request.
-        pre_request = srvsock.recv(SocketServProtocol.PRE_REQ_SIZE)
+        pre_request = srvsock.recv(SocketServProtocol.PRE_REQ_SIZE).decode()
 
         # Loop until client terminated (unexpectedly or per protocol)
         while (pre_request and
@@ -699,35 +704,35 @@ class ManifestServ(object):
             elif (pre_request[0] == '1'):
                 is_key = True
             else:
-                raise socket.error, (errno.EPROTO, "ManifestServ Prerequest " +
+                raise socket.error(errno.EPROTO, "ManifestServ Prerequest " +
                                      "Protocol Error:key")
             try:
                 request_size = int(pre_request[2:SocketServProtocol.
                                    PRE_REQ_SIZE])
             except ValueError:
-                raise socket.error, (errno.EPROTO, "ManifestServ Prerequest " +
+                raise socket.error(errno.EPROTO, "ManifestServ Prerequest " +
                                      "Protocol Error:size")
             if (self.socket_debug):
-                print ("Prerequest received: key is " + str(is_key) +
-                       " and size = " + str(request_size))
+                print(("Prerequest received: key is " + str(is_key) +
+                       " and size = " + str(request_size)))
 
             # Send the pre_request ack and wait for the request
-            srvsock.send(SocketServProtocol.PRE_REQ_ACK)
-            request = srvsock.recv(request_size)
+            srvsock.send(SocketServProtocol.PRE_REQ_ACK.encode())
+            request = srvsock.recv(request_size).decode()
 
             # Query the request
             if (self.socket_debug):
-                print "Received Request: " + request.strip()
+                print("Received Request: " + request.strip())
 
             try:
                 values = self.get_values(request.strip(), is_key)
-            except TreeAccError, err:
+            except TreeAccError as err:
 
-                print ("Error parsing remote request \"" + request.strip() +
-                       "\": " + str(err))
+                print(("Error parsing remote request \"" + request.strip() +
+                       "\": " + str(err)))
 
                 # Treat bad search strings like good ones with no results.
-                srvsock.send("0,0")
+                srvsock.send("0,0".encode())
 
                 values = []
             else:
@@ -736,7 +741,7 @@ class ManifestServ(object):
                 # results, calculate the results string first to get
                 # the size.
                 if not values:    # No results found
-                    srvsock.send("0,0")
+                    srvsock.send("0,0".encode())
                 else:
                     results = ""
                     for value in values:
@@ -752,24 +757,24 @@ class ManifestServ(object):
                     results += SocketServProtocol.REQ_COMPLETE
 
                     # Send results count and size.
-                    srvsock.send(str(len(values)) + "," + str(len(results)))
+                    srvsock.send((str(len(values)) + "," + str(len(results))).encode())
 
             # Wait for the count/size acknowledge from the client.
-            request = srvsock.recv(1)
+            request = srvsock.recv(1).decode()
             if ((not request) or
                 (request[0] != SocketServProtocol.RECV_PARAMS_RECVD)):
-                raise socket.error, (errno.EPROTO,
+                raise socket.error(errno.EPROTO,
                                      "ManifestServ Protocol Error")
 
             # Send the results.
             if values:
-                srvsock.sendall(results)
+                srvsock.sendall(results.encode())
 
             # Receive a new request.
-            pre_request = srvsock.recv(SocketServProtocol.PRE_REQ_SIZE)
+            pre_request = srvsock.recv(SocketServProtocol.PRE_REQ_SIZE).decode()
 
         if (self.socket_debug):
-            print "termination requested"
+            print("termination requested")
 
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -791,7 +796,7 @@ class ManifestServ(object):
         """
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         if (self.socket_debug):
-            print "Starting new serve thread"
+            print("Starting new serve thread")
 
         # Process client requests.  Eat all exceptions, some of
         # which can come in somewhat expectedly (as when a
@@ -800,19 +805,19 @@ class ManifestServ(object):
         # pylint: disable-msg=C0321
         try:
             self.__process_srvr_requests(srvsock)
-        except socket.error, err:
+        except socket.error as err:
             if (err.args[0] != errno.EPIPE):
-                print >> sys.stderr, "Exception in socket serve:"
-                print >> sys.stderr, str(err)
+                print("Exception in socket serve:", file=sys.stderr)
+                print(str(err), file=sys.stderr)
             elif (self.socket_debug):
-                print "Socket closed"
+                print("Socket closed")
 
         # Always close the socket when done with it.
         finally:
             srvsock.close()
 
         if (self.socket_debug):
-            print "Terminating client-specific server thread"
+            print("Terminating client-specific server thread")
 
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -834,24 +839,27 @@ class ManifestServ(object):
         try:
             self.listen_sock = socket.socket(socket.AF_UNIX,
                                              socket.SOCK_STREAM)
-        except socket.error, err:
-            print >> sys.stderr, "Error creating listener socket:"
-            print >> sys.stderr, str(err)
+        except socket.error as err:
+            print("Error creating listener socket:", file=sys.stderr)
+            print(str(err), file=sys.stderr)
             return
 
         try:
             self.listen_sock.bind(self.listen_sock_name)
-        except socket.error, err:
-            print >> sys.stderr, "Error binding receptor socket:"
-            print >> sys.stderr, str(err)
+        except socket.error as err:
+            print("Error binding receptor socket:", file=sys.stderr)
+            print(str(err), file=sys.stderr)
             return
 
         try:
             self.listen_sock.listen(5)
-        except socket.error, err:
-            print >> sys.stderr, "Error listening on receptor socket:"
-            print >> sys.stderr, str(err)
+        except socket.error as err:
+            print("Error listening on receptor socket:", file=sys.stderr)
+            print(str(err), file=sys.stderr)
             return
+
+        # Take a lock - we are starting accepting requests
+        self.lock.acquire()
 
         # Now wait for clients.  Start a new thread for each client.
         while (self.server_run):
@@ -860,18 +868,20 @@ class ManifestServ(object):
                 del addr
             except KeyboardInterrupt:
                 break
-            except socket.error, err:
-                print >> sys.stderr, "Error accepting new connection"
-                print >> sys.stderr, str(err)
+            except socket.error as err:
+                print("Error accepting new connection", file=sys.stderr)
+                print(str(err), file=sys.stderr)
                 continue
 
             # stop_socket_server() clears this flag when it's time to stop.
             if (not self.server_run):
-                if (self.socket_debug):
-                    print "Server terminating"
                 break
             try:
-                thread.start_new_thread(self.__serve, (srvsock, ))
-            except thread.error, err:
-                print >> sys.stderr, "Error starting new connection thread:"
-                print >> sys.stderr, str(err)
+                _thread.start_new_thread(self.__serve, (srvsock, ))
+            except _thread.error as err:
+                print("Error starting new connection thread:", file=sys.stderr)
+                print(str(err), file=sys.stderr)
+       
+        # Release lock - this will let stop_socket_server() know that we
+        # have finished
+        self.lock.release()  

@@ -110,7 +110,7 @@ TgtGeometry_New(PyTypeObject *type, PyObject *args, PyObject *kwds)
 static void
 TgtGeometry_Deallocate(TgtGeometry *self)
 {
-	self->ob_type->tp_free((PyObject*)self);
+	Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 
@@ -189,7 +189,6 @@ will not allow sane calculations of tgt.Partition boundaries.");
 
 PyTypeObject TgtGeometryType = {
 	PyObject_HEAD_INIT(NULL)
-	.ob_size = 0,
 	.tp_name = "tgt.Geometry",
 	.tp_basicsize = sizeof (TgtGeometry),
 	.tp_dealloc = (destructor)TgtGeometry_Deallocate,

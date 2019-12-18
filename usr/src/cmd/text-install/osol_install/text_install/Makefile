@@ -68,7 +68,7 @@ PYMODULES=	__init__.py \
 		window_area.py \
 		zpool_selection.py
 
-PYCMODULES=     $(PYMODULES:%.py=%.pyc)
+PYCMODULES=     $(PYMODULES:%.py=__pycache__/%.cpython$(PYTHON3_PKGVERS).pyc)
 
 ROOTPROGS=      $(PROGS:%=$(ROOTUSRBIN)/%)
 

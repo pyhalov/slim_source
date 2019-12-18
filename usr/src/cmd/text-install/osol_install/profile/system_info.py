@@ -114,7 +114,7 @@ class SystemInfo(object):
                 self.locale = language
             try:
                 self.actual_lang = self.get_actual_lang(self.locale)
-            except ValueError, err:
+            except ValueError as err:
                 logging.warn(err)
                 self.actual_lang = self.locale
 

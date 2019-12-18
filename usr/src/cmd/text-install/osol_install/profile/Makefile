@@ -41,7 +41,7 @@ PYMODULES=	__init__.py \
 		system_info.py \
 		user_info.py
 
-PYCMODULES=     $(PYMODULES:%.py=%.pyc)
+PYCMODULES=     $(PYMODULES:%.py=__pycache__/%.cpython$(PYTHON3_PKGVERS).pyc)
 
 ROOTPROGS=      $(PROGS:%=$(ROOTUSRBIN)/%)
 

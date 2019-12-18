@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.5
 #
 # CDDL HEADER START
 #
@@ -116,7 +116,7 @@ def get_manifest_server_obj(cp):
     manifest_file = pargs2[0]
     err = dc_ckp.verify_manifest_filename(manifest_file)
     if err != 0:
-        raise Exception, ""
+        raise Exception("")
     cp.set_manifest(manifest_file)
     return  ManifestServ(manifest_file, DC_MANIFEST_DATA, socket_debug=socket_debug)
 
@@ -325,9 +325,10 @@ def have_empty_snapshot(cp):
           dataset + BUILD_DATA + "@empty" + " 2>/dev/null"
     try:
         (rtout, rterr) = Popen(cmd, shell=True,
+                               universal_newlines=True,
                                stdout=PIPE, stderr=PIPE).communicate()
 
-    except OSError, err:
+    except OSError as err:
         dc_log.error("Exception caught when listing zfs"
                      " snapshots." + str(err))
         return False
@@ -392,7 +393,7 @@ def cleanup_build_data_area(cp):
                   BUILD_DATA + "@empty"
             try:
                 ret = dc_ckp.shell_cmd(cmd, dc_log)
-            except OSError, err:
+            except OSError as err:
                 dc_log.error(str(err))
                 ret = -1
 
@@ -408,7 +409,7 @@ def cleanup_build_data_area(cp):
             cmd = "zfs destroy -r " + dataset + BUILD_DATA
             try:
                 ret = dc_ckp.shell_cmd(cmd, dc_log)
-            except OSError, err:
+            except OSError as err:
                 dc_log.error("Exception caught during zfs "
                              "dataset destroy: " + str(err))
                 ret = -1
@@ -430,7 +431,7 @@ def cleanup_build_data_area(cp):
             cmd = "/usr/sbin/zfs snapshot " + ba_dataset
             try:
                 ret = dc_ckp.shell_cmd(cmd, dc_log)
-            except OSError, err:
+            except OSError as err:
                 dc_log.error("Exception caught when "
                              "creating zfs snapshot " + dataset)
                 ret = -1
@@ -473,7 +474,7 @@ def main_func():
         return 1
 
     # Sets the umask for the DC app
-    os.umask(022)
+    os.umask(0o22)
 
     cp = dc_ckp.Checkpoints()
 
@@ -589,10 +590,10 @@ if __name__ == "__main__":
     except UsageError:
         RET_VAL = 2
 
-    except SystemExit, e:
+    except SystemExit as e:
         DC_LOG.info(str(e))
 
-    except Exception, ex:
+    except Exception as ex:
         DC_LOG.exception(ex)
 
     finally:

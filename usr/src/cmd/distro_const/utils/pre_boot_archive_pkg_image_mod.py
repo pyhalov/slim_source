@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.5
 #
 # CDDL HEADER START
 #
@@ -62,7 +62,7 @@ ${pkg_img_path}.
 if __name__ == "__main__":
 
     if (len(sys.argv) != 6): # Don't forget sys.argv[0] is the script itself.
-        raise Exception, (sys.argv[0] + ": Requires 5 args:\n" +
+        raise Exception(sys.argv[0] + ": Requires 5 args:\n" +
             "    Reader socket, pkg_image area, temp dir,\n" +
             "    boot archive build area, media area.")
     
@@ -78,8 +78,8 @@ if __name__ == "__main__":
     is_plaintext = get_manifest_boolean(manifest_reader_obj,
                                         ROOT_PASSWD_PLAINTEXT)
 
-    print "root_passwd_text = " + root_passwd_text
-    print "is_plaintext = " + str(is_plaintext)
+    print("root_passwd_text = " + root_passwd_text)
+    print("is_plaintext = " + str(is_plaintext))
     
     if is_plaintext:
         encrypted_root_passwd = encrypt_password(root_passwd_text,
@@ -87,7 +87,7 @@ if __name__ == "__main__":
     else:
         encrypted_root_passwd = root_passwd_text
     
-    print "Encrypted root password: " + encrypted_root_passwd
+    print("Encrypted root password: " + encrypted_root_passwd)
 
     try:
         pfile = PasswordFile(pkg_img_path)
@@ -95,9 +95,9 @@ if __name__ == "__main__":
         root_entry["password"] = encrypted_root_passwd
         pfile.setvalue(root_entry)
         pfile.writefile()
-    except StandardError:
-        print >> sys.stderr, "Failed to modify image with user" \
-                             + "specified root password"
+    except Exception:
+        print("Failed to modify image with user" \
+                             + "specified root password", file=sys.stderr)
         sys.exit(1)
 
     sys.exit(0)

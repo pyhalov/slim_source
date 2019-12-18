@@ -34,7 +34,6 @@
 static PyObject *write_log_message(PyObject *, PyObject *);
 static PyObject *write_dbg_message(PyObject *, PyObject *);
 static PyObject *init_logsvc(PyObject *, PyObject *);
-void initliblogsvc();
 
 /* Private python initialization structure */
 
@@ -123,14 +122,22 @@ init_logsvc(PyObject *self, PyObject *args)
 	return (Py_BuildValue("i", 1));
 }
 
-void
-initliblogsvc()
+static struct PyModuleDef liblogsvc_module = {
+        PyModuleDef_HEAD_INIT,
+        "liblogsvc",
+        NULL,
+        -1,
+        liblogsvcMethods
+};
+
+PyMODINIT_FUNC
+PyInit_liblogsvc(void)
 {
 	PyObject	*mod;
 
 	/* initialize module and its methods */
 	/* PyMODINIT_FUNC; */
-	mod = Py_InitModule("liblogsvc", liblogsvcMethods);
+	mod = PyModule_Create(&liblogsvc_module);
 
 	/* initialize constants in module */
 	/* debugging levels */
@@ -143,4 +150,5 @@ initliblogsvc()
 	PyModule_AddIntConstant(mod, "LS_DEST_NONE", LS_DEST_NONE);
 	PyModule_AddIntConstant(mod, "LS_DEST_CONSOLE", LS_DEST_CONSOLE);
 	PyModule_AddIntConstant(mod, "LS_DEST_FILE", LS_DEST_FILE);
+	return mod;
 }

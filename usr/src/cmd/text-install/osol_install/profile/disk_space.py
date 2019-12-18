@@ -97,7 +97,7 @@ class DiskSpace(object):
         a DiskSpace, and raises ValueError otherwise
         
         '''
-        if not isinstance(input_str, basestring):
+        if not isinstance(input_str, str):
             raise TypeError("input_str must be a string")
         input_str = input_str.strip()
         # Determine whether the units are represented by a single character

@@ -25,7 +25,7 @@
 
 import re
 
-H_FILE = file('/usr/include/admin/ti_api.h', 'r').read()
+H_FILE = open('/usr/include/admin/ti_api.h', 'r').read()
 
 # Search ti_api.h for the #defines and place the name value
 # pairs into a dictionary.

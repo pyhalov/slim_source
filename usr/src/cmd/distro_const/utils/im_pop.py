@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.5
 #
 # CDDL HEADER START
 #
@@ -84,11 +84,11 @@ def create_image_info(mntpt):
         # size to be in KB.  Convert it to an int
         image_size = int(round((dir_size(mntpt) / 1024), 0))
     except (TypeError, ValueError):
-        print >> sys.stderr, "Error in getting the size of " + mntpt
+        print("Error in getting the size of " + mntpt, file=sys.stderr)
         return
 
     if (image_size == 0):
-        print >> sys.stderr, "Error in getting the size of " + mntpt
+        print("Error in getting the size of " + mntpt, file=sys.stderr)
         return
 
     try:
@@ -97,7 +97,7 @@ def create_image_info(mntpt):
             str(image_size) + "\n")
         image_file.close()
     except IOError:
-        print >> sys.stderr, "Error in creating " + mntpt + "/.image_info"
+        print("Error in creating " + mntpt + "/.image_info", file=sys.stderr)
         return
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -171,10 +171,10 @@ def ips_set_auth(alt_url, alt_auth, mntpt, mirr_cmd=None, pref_flag=None,
     # If both mirr_cmd and pref_flag are set that's an error. We
     # can't do both at once.
     if mirr_cmd is not None and pref_flag:
-        print >> sys.stderr, "Failed to set-publisher on the IPS " \
+        print("Failed to set-publisher on the IPS " \
                      "image at " + mntpt + "It is illegal to specify " \
                      "setting a mirror and the preferred publisher in the " \
-                     " same command"
+                     " same command", file=sys.stderr)
         return -1
     tm_argslist = [
                   (TM_ATTR_MECHANISM, TM_PERFORM_IPS),
@@ -289,8 +289,8 @@ def ips_cleanup_authorities(auth_list, future_auth, mntpt):
         if auth != future_auth:
             status = ips_unset_auth(auth, mntpt)
             if status != TM_E_SUCCESS:
-                print >> sys.stderr, "Unable to remove the old "\
-                             "publisher from the ips image"
+                print("Unable to remove the old "\
+                             "publisher from the ips image", file=sys.stderr)
                 return -1
     return 0
 
@@ -316,8 +316,8 @@ def ips_cleanup_mirrors(unset_mirror_list, future_auth, mntpt):
             status = ips_set_auth(url, auth, mntpt,
                                      mirr_cmd=TM_IPS_UNSET_MIRROR)
             if status != TM_E_SUCCESS:
-                print >> sys.stderr, "Unable to remove the old "\
-                             "mirror from the ips image"
+                print("Unable to remove the old "\
+                             "mirror from the ips image", file=sys.stderr)
                 return -1
     return 0
 
@@ -360,7 +360,7 @@ Returns:
 if __name__ == "__main__":
 
     if (len(sys.argv) != 6): # sys.argv[0] is the script itself.
-        raise Exception, (sys.argv[0] + ": Requires 5 args:\n" +
+        raise Exception(sys.argv[0] + ": Requires 5 args:\n" +
                         "    Reader socket, pkg_image area, tmp dir,\n" +
                         "    bootroot build area, media area")
 
@@ -381,10 +381,10 @@ if __name__ == "__main__":
                                       DEFAULT_MAIN_AUTHNAME)
 
     if PKG_AUTH is None:
-        raise Exception, (sys.argv[0] +
+        raise Exception(sys.argv[0] +
                           ": pkg publisher is missing from manifest")
     if PKG_URL is None:
-        raise Exception, (sys.argv[0] +
+        raise Exception(sys.argv[0] +
                           ": pkg url is missing from manifest")
 
     QUIT_ON_PKG_FAILURE = dcu.get_manifest_value(MANIFEST_SERVER_OBJ,
@@ -403,18 +403,18 @@ if __name__ == "__main__":
         CONSOLE_STDERR.setLevel(logging.INFO)
         DC_LOG.addHandler(CONSOLE_STDOUT)
         DC_LOG.addHandler(CONSOLE_STDERR)
-    except OSError, err:
-        print >> sys.stderr, "WARNING: There's a problem with logging setup"
-        print >> sys.stderr, "Error: " + str(err)
+    except OSError as err:
+        print("WARNING: There's a problem with logging setup", file=sys.stderr)
+        print("Error: " + str(err), file=sys.stderr)
 
     # Initialize the IPS area. Use the default publisher.
-    print >> sys.stderr, "Initializing the IPS package image area: " + \
-                         PKG_IMG_MNT_PT
-    print >> sys.stderr, "Setting preferred publisher: " + PKG_AUTH
-    print >> sys.stderr, "\tOrigin repository: " + PKG_URL
+    print("Initializing the IPS package image area: " + \
+                         PKG_IMG_MNT_PT, file=sys.stderr)
+    print("Setting preferred publisher: " + PKG_AUTH, file=sys.stderr)
+    print("\tOrigin repository: " + PKG_URL, file=sys.stderr)
     STATUS = ips_init(PKG_URL, PKG_AUTH, PKG_IMG_MNT_PT)
     if STATUS != TM_E_SUCCESS:
-        raise Exception, (sys.argv[0] +
+        raise Exception(sys.argv[0] +
                           ": Unable to initialize the IPS image")
 
     # Keep a list of authorities to cleanup at the end.
@@ -425,13 +425,13 @@ if __name__ == "__main__":
     MIRROR_URL_LIST = dcu.get_manifest_list(MANIFEST_SERVER_OBJ,
                                             DEFAULT_MIRROR_URL)
     for mirror_url in MIRROR_URL_LIST:
-        print >> sys.stderr, "\tMirror repository: " + mirror_url
+        print("\tMirror repository: " + mirror_url, file=sys.stderr)
         STATUS = ips_set_auth(mirror_url, PKG_AUTH, PKG_IMG_MNT_PT,
                               mirr_cmd=TM_IPS_SET_MIRROR, refresh_flag=True)
         if STATUS != TM_E_SUCCESS:
-            print >> sys.stderr, "Unable to set the IPS image mirror"
+            print("Unable to set the IPS image mirror", file=sys.stderr)
             if QUIT_ON_PKG_FAILURE == 'true':
-                raise Exception, (sys.argv[0] +
+                raise Exception(sys.argv[0] +
                                   ": Unable to set the IPS image mirror")
 
         # Keep a list of mirrors to cleanup at the end.
@@ -448,15 +448,15 @@ if __name__ == "__main__":
                                           ADD_AUTH_URL_TO_AUTHNAME % alt_url)
         if alt_auth is None:
             continue
-        print >> sys.stderr, "Setting alternate publisher: " + alt_auth
-        print >> sys.stderr, "\tOrigin repository: " + alt_url
+        print("Setting alternate publisher: " + alt_auth, file=sys.stderr)
+        print("\tOrigin repository: " + alt_url, file=sys.stderr)
         STATUS = ips_set_auth(alt_url, alt_auth, PKG_IMG_MNT_PT,
                               refresh_flag=False)
         if STATUS != TM_E_SUCCESS:
-            print >> sys.stderr, "Unable to set alternate publisher " + \
-                                 "for IPS image"
+            print("Unable to set alternate publisher " + \
+                                 "for IPS image", file=sys.stderr)
             if QUIT_ON_PKG_FAILURE == 'true':
-                raise Exception, (sys.argv[0] +
+                raise Exception(sys.argv[0] +
                                   ": Unable to set alternate publisher " +
                                   "for IPS image")
             else:
@@ -474,17 +474,17 @@ if __name__ == "__main__":
             MANIFEST_SERVER_OBJ,
             ADD_AUTH_URL_TO_MIRROR_URL % alt_url)
         for alt_url_mirror in mirror_url_list:
-            print >> sys.stderr, "\tMirror repository: " + alt_url_mirror
+            print("\tMirror repository: " + alt_url_mirror, file=sys.stderr)
             STATUS = ips_set_auth(alt_url_mirror,
                                   alt_auth,
                                   PKG_IMG_MNT_PT,
                                   mirr_cmd=TM_IPS_SET_MIRROR,
                                   refresh_flag=True)
             if STATUS != TM_E_SUCCESS:
-                print >> sys.stderr, "Unable to set alternate publisher " + \
-                                     "mirror for IPS image"
+                print("Unable to set alternate publisher " + \
+                                     "mirror for IPS image", file=sys.stderr)
                 if QUIT_ON_PKG_FAILURE == 'true':
-                    raise Exception, (sys.argv[0] +
+                    raise Exception(sys.argv[0] +
                                       ": Unable to set the alternate " +
                                       "publisher mirror for IPS image")
 
@@ -500,17 +500,17 @@ if __name__ == "__main__":
     try:
         PKGFILE = open(PKG_FILE_NAME, 'w+')
     except IOError:
-        print >> sys.stderr, "Unable to create " + PKG_FILE_NAME
+        print("Unable to create " + PKG_FILE_NAME, file=sys.stderr)
 
     for pkg in PKGS:
         PKGFILE.write(pkg + '\n')
     PKGFILE.close()
 
-    print >> sys.stderr, "Verifying the contents of the IPS repository"
+    print("Verifying the contents of the IPS repository", file=sys.stderr)
     STATUS = ips_contents_verify(PKG_FILE_NAME, PKG_IMG_MNT_PT)
     if STATUS and QUIT_ON_PKG_FAILURE == 'true':
         os.unlink(PKG_FILE_NAME)
-        raise Exception, (sys.argv[0] + ": Unable to verify the " +
+        raise Exception(sys.argv[0] + ": Unable to verify the " +
                                    "contents of the specified IPS " +
                                    "repository")
 
@@ -519,15 +519,15 @@ if __name__ == "__main__":
 
 
     # And finally install the designated packages.
-    print >> sys.stderr, "Installing the designated packages"
+    print("Installing the designated packages", file=sys.stderr)
 
     STATUS = ips_pkg_op(PKG_FILE_NAME, PKG_IMG_MNT_PT, TM_IPS_RETRIEVE,
                         GEN_IPS_INDEX)
 
     if STATUS and QUIT_ON_PKG_FAILURE == 'true':
-        print >> sys.stderr, "Unable to retrieve all of the specified packages"
+        print("Unable to retrieve all of the specified packages", file=sys.stderr)
         os.unlink(PKG_FILE_NAME)
-        raise Exception, (sys.argv[0] + ": Unable to retrieve all " +
+        raise Exception(sys.argv[0] + ": Unable to retrieve all " +
                                    "of the specified packages")
 
     os.unlink(PKG_FILE_NAME)
@@ -545,27 +545,27 @@ if __name__ == "__main__":
         try:
             PKGFILE = open(PKG_FILE_NAME, 'w+')
         except IOError:
-            print >> sys.stderr, "Unable to create " + PKG_FILE_NAME
+            print("Unable to create " + PKG_FILE_NAME, file=sys.stderr)
 
         for pkg in PKGS:
             PKGFILE.write(pkg + '\n')
         PKGFILE.close()
 
-        print >> sys.stderr, "Uninstalling the designated packages"
+        print("Uninstalling the designated packages", file=sys.stderr)
         STATUS = ips_pkg_op(PKG_FILE_NAME, PKG_IMG_MNT_PT, TM_IPS_UNINSTALL,
                             GEN_IPS_INDEX)
 
         os.unlink(PKG_FILE_NAME)
 
         if STATUS:
-            print >> sys.stderr, "Unable to uninstall all of the " + \
-                                 "specified packages"
+            print("Unable to uninstall all of the " + \
+                                 "specified packages", file=sys.stderr)
 
             if QUIT_ON_PKG_FAILURE == 'true':
-                raise Exception, (sys.argv[0] + ": Unable to uninstall " +
+                raise Exception(sys.argv[0] + ": Unable to uninstall " +
                                   "all of the specified packages")
     else:
-        print >> sys.stdout, "No packages to uninstall"
+        print("No packages to uninstall", file=sys.stdout)
 
     # After all the packages are installed, modify the
     # configuration information in the image so that further
@@ -579,16 +579,16 @@ if __name__ == "__main__":
                                          POST_INSTALL_DEFAULT_AUTH)
 
     if FUTURE_URL is None:
-        raise Exception, (sys.argv[0] +
+        raise Exception(sys.argv[0] +
                           ": future pkg url is missing from manifest")
 
     if FUTURE_AUTH is None:
-        raise Exception, (sys.argv[0] +
+        raise Exception(sys.argv[0] +
                           ": future pkg publisher is missing from manifest")
 
-    print >> sys.stderr, "Setting post-install preferred publisher: " + \
-                         FUTURE_AUTH
-    print >> sys.stderr, "\tOrigin repository: " + FUTURE_URL
+    print("Setting post-install preferred publisher: " + \
+                         FUTURE_AUTH, file=sys.stderr)
+    print("\tOrigin repository: " + FUTURE_URL, file=sys.stderr)
 
     # This is the mountpoint used for validating whether the post-install
     # authorities, URLs and mirrors are valid or not.  We don't want to
@@ -600,35 +600,35 @@ if __name__ == "__main__":
                           pref_flag=True)
     if STATUS != TM_E_SUCCESS:
         dcu.cleanup_dir(VALIDATE_MNTPT)
-        raise Exception, (sys.argv[0] + ": Unable to set the future " +
+        raise Exception(sys.argv[0] + ": Unable to set the future " +
                           "repository")
 
     # unset any authorities not the auth to use in the future
     if ips_cleanup_authorities(UNSET_AUTH_LIST, FUTURE_AUTH, PKG_IMG_MNT_PT):
         dcu.cleanup_dir(VALIDATE_MNTPT)
-        raise Exception, (sys.argv[0] + ": Unable to cleanup installation " +
+        raise Exception(sys.argv[0] + ": Unable to cleanup installation " +
                           "authorities")
 
     # unset any mirrors on the default publisher and any additional
     # authorities.
     if ips_cleanup_mirrors(UNSET_MIRROR_LIST, FUTURE_AUTH, PKG_IMG_MNT_PT):
         dcu.cleanup_dir(VALIDATE_MNTPT)
-        raise Exception, (sys.argv[0] + ": Unable to cleanup installation " +
+        raise Exception(sys.argv[0] + ": Unable to cleanup installation " +
                           "mirrors")
 
     # If there are any default mirrors specified, set them.
     FUTURE_MIRROR_URL_LIST = dcu.get_manifest_list(MANIFEST_SERVER_OBJ,
         POST_INSTALL_DEFAULT_MIRROR_URL)
     for future_url in FUTURE_MIRROR_URL_LIST:
-        print >> sys.stderr, "\tMirror repository: " + future_url
+        print("\tMirror repository: " + future_url, file=sys.stderr)
 
         STATUS = ips_set_auth(future_url, FUTURE_AUTH, PKG_IMG_MNT_PT,
                               mirr_cmd=TM_IPS_SET_MIRROR)
         if STATUS != TM_E_SUCCESS:
-            print >> sys.stderr, "Unable to set the future IPS image mirror"
+            print("Unable to set the future IPS image mirror", file=sys.stderr)
             if QUIT_ON_PKG_FAILURE == 'true':
                 dcu.cleanup_dir(VALIDATE_MNTPT)
-                raise Exception, (sys.argv[0] + ": Unable to set the " +
+                raise Exception(sys.argv[0] + ": Unable to set the " +
                                   "future IPS image mirror")
 
     # If there are any additional repositories and mirrors, set them.
@@ -639,17 +639,17 @@ if __name__ == "__main__":
             POST_INSTALL_ADD_URL_TO_AUTHNAME % future_alt_url)
         if future_alt_auth is None:
             continue
-        print >> sys.stderr, "Setting post-install alternate publisher: " + \
-                             future_alt_auth
-        print >> sys.stderr, "\tOrigin repository: " + future_alt_url
+        print("Setting post-install alternate publisher: " + \
+                             future_alt_auth, file=sys.stderr)
+        print("\tOrigin repository: " + future_alt_url, file=sys.stderr)
  
         STATUS = ips_set_auth(future_alt_url, future_alt_auth, PKG_IMG_MNT_PT)
         if STATUS != TM_E_SUCCESS:
             if QUIT_ON_PKG_FAILURE == 'true':
-                print >> sys.stderr, "Unable to set future alternate " + \
-                                     "publisher for IPS image"
+                print("Unable to set future alternate " + \
+                                     "publisher for IPS image", file=sys.stderr)
                 dcu.cleanup_dir(VALIDATE_MNTPT)
-                raise Exception, (sys.argv[0] + ": Unable to set future " +
+                raise Exception(sys.argv[0] + ": Unable to set future " +
                                   "alternate publisher for IPS image")
             else:
                 # If the set-auth fails, sometimes
@@ -663,19 +663,19 @@ if __name__ == "__main__":
             MANIFEST_SERVER_OBJ,
             POST_INSTALL_ADD_URL_TO_MIRROR_URL % future_alt_url)
         for future_add_mirror_url in future_add_mirror_url_list:
-            print >> sys.stderr, "\tMirror repository: " + \
-                                 future_add_mirror_url
+            print("\tMirror repository: " + \
+                                 future_add_mirror_url, file=sys.stderr)
 
             STATUS = ips_set_auth(future_add_mirror_url,
                                   future_alt_auth,
                                   PKG_IMG_MNT_PT,
                                   mirr_cmd=TM_IPS_SET_MIRROR)
             if STATUS != TM_E_SUCCESS:
-                print >> sys.stderr, "Unable to set future alternate " + \
-                                     "publisher mirror for IPS image"
+                print("Unable to set future alternate " + \
+                                     "publisher mirror for IPS image", file=sys.stderr)
                 if QUIT_ON_PKG_FAILURE == 'true':
                     dcu.cleanup_dir(VALIDATE_MNTPT)
-                    raise Exception, (sys.argv[0] + ": Unable to set future " +
+                    raise Exception(sys.argv[0] + ": Unable to set future " +
                                       "alternate publisher mirror for IPS " +
                                       "image")
     dcu.cleanup_dir(VALIDATE_MNTPT)
@@ -684,7 +684,7 @@ if __name__ == "__main__":
     # This saves us some space.
     STATUS = ips_purge_hist(PKG_IMG_MNT_PT)
     if STATUS and QUIT_ON_PKG_FAILURE == 'true':
-        raise Exception, (sys.argv[0] + ": Unable to purge the IPS package " +
+        raise Exception(sys.argv[0] + ": Unable to purge the IPS package " +
                           "history")
 
     # Create the .image_info file in the pkg_image directory

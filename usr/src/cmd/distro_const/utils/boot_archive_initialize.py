@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.5
 #
 # CDDL HEADER START
 #
@@ -69,7 +69,7 @@ Args:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 if (len(sys.argv) != 6): # Don't forget sys.argv[0] is the script itself.
-    raise Exception, (sys.argv[0] + ": Requires 5 args:\n" +
+    raise Exception(sys.argv[0] + ": Requires 5 args:\n" +
         "    Reader socket, pkg_image area, temp dir,\n" +
         "    boot archive build area, media area.")
 
@@ -85,21 +85,21 @@ BA_INIT_MSG_COPYERR = "boot_archive_initialize: Error copying dir %s to %s"
 # get the manifest reader object from the socket
 MANIFEST_READER_OBJ = ManifestRead(MFEST_SOCKET)
 
-print "Creating boot archive build area and adding files to it..."
+print("Creating boot archive build area and adding files to it...")
 
 
 # Clean out any old files which may exist.
 try:
     shutil.rmtree(BA_BUILD)
 except OSError:
-    print >> sys.stderr, ("Error purging old contents from "
-                         "boot archive build area")
+    print(("Error purging old contents from "
+                         "boot archive build area"), file=sys.stderr)
     raise
 
 try:
     os.mkdir(BA_BUILD)
 except OSError:
-    print >> sys.stderr, "Error creating boot archive build area"
+    print("Error creating boot archive build area", file=sys.stderr)
     raise
 
 FILELIST_NAME = TMP_DIR + "/filelist"
@@ -130,7 +130,7 @@ os.remove(FILELIST_NAME)
 
 # verify that copy suceeded
 if (STATUS != 0):
-    raise Exception, ("boot_archive_initialize: copying files to " +
+    raise Exception("boot_archive_initialize: copying files to " +
                       "boot_archive failed: tm_perform_transfer returned %d"
                       % STATUS)
 
@@ -174,7 +174,7 @@ for item in BA_DIRLIST:
            CPIO + " -pdum " + BA_BUILD)
     STATUS = os.system(CMD)
     if (STATUS != 0):
-        raise Exception, BA_INIT_MSG_COPYERR % (item, BA_BUILD)
+        raise Exception(BA_INIT_MSG_COPYERR % (item, BA_BUILD))
 
 #
 # Remove the list of files to be excluded from the boot archive
@@ -196,8 +196,8 @@ for item in BA_FILEEXCLLIST:
         # We will also get this error if people specified a directory
         # as a file.
         #
-        print >> sys.stderr, "WARNING: Unable to exclude this file " + \
-                "from boot_archive: " + item
+        print("WARNING: Unable to exclude this file " + \
+                "from boot_archive: " + item, file=sys.stderr)
 
 # HACK copy var and etc directory trees to boot_archive
 # this is needed or the symlinking step fails
@@ -209,12 +209,12 @@ FIND_NO_EXCL_CMD = FIND + " %s ! -type f | " + CPIO + " -pdum " + BA_BUILD
 ITEM = "./var"
 STATUS = os.system(FIND_NO_EXCL_CMD % (ITEM))
 if (STATUS != 0):
-    raise Exception, BA_INIT_MSG_COPYERR % (ITEM, BA_BUILD)
+    raise Exception(BA_INIT_MSG_COPYERR % (ITEM, BA_BUILD))
 
 ITEM = "./etc"
 STATUS = os.system(FIND_NO_EXCL_CMD % (ITEM))
 if (STATUS != 0):
-    raise Exception, BA_INIT_MSG_COPYERR % (ITEM, BA_BUILD)
+    raise Exception(BA_INIT_MSG_COPYERR % (ITEM, BA_BUILD))
 
 # cd to the boot archive
 os.chdir(BA_BUILD)
@@ -223,12 +223,12 @@ os.chdir(BA_BUILD)
 # Do mkdir and chmod separately as os.mkdir('tmp', 01777) doesn't work right.
 # The permissions value needs a leading 0 to make it octal too.
 os.mkdir('tmp')
-os.chmod('tmp', 01777)
+os.chmod('tmp', 0o1777)
 
 # create ./proc
-os.mkdir('proc', 0555)
+os.mkdir('proc', 0o555)
 
 # create ./mnt
-os.mkdir('mnt', 0755)
+os.mkdir('mnt', 0o755)
 
 sys.exit(0)

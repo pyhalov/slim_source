@@ -40,13 +40,21 @@ static PyMethodDef libzoneinfoMethods[] = {
 	"Get timezone information from libzoneinfo"},
 	{"tz_isvalid", (PyCFunction)tz_isvalid, METH_VARARGS,
 	"Check if timezone is valid per libzoneinfo"},
-	{NULL, NULL, 0, NULL} };
+	{NULL, NULL, 0, NULL}
+};
 
+static struct PyModuleDef libzoneinfo_module = {
+       PyModuleDef_HEAD_INIT,
+       "libzoneinfo",
+       NULL,
+       -1,
+       libzoneinfoMethods 
+};
 
 PyMODINIT_FUNC
-initlibzoneinfo(void)
+PyInit_libzoneinfo(void)
 {
-	(void) Py_InitModule("libzoneinfo", libzoneinfoMethods);
+	return PyModule_Create(&libzoneinfo_module);
 }
 
 /*
@@ -142,19 +150,19 @@ get_tz_info(PyObject *self, PyObject *args)
 			/*
 			 * Need to get continent list
 			 */
-			item_name = PyString_FromString(pctnt->ctnt_name);
+			item_name = PyUnicode_FromString(pctnt->ctnt_name);
 			if (pctnt->ctnt_id_desc != NULL) {
-				item_desc = PyString_FromString(
+				item_desc = PyUnicode_FromString(
 				    pctnt->ctnt_id_desc);
 			} else {
-				item_desc = PyString_FromString("");
+				item_desc = PyUnicode_FromString("");
 			}
 
 			if (pctnt->ctnt_display_desc != NULL) {
-				item_loc = PyString_FromString(
+				item_loc = PyUnicode_FromString(
 				    pctnt->ctnt_display_desc);
 			} else {
-				item_loc = PyString_FromString("");
+				item_loc = PyUnicode_FromString("");
 			}
 
 			PyTuple_SetItem(tz_tuple, 0, item_name);
@@ -200,19 +208,19 @@ get_tz_info(PyObject *self, PyObject *args)
 				if ((tz_tuple = PyTuple_New(3)) == NULL) {
 					return (Py_BuildValue("O", empty_list));
 				}
-				item_name = PyString_FromString(
+				item_name = PyUnicode_FromString(
 				    pctry->ctry_code);
 				if (pctry->ctry_id_desc != NULL) {
-					item_desc = PyString_FromString(
+					item_desc = PyUnicode_FromString(
 					    pctry->ctry_id_desc);
 				} else {
-					item_desc = PyString_FromString("");
+					item_desc = PyUnicode_FromString("");
 				}
 				if (pctry->ctry_display_desc != NULL) {
-					item_loc = PyString_FromString(
+					item_loc = PyUnicode_FromString(
 					    pctry->ctry_display_desc);
 				} else {
-					item_loc = PyString_FromString("");
+					item_loc = PyUnicode_FromString("");
 				}
 
 				PyTuple_SetItem(tz_tuple, 0, item_name);
@@ -252,18 +260,18 @@ get_tz_info(PyObject *self, PyObject *args)
 				if ((tz_tuple = PyTuple_New(3)) == NULL) {
 					return (Py_BuildValue("O", empty_list));
 				}
-				item_name = PyString_FromString(ptz->tz_name);
+				item_name = PyUnicode_FromString(ptz->tz_name);
 				if (ptz->tz_id_desc != NULL) {
-					item_desc = PyString_FromString(
+					item_desc = PyUnicode_FromString(
 					    ptz->tz_id_desc);
 				} else {
-					item_desc = PyString_FromString("");
+					item_desc = PyUnicode_FromString("");
 				}
 				if (ptz->tz_display_desc != NULL) {
-					item_loc = PyString_FromString(
+					item_loc = PyUnicode_FromString(
 					    ptz->tz_display_desc);
 				} else {
-					item_loc = PyString_FromString("");
+					item_loc = PyUnicode_FromString("");
 				}
 
 				PyTuple_SetItem(tz_tuple, 0, item_name);

@@ -48,7 +48,7 @@ def get_encoding():
 def charwidth(c):
     ''' Count column width needed for given Unicode character
     '''
-    if isinstance(c, str):
+    if isinstance(c, bytes):
         c = c.decode(get_encoding())
     width_class = east_asian_width(c)
 
@@ -61,7 +61,7 @@ def textwidth(text):
     ''' Count column width needed for given string.
         text passed in should be a str or unicode object.
      '''
-    if isinstance(text, str):
+    if isinstance(text, bytes):
         text = text.decode(get_encoding())
     text = text.expandtabs(4)
 
@@ -84,25 +84,25 @@ def if_wrap_on_whitespace():
     else:
         return True
 
-def fit_text_truncate(text, max_width, just="", fillchar=u" "):
+def fit_text_truncate(text, max_width, just="", fillchar=" "):
     ''' Fit a text in max_width columns, by truncating the text if needed.
     If just is one of LEFT, RIGHT, or CENTER, justify text
     and fill unused room with fillchar.
     '''
-    if isinstance(text, str):
+    if isinstance(text, bytes):
         text = text.decode(get_encoding())
 
     text = text.expandtabs(4)
 
     if fillchar is None:
-        fillchar = u" "
-    if isinstance(fillchar, str):
+        fillchar = " "
+    if isinstance(fillchar, bytes):
         fillchar = fillchar.decode(get_encoding())
     if charwidth(fillchar) != 1:
         raise ValueError('Cannot use multi-column character "%c" as '
                          'fillchar.' % fillchar)
 
-    fitted_text = u""
+    fitted_text = ""
     width_total = 0
 
     for char in text:
@@ -128,17 +128,17 @@ def fit_text_truncate(text, max_width, just="", fillchar=u" "):
 
     return fitted_text
 
-def ljust_columns(text, max_width, fillchar=u" "):
+def ljust_columns(text, max_width, fillchar=" "):
     ''' alternative to ljust(); counts multicolumn characters correctly
     '''
     return fit_text_truncate(text, max_width, just=LEFT, fillchar=fillchar)
 
-def rjust_columns(text, max_width, fillchar=u" "):
+def rjust_columns(text, max_width, fillchar=" "):
     ''' alternative to rjust(); counts multicolumn characters correctly
     '''
     return fit_text_truncate(text, max_width, just=RIGHT, fillchar=fillchar)
 
-def center_columns(text, max_width, fillchar=u" "):
+def center_columns(text, max_width, fillchar=" "):
     ''' alternative to center(); counts multicolumn characters correctly
     '''
     return fit_text_truncate(text, max_width, just=CENTER, fillchar=fillchar)
@@ -153,7 +153,7 @@ def convert_paragraph(text, max_chars):
     '''
     wrap_on_whitespace = if_wrap_on_whitespace()
 
-    if isinstance(text, str):
+    if isinstance(text, bytes):
         text = text.decode(get_encoding())
 
     text_lines = text.expandtabs(4).splitlines()
@@ -185,7 +185,7 @@ def convert_paragraph(text, max_chars):
                     start_pt = i
                     width_total = 0
             width_total += width
-            if c == u' ':
+            if c == ' ':
                 if i == start_pt:
                     # not count leading white space
                     width_total -= width

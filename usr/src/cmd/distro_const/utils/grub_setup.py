@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.5
 #
 # CDDL HEADER START
 #
@@ -75,7 +75,7 @@ Note: This assumes a populated pkg_image area exists at the location
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 if (len(sys.argv) != 7): # Don't forget sys.argv[0] is the script itself.
-    raise Exception, (sys.argv[0] + ": Requires 6 args:\n" +
+    raise Exception(sys.argv[0] + ": Requires 6 args:\n" +
     "    Reader socket, pkg_image area, temp dir,\n" +
     "    boot archive build area, media area, grub setup type.")
 
@@ -102,9 +102,9 @@ if RELEASE is not None:
             IMG_INFO_FD = open(IMG_INFO_PATH, "a+")
             IMG_INFO_FD.write(IMAGE_INFO_GRUB_TITLE_KEYWORD +
                 RELEASE + "\n")
-        except Exception, err:
-            print >> sys.stderr, sys.argv[0] +  \
-                     "Unable to write to " + IMG_INFO_PATH 
+        except Exception as err:
+            print(sys.argv[0] +  \
+                     "Unable to write to " + IMG_INFO_PATH, file=sys.stderr) 
             raise err
     finally:
         if (IMG_INFO_FD != None):
@@ -117,17 +117,17 @@ else:
         try:
             RELEASE_FD = open(PKG_IMG_PATH + RELEASE_FILE, "r")
             RELEASE = RELEASE_FD.readline().strip()
-        except Exception, err:
-            print >> sys.stderr, sys.argv[0] + ": " \
-                + FIND_EXTRACT_ERR_MSG
+        except Exception as err:
+            print(sys.argv[0] + ": " \
+                + FIND_EXTRACT_ERR_MSG, file=sys.stderr)
             raise err
     finally:
         if RELEASE_FD is not None:
             RELEASE_FD.close()
 
 if (RELEASE is None or (len(RELEASE.strip()) == 0)):
-    print >> sys.stderr, sys.argv[0] + ": Empty or blank first line in file"
-    raise Exception, sys.argv[0] + ": " + FIND_EXTRACT_ERR_MSG
+    print(sys.argv[0] + ": Empty or blank first line in file", file=sys.stderr)
+    raise Exception(sys.argv[0] + ": " + FIND_EXTRACT_ERR_MSG)
 
 #
 # For purposes of network automated installation (AI), pass (via .image_info
@@ -149,18 +149,18 @@ if (GRUB_SETUP_TYPE == "ai"):
         with open(IMG_INFO_PATH, "a+") as image_info:
             image_info.write("%s%s\n" % (IMAGE_INFO_GRUB_MIN_MEM64_KEYWORD,
                              min_mem64))
-	    image_info.write("%s%s\n" %
+            image_info.write("%s%s\n" %
 		(IMAGE_INFO_GRUB_DO_SAFE_DEFAULT_KEYWORD, do_safe_default))
-    except Exception, err:
-        print >> sys.stderr, sys.argv[0] + \
-                 " : Unable to write to " + IMG_INFO_PATH
+    except Exception as err:
+        print(sys.argv[0] + \
+                 " : Unable to write to " + IMG_INFO_PATH, file=sys.stderr)
         raise err
 
 # Open menu.lst file.
 try:
     MENU_LST_FILE = open(PKG_IMG_PATH + "/boot/grub/menu.lst", "w")
-except IOError, err:
-    print >> sys.stderr, "Error opening grub menu.lst for writing"
+except IOError as err:
+    print("Error opening grub menu.lst for writing", file=sys.stderr)
     raise
 
 # Get default entry from manifest, if it exists.
@@ -292,11 +292,11 @@ for name in ENTRY_NAMES:
             position = int(position_str)
             ENTRIES.insert(position, ENTRY)
         except ValueError:
-            print >> sys.stderr, ("Position specified for the \"" +
-                                  RELEASE + " " + name + "\" entry")
-            print >> sys.stderr, ("    is not a positive number.  " +
-                "Found: " + position_str)
-            print >> sys.stderr, "    Placing at the end of the list"
+            print(("Position specified for the \"" +
+                                  RELEASE + " " + name + "\" entry"), file=sys.stderr)
+            print(("    is not a positive number.  " +
+                "Found: " + position_str), file=sys.stderr)
+            print("    Placing at the end of the list", file=sys.stderr)
             ENTRIES.append(ENTRY)
 
 for entry in ENTRIES:

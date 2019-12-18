@@ -27,6 +27,7 @@ Object to represent Partitions
 '''
 
 from copy import copy, deepcopy
+from functools import cmp_to_key
 import logging
 
 import osol_install.tgt as tgt
@@ -390,7 +391,7 @@ class PartitionInfo(object):
     
     def sort_disk_order(self):
         '''Sort slices by disk order'''
-        self.slices.sort(cmp=SliceInfo.compare)
+        self.slices = sorted(self.slices, key=cmp_to_key(SliceInfo.compare))
     
     def get_parts(self):
         '''Return the slices on this partition. Provided for interface
@@ -428,8 +429,8 @@ class PartitionInfo(object):
             self.slices.remove(alt_slice)
         
         parts = copy(self.slices)
-        parts.sort(cmp=SliceInfo.compare)
-        numbers = range(SliceInfo.MAX_SLICES)
+        parts = sorted(parts, key=cmp_to_key(SliceInfo.compare))
+        numbers = list(range(SliceInfo.MAX_SLICES))
         numbers.remove(SliceInfo.BACKUP_SLICE)
         backup_part = None
         for part in parts:

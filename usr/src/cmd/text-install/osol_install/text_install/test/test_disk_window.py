@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.5
 #
 # CDDL HEADER START
 #
@@ -26,11 +26,11 @@
 To run these tests:
 
 1) nightly -n developer.sh # build the gate
-2) export PYTHONPATH=${WS}/proto/root_i386/usr/snadm/lib:${WS}/proto/root_i386/usr/lib/python2.7/vendor-packages
-3) python2.7 test_disk_window.py
+2) export PYTHONPATH=${WS}/proto/root_i386/usr/snadm/lib:${WS}/proto/root_i386/usr/lib/python3.5/vendor-packages
+3) python3.5 test_disk_window.py
 
 A single test may be run by specifying the test as an argument to step 3:
-python2.7 test_disk_window.py UpdateEditField.test_part_info_not_editable
+python3.5 test_disk_window.py UpdateEditField.test_part_info_not_editable
 
 Since the proto area is used for the PYTHONPATH, the gate must be rebuilt for
 these tests to pick up any changes in the tested code.
@@ -195,7 +195,7 @@ class UpdateEditField(TestDiskWindow):
         self.disk_win._update_edit_field(self.part_info, self.part_field,
                                          self.edit_field)
         self.assertFalse(self.edit_field.active)
-        self.assertEquals(len(self.part_field.objects), 0)
+        self.assertEqual(len(self.part_field.objects), 0)
         self.assertTrue(self.part_field.active_object is None)
 
     def test_part_info_editable_no_active_win(self):
@@ -235,12 +235,12 @@ class UpdateEditField(TestDiskWindow):
         self.inner_win.objects.append(self.part_field)
         self.inner_win.active_object = 0
 
-        self.assertEquals(self.disk_win.active_object, 0)
+        self.assertEqual(self.disk_win.active_object, 0)
         self.assertTrue(self.part_field.active_object is None)
 
         self.disk_win._update_edit_field(self.part_info, self.part_field,
                                          self.edit_field)
-        self.assertEquals(self.part_field.active_object, 0)
+        self.assertEqual(self.part_field.active_object, 0)
         self.assertTrue(self.edit_field.active)
         
 

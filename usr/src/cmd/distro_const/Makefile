@@ -42,7 +42,7 @@ PYMODULES=	dc_checkpoint.py \
 		DefaultsModule.py \
 		dc_utils.py
 
-PYCMODULES=	$(PYMODULES:%.py=%.pyc)
+PYCMODULES=	$(PYMODULES:%.py=__pycache__/%.cpython$(PYTHON3_PKGVERS).pyc)
 
 MANIFEST_FILES= DC-manifest.defval.xml \
 		DC-manifest.rng

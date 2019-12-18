@@ -327,7 +327,7 @@ class InnerWindow(object):
         
         '''
         win_y, win_x = self.window.getmaxyx()
-        logging.log(LOG_LEVEL_INPUT, "start_y=%d, start_x=%d, max_chars=%s, "
+        logging.log(LOG_LEVEL_INPUT, "start_y=%s, start_x=%s, max_chars=%s, "
                     "centered=%s, win_max_x=%s, win_max_y=%s",
                     start_y, start_x, max_chars, centered, win_x, win_y)
         max_x = self.window.getmaxyx()[1] - self.border_size[1]
@@ -342,9 +342,9 @@ class InnerWindow(object):
         text = fit_text_truncate(text, max_chars)
 
         if centered:
-            start_x = (max_x - textwidth(text)) / 2 + start_x
+            start_x = int((max_x - textwidth(text)) / 2) + start_x
         
-        text = unicode(text)
+        text = str(text)
         text = text.encode(get_encoding())
         logging.log(LOG_LEVEL_INPUT, "calling addstr with params start_y=%s,"
                     "start_x=%s, text=%s", start_y, start_x, text)
@@ -374,7 +374,7 @@ class InnerWindow(object):
             max_x = win_size_x
         max_chars = max_x - start_x - self.border_size[1] * 2
         y_index = start_y
-        if isinstance(text, basestring):
+        if isinstance(text, str):
             text = convert_paragraph(text, max_chars)
         for line in text:
             logging.log(LOG_LEVEL_INPUT, "add_paragraph:add_text: y_index=%d, "

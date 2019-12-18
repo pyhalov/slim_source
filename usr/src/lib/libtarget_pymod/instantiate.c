@@ -36,7 +36,7 @@
 #include "ti_api.h"
 #include <sys/dktp/fdisk.h>
 
-#if defined(i386)
+#if defined(__i386) || defined(__amd64__)
 static int create_fdisk_target(PyObject *self, TgtDisk *disk);
 #endif
 
@@ -48,7 +48,7 @@ static int create_vtoc_target(PyObject *self, TgtDisk *disk,
 
 static char *zfs_fs_names[ZFS_FS_NUM] = {"/", "/var"};
 
-#if defined(i386)
+#if defined(__i386) || defined(__amd64__)
 /*
  * create_fdisk_target
  * Create the nvlist for the creation of an fdisk target via the TI module.
@@ -480,7 +480,7 @@ create_disk_target(PyObject *self, PyObject *args)
 		return (NULL);
 	}
 
-#if defined(i386)
+#if defined(__i386) || defined(__amd64__)
 	ret = create_fdisk_target(self, (TgtDisk *)disk);
 	if (ret != TI_E_SUCCESS) {
 		raise_ti_errcode(ret);

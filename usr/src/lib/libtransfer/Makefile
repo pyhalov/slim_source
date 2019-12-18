@@ -27,7 +27,7 @@
 PYMODS = transfer_mod.py \
 	 transfer_defs.py
 
-PYCMODS =	$(PYMODS:%.py=%.pyc)
+PYCMODS =	$(PYMODS:%.py=__pycache__/%.cpython$(PYTHON3_PKGVERS).pyc)
 
 EXPHDRS = transfermod.h
 

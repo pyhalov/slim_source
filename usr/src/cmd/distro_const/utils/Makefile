@@ -39,7 +39,7 @@ PYMODULES=	boot_archive_initialize.py \
 		plat_setup.py \
 		pre_boot_archive_pkg_image_mod.py
 
-PYCMODULES=	$(PYMODULES:%.py=%.pyc)
+PYCMODULES=	$(PYMODULES:%.py=__pycache__/%.cpython$(PYTHON3_PKGVERS).pyc)
 
 DC_UTIL_FILES=	mkrepo \
 		create_iso \

@@ -32,7 +32,7 @@ CPYTHONLIBS	= libti.so
 
 PYMODS		= ti_defs.py
 
-PYCMODS =       $(PYMODS:%.py=%.pyc)
+PYCMODS =       $(PYMODS:%.py=__pycache__/%.cpython$(PYTHON3_PKGVERS).pyc)
 
 PRIVHDRS	=
 EXPHDRS		=
@@ -46,7 +46,7 @@ python:
 
 include ../Makefile.lib
 
-INCLUDE		= -I/usr/include/python2.7 -I../libti
+INCLUDE		= -I$(PYINCDIR) -I../libti
 
 CPPFLAGS	+= ${INCLUDE} $(CPPFLAGS.master) -D_FILE_OFFSET_BITS=64
 CFLAGS		+= $(DEBUG_CFLAGS)  ${CPPFLAGS}

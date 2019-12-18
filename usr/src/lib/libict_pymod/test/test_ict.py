@@ -66,12 +66,12 @@ class TestICTBase(unittest.TestCase):
     def tearDown(self):
         try:
             os.remove(self.loc_grubmenu)
-        except StandardError:
+        except Exception:
             pass
         
         try:
             os.remove(self.new_grub)
-        except StandardError:
+        except Exception:
             pass
         
         # Restore the get_special_grub_entry function

@@ -36,7 +36,7 @@ import sys
 # Declare new classes for errors thrown from this file's classes.
 # =============================================================================
 
-class ParserError(StandardError):
+class ParserError(Exception):
     """ Exceptions encountered or generated during parsing. """
     pass
 
@@ -174,7 +174,7 @@ quotes.
 #
 __ST_START, __ST_STSL, __ST_N0, __ST_N, __ST_P0, __ST_P, __ST_V0, __ST_V, \
     __ST_DQON, __ST_DQOFF, __ST_SQON, __ST_SQOFF, __ST_CBKT, __ST_TCMPL, \
-    __ST_EXSL, __ST_ERR = range(16)
+    __ST_EXSL, __ST_ERR = list(range(16))
 
 # __ST_ERR has no "current state" storage in the table.
 # When __ST_ERR is hit, the method using the table exits.
@@ -416,10 +416,10 @@ def __get_next_state(curr_state, curr_char, double_quote_active,
 
         # Missing state in the table.  Programming error.
         except IndexError:
-            print >> sys.stderr, ("Unexpected Internal " +
+            print(("Unexpected Internal " +
                                   "IndexError: curr state:%d, curr char:%s" % (
-                                  curr_state, curr_char))
-            raise ParserError, __MSG_PARSER_ERROR
+                                  curr_state, curr_char)), file=sys.stderr)
+            raise ParserError(__MSG_PARSER_ERROR)
 
     # Non-special character.
     return __STATE_TABLE[curr_state].normal_char_next_state
@@ -548,10 +548,10 @@ def parse_nodepath(nodepath):
 
         # Error.
         elif (new_state == __ST_ERR):
-            print >> sys.stderr, "Error parsing nodepath"
-            print >> sys.stderr, (
+            print("Error parsing nodepath", file=sys.stderr)
+            print((
                                   "At index %d, remaining string:%s" % (
-                                  curr_char_idx, nodepath[curr_char_idx:]))
+                                  curr_char_idx, nodepath[curr_char_idx:])), file=sys.stderr)
 
         # Extra slash received.  Just eat it.
         elif (new_state == __ST_EXSL):
@@ -563,8 +563,8 @@ def parse_nodepath(nodepath):
             new_state = __ST_ERR
 
         else:	# Shouldn't get here
-            print >> sys.stderr, ("Oops!  parse_nodepath " +
-                                  "unexpected state: %d" % (new_state))
+            print(("Oops!  parse_nodepath " +
+                                  "unexpected state: %d" % (new_state)), file=sys.stderr)
             new_state = __ST_ERR
 
         # Note: Explicit transition to the start state will never occur.
@@ -581,13 +581,13 @@ def parse_nodepath(nodepath):
     if (new_state == __ST_ERR):
         if (error_msg is None):
             error_msg = __MSG_PARSER_ERROR
-        raise ParserError, error_msg
+        raise ParserError(error_msg)
 
     if (double_quote_active or single_quote_active):
-        raise ParserError, __MSG_QUOTE_MISMATCH
+        raise ParserError(__MSG_QUOTE_MISMATCH)
 
     if (bracket_active):
-        raise ParserError, __MSG_BKT_MISMATCH
+        raise ParserError(__MSG_BKT_MISMATCH)
 
     # No errors.  Append the token in progress.
     if (token_in_progress):

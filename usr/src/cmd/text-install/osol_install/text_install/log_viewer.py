@@ -72,7 +72,7 @@ class LogViewer(BaseScreen):
                 try:
                     log_file = open(self.install_profile.log_location)
                     log_data = log_file.read()
-                except (OSError, IOError), error:
+                except (OSError, IOError) as error:
                     self.log_data = _("Could not read log file:\n\t%s") % \
                                     error.strerror
             finally:

@@ -108,7 +108,7 @@ def print_all_disks(disks=None):
     if disks is None:
         disks = tgt.discover_target_data()
     for disk in disks:
-        print str(disk)
+        print(str(disk))
 
 
 if __name__ == '__main__':

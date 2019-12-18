@@ -25,46 +25,46 @@
 from libtransfer import *
 from transfer_mod import *
 
-execfile('./transfer_defs.py')
+exec(compile(open('./transfer_defs.py', "rb").read(), './transfer_defs.py', 'exec'))
 num_failed= 0
 
 # Test missing TM_IPS_INIT_MNTPT, should FAIL 
-print "Test missing TM_IPS_INIT_MNTPT. Should FAIL"
+print("Test missing TM_IPS_INIT_MNTPT. Should FAIL")
 status = tm_perform_transfer([
 	    (TM_ATTR_MECHANISM, TM_PERFORM_IPS),
 	    (TM_IPS_ACTION, TM_IPS_REFRESH)])
 if status == TM_E_SUCCESS:
 	num_failed += 1
-	print "PASS"
+	print("PASS")
 else:
-	print "FAIL"
+	print("FAIL")
 
 # Test invalid mountpoint. Should Fail 
-print "Test invalid mountpoint. Should FAIL"
+print("Test invalid mountpoint. Should FAIL")
 status = tm_perform_transfer([
 	    (TM_ATTR_MECHANISM, TM_PERFORM_IPS),
 	    (TM_IPS_ACTION, TM_IPS_REFRESH),
 	    (TM_IPS_INIT_MNTPT, '/export/home/testZ')])
 if status == TM_E_SUCCESS:
 	num_failed += 1
-	print "PASS"
+	print("PASS")
 else:
-	print "FAIL"
+	print("FAIL")
 
 # Test invalid attributes. Should Fail 
-print "Test invalid attributes. Should FAIL"
+print("Test invalid attributes. Should FAIL")
 status = tm_perform_transfer([
 	    (TM_ATTR_MECHANISM, TM_PERFORM_IPS),
 	    (TM_IPS_ACTION, TM_IPS_REFRESH),
 	    ("tm_a", '/export/home/test1')])
 if status == TM_E_SUCCESS:
 	num_failed += 1
-	print "PASS"
+	print("PASS")
 else:
-	print "FAIL"
+	print("FAIL")
 
 if num_failed != 0:
-	print "Check your results %d tests didn't perform as expected" % num_failed
+	print("Check your results %d tests didn't perform as expected" % num_failed)
 else:
-	print "Tests performed as expected"
+	print("Tests performed as expected")
 

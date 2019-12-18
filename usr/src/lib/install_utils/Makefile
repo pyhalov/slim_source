@@ -42,7 +42,7 @@ PYMODS =	__init__.py \
 		ManifestRead.py \
 		SocketServProtocol.py
 
-PYCMODS=	$(PYMODS:%.py=%.pyc)
+PYCMODS=	$(PYMODS:%.py=__pycache__/%.cpython$(PYTHON3_PKGVERS).pyc)
 
 ROOTRNGSCHEMA   = $(ROOT)/usr/share/lib/xml/rng
 RNG_SCHEMA=	defval-manifest.rng

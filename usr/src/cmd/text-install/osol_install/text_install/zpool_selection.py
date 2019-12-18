@@ -93,8 +93,8 @@ class ZpoolScreen(BaseScreen):
                         textwidth(ZpoolScreen.BE_NAME_UNALLOWED_ERROR),
                         textwidth(ZpoolScreen.NO_POOLS))
 
-        self.max_text_len = (self.win_size_x - ZpoolScreen.BE_SCREEN_LEN -
-                             ZpoolScreen.ITEM_OFFSET) / 2
+        self.max_text_len = int((self.win_size_x - ZpoolScreen.BE_SCREEN_LEN -
+                             ZpoolScreen.ITEM_OFFSET) / 2)
         self.text_len = min(max_field + 1, self.max_text_len)
         self.list_area = WindowArea(1, self.text_len, 0,
                                     ZpoolScreen.ITEM_OFFSET)
@@ -244,7 +244,7 @@ class ZpoolScreen(BaseScreen):
          
         y_loc += 2
         boot_configuration_width = textwidth(ZpoolScreen.OVERWRITE_BOOT_CONFIGURATION_LABEL) + 5
-        cols = (self.win_size_x - boot_configuration_width) / 2
+        cols = int((self.win_size_x - boot_configuration_width) / 2)
         boot_configuration_area = WindowArea(1, boot_configuration_width, y_loc, cols)
 
         self.boot_configuration_item = MultiListItem(boot_configuration_area,
@@ -276,16 +276,16 @@ class ZpoolScreen(BaseScreen):
 
     def validate(self):
         if not self.pool_win:
-            raise UIMessage, ZpoolScreen.NO_POOLS
+            raise UIMessage(ZpoolScreen.NO_POOLS)
         pool_name = self.existing_pools[self.pool_win.active_object]
         be_name = self.be_name_edit.get_text()
         if not be_name:
-            raise UIMessage, ZpoolScreen.BE_NAME_EMPTY_ERROR
+            raise UIMessage(ZpoolScreen.BE_NAME_EMPTY_ERROR)
 
         be_names = get_zpool_be_names(pool_name)
         if be_name in be_names:
             filesystem_dict = {"pool_name": pool_name, "be_name": be_name}
-            raise UIMessage, ZpoolScreen.FILESYSTEM_EXISTS_ERROR % filesystem_dict
+            raise UIMessage(ZpoolScreen.FILESYSTEM_EXISTS_ERROR % filesystem_dict)
 
 def on_activate(pool_select=None):
     '''When a pool is selected, note that it should be copied'''
@@ -299,11 +299,11 @@ def be_name_valid(edit_field):
 
     be_name = edit_field.get_text()
     if not be_name:
-        raise UIMessage, ZpoolScreen.BE_NAME_EMPTY_ERROR
+        raise UIMessage(ZpoolScreen.BE_NAME_EMPTY_ERROR)
     
     search = re.compile(r'[^a-zA-Z0-9_\-]').search
     if bool(search(be_name)):
-        raise UIMessage, ZpoolScreen.BE_NAME_UNALLOWED_ERROR
+        raise UIMessage(ZpoolScreen.BE_NAME_UNALLOWED_ERROR)
 
     return True
 

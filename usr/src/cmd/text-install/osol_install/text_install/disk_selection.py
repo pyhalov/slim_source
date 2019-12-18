@@ -397,7 +397,7 @@ class DiskScreen(BaseScreen):
         # During the call to _show, if an exception occurred, the program
         # aborts gracefully
         # pylint: disable-msg=W0703
-        except BaseException, err:
+        except BaseException as err:
             logging.exception(traceback.format_exc())
             disks.insert(0, err)
 

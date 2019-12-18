@@ -148,7 +148,7 @@ class InstallProgress(BaseScreen):
         try:
             perform_ti_install(install_profile, screen, update_status,
                                quit_event, time_change_event)
-        except BaseException, ex:
+        except BaseException as ex:
             logging.exception(ex)
     
     @staticmethod

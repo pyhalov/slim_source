@@ -219,35 +219,38 @@ raise_ti_errcode(int ti_errno)
 }
 
 
-PyDoc_STRVAR(TgtDoc,
-"This module provides tgt.Disk, tgt.Partition, and tgt.Slice types.");
+static struct PyModuleDef tgt_module = {
+        PyModuleDef_HEAD_INIT,
+        "tgt",
+        "This module provides tgt.Disk, tgt.Partition, and tgt.Slice types.",
+        -1,
+        TgtMethods 
+};
 
-#ifndef	PyMODINIT_FUNC
-#define	PyMODINIT_FUNC void
-#endif	/* PyMODINIT_FUNC */
+
 PyMODINIT_FUNC
-inittgt(void)
+PyInit_tgt(void)
 {
 	PyObject *module = NULL;
 	PyObject *unknown = NULL;
 
 	/* The type objects provided */
 	if (PyType_Ready(&TgtGeometryType) < 0)
-		return;
+		return NULL;
 	if (PyType_Ready(&TgtDiskType) < 0)
-		return;
+		return NULL;
 	if (PyType_Ready(&TgtPartitionType) < 0)
-		return;
+		return NULL;
 	if (PyType_Ready(&TgtSliceType) < 0)
-		return;
+		return NULL;
 	if (PyType_Ready(&TgtZpoolType) < 0)
-		return;
+		return NULL;
 	if (PyType_Ready(&TgtZFSDatasetType) < 0)
-		return;
+		return NULL;
 
-	module = Py_InitModule3("tgt", TgtMethods, TgtDoc);
+	module = PyModule_Create(&tgt_module);
 	if (module == NULL)
-		return;
+		return NULL;
 
 
 	Py_INCREF(&TgtGeometryType);
@@ -268,10 +271,11 @@ inittgt(void)
 	PyModule_AddObject(module, "TgtError", TgtError);
 
 	/* Initialize each type object. */
-	unknown = PyString_FromString("unknown");
+	unknown = PyUnicode_FromString("unknown");
 	init_disk(unknown);
 	init_partition(unknown);
 	init_slice(unknown);
+	return module;
 }
 
 PyObject *retrieve_tgt_utils_module() {

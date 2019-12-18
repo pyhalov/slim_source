@@ -50,7 +50,7 @@ class FileSaveError(IOError):
     """Exception for errors saving the xml tree. """
     pass
 
-class TreeAccError(StandardError):
+class TreeAccError(Exception):
     """Base exception for non-system errors."""
     pass
 class PathNotUniqueError(TreeAccError):
@@ -135,18 +135,18 @@ class TreeAccNode:
         """
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         if (name is None):
-            raise InvalidArgError, ("TreeAccNode init: name cannot be None")
+            raise InvalidArgError(("TreeAccNode init: name cannot be None"))
 
         if ((node_type != TreeAccNode.ELEMENT) and
             (node_type != TreeAccNode.ATTRIBUTE)):
-            raise InvalidArgError, ("TreeAccNode init: invalid node type")
+            raise InvalidArgError(("TreeAccNode init: invalid node type"))
 
         if ((node_type == TreeAccNode.ATTRIBUTE) and (value is None)):
-            raise InvalidArgError, ("TreeAccNode init: " +
+            raise InvalidArgError("TreeAccNode init: " +
                                     "missing attribute value")
 
         if (element_node is None):
-            raise InvalidArgError, ("TreeAccNode init: " +
+            raise InvalidArgError("TreeAccNode init: " +
                                     "missing element_node arg")
 
         self.__name = name
@@ -328,7 +328,7 @@ class TreeAccNode:
         ret_string += "\n    Value:" + self.__value
         ret_string += "\n    Path:" + self.__path
         ret_string += "\n    Attributes:"
-        for key, value in self.__attr_dict.iteritems():
+        for key, value in self.__attr_dict.items():
             ret_string += "\n        " + key + ": " + value
         return ret_string
 
@@ -507,11 +507,11 @@ class TreeAcc:
         # Read file into memory.
         try:
             self.treedoc = minidom.parse(xml_file.strip())
-        except IOError, err:
-            raise TreeAccError, ("Error opening xml file %s: %s" %
+        except IOError as err:
+            raise TreeAccError("Error opening xml file %s: %s" %
                                 (xml_file.strip(), errno.errorcode[err.errno]))
-        except (DOMException, ExpatError), err:
-            raise TreeAccError, ("Error parsing xml file %s" %
+        except (DOMException, ExpatError) as err:
+            raise TreeAccError("Error parsing xml file %s" %
                                  (xml_file.strip()))
 
         # Save root document element.
@@ -562,8 +562,8 @@ class TreeAcc:
         try:
             return self.__find_node_w_pathlist(parse_nodepath(path),
                                                starting_ta_node)
-        except ParserError, err:
-            raise BadNodepathError, "Error parsing nodepath: " + str(err)
+        except ParserError as err:
+            raise BadNodepathError("Error parsing nodepath: " + str(err))
 
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1061,12 +1061,12 @@ class TreeAcc:
 
         # No match.
         if (len(matches) == 0):
-            raise NodeNotFoundError, (("replace_value: node %s not " +
+            raise NodeNotFoundError(("replace_value: node %s not " +
                                       "found") % path)
 
         # Multiple matches.
         if (len(matches) > 1):
-            raise PathNotUniqueError, (("replace_value: path %s matches " +
+            raise PathNotUniqueError(("replace_value: path %s matches " +
                                         "multiple nodes") % path)
 
         # Get the DOM element node of the one match.  If the target
@@ -1135,20 +1135,20 @@ class TreeAcc:
         # Type must be an ELEMENT or an ATTRIBUTE
         if ((node_type != TreeAccNode.ELEMENT) and
             (node_type != TreeAccNode.ATTRIBUTE)):
-            raise InvalidArgError, "invalid type specified"
+            raise InvalidArgError("invalid type specified")
 
         # Enforce arg restrictions applicable when adding attributes.
         if (node_type == TreeAccNode.ATTRIBUTE):
             if (value is None):
-                raise InvalidArgError, ("add_node: missing attribute value")
+                raise InvalidArgError(("add_node: missing attribute value"))
             if (not is_unique):
-                raise InvalidArgError, ("add_node: is_unique must be True " +
+                raise InvalidArgError("add_node: is_unique must be True " +
                                         "when adding attributes")
 
         path_tokens = parse_nodepath(path)
         if (len(path_tokens) == 0):
-            raise InvalidArgError, (
-                                    "add_node: provided path is empty")
+            raise InvalidArgError((
+                                    "add_node: provided path is empty"))
 
         # Note: can have non-unique attribute paths, as can have same
         # attribute on sibling elements, e.g. two users both have
@@ -1166,7 +1166,7 @@ class TreeAcc:
         # Have at least one match for an existing node.
         if (len(matches) > 0):
             if (is_unique):
-                raise NodeExistsError, ("add_node: Node with given " +
+                raise NodeExistsError("add_node: Node with given " +
                                         "path %s exists" % path)
 
             # More than one match.
@@ -1182,7 +1182,7 @@ class TreeAcc:
                     if (parent_element is not
                         matches[i].get_element_node().
                         parentNode):
-                        raise AmbiguousParentNodeError, (("add_node: " +
+                        raise AmbiguousParentNodeError(("add_node: " +
                                                           "multiple nodes " +
                                                           "matching %s " +
                                                           "don't have " +
@@ -1211,10 +1211,10 @@ class TreeAcc:
             matches = self.__find_node_w_pathlist(parent_path_tokens,
                                                   starting_ta_node)
             if (len(matches) == 0):
-                raise ParentNodeNotFoundError, ("add_node: parent node to " +
+                raise ParentNodeNotFoundError("add_node: parent node to " +
                                                 "%s not found" % path)
             if (len(matches) > 1):
-                raise AmbiguousParentNodeError, (("add_node: multiple nodes " +
+                raise AmbiguousParentNodeError(("add_node: multiple nodes " +
                                                   "matching %s don't have " +
                                                   "common parent") % path)
 
@@ -1315,7 +1315,7 @@ class TreeAcc:
             return None
 
         try:
-            tree_walker.curr_node = tree_walker.walker.next()
+            tree_walker.curr_node = next(tree_walker.walker)
         except StopIteration:
             tree_walker.curr_node = None
         return self.get_treeaccnode_clust_fm_elem(ret_node)
@@ -1344,8 +1344,8 @@ class TreeAcc:
         # Open the file.
         try:
             fp = open(out_file, "w")
-        except IOError, err:
-            raise FileOpenError, errno.errorcode[err.errno]
+        except IOError as err:
+            raise FileOpenError(errno.errorcode[err.errno])
 
         # If the original document contained a reference to an external
         # DTD, then reconstruct the DOCTYPE field and write it out at
@@ -1366,8 +1366,8 @@ class TreeAcc:
             fp.write(self.treeroot.toprettyxml(
                      indent="", newl=""))
             fp.write("\n")
-        except IOError, err:
-            raise FileSaveError, errno.errorcode[err.errno]
+        except IOError as err:
+            raise FileSaveError(errno.errorcode[err.errno])
 
         finally:
             # Ignore errors on close.
@@ -1440,7 +1440,7 @@ class TreeAcc:
 
         # Build TreeAccNodes for any attributes.
         try:
-            for attr, attrvalue in elem_attr_dict.items():
+            for attr, attrvalue in list(elem_attr_dict.items()):
                 attr_attr_dict = {}
                 attr_attr_dict[attr] = attrvalue
                 retlist.append(TreeAccNode(attr,

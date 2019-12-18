@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3.5
 #
 # CDDL HEADER START
 #
@@ -101,7 +101,7 @@ OVERWRITE_BOOT_CONFIG = True # argument C
 try:
     OPTS, ARGS = getopt.getopt(sys.argv[1:],'B:d:R:n:l:p:G:U:NF:I:M:D:O:W:C')
 
-except getopt.GetoptError, err:
+except getopt.GetoptError as err:
     prerror('Parsing command line arguments failed. (%s)' % str(err))
 
     prerror('Usage: -B <target basedir>')

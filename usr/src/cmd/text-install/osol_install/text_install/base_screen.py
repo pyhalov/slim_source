@@ -28,7 +28,7 @@ Common screen functionality for text installer UI
 
 from osol_install.text_install import _
 
-class QuitException(StandardError):
+class QuitException(Exception):
     '''Raised when a function needs to force the program to quit gracefully'''
     pass
 
@@ -38,12 +38,12 @@ class RebootException(SystemExit):
     pass
 
 
-class SkipException(StandardError):
+class SkipException(Exception):
     '''Raised to signal this screen should be skipped'''
     pass
 
 
-class UIMessage(StandardError):
+class UIMessage(Exception):
     '''Exception class for passing an error message to the UI'''
     
     def get_message(self):
@@ -136,7 +136,7 @@ class BaseScreen(object):
         set-up any lists, editable fields, or text relevant to this screen
         
         '''
-        raise NotImplementedError, "Subclasses must override the 'show' method"
+        raise NotImplementedError("Subclasses must override the 'show' method")
     
     def validate_loop(self):
         '''
@@ -156,7 +156,7 @@ class BaseScreen(object):
                     self.on_continue()
                 except UIMessage as msg:
                     self.main_win.screen_list.previous_screen()
-                    error_str = unicode(msg)
+                    error_str = str(msg)
                     if error_str:
                         self.main_win.error_line.display_err(error_str)
             elif next_screen is None:

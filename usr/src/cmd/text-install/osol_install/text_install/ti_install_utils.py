@@ -239,7 +239,7 @@ class SwapDump:
         if (available_space < size):
             size = available_space - 1024
 
-        return (int)(size)	# Make sure size is an int
+        return int(size)	# Make sure size is an int
 
     def get_swap_device(self, pool_name):
         ''' Return the string representing the device used for swap '''
@@ -273,11 +273,11 @@ def get_image_size():
                     # the file, and convert to integer
                     img_size = int(val.rstrip('\n'))
                     break
-    except IOError, ioe:
+    except IOError as ioe:
         logging.error("Failed to access %s", IMAGE_INFO)
         logging.exception(ioe)
         raise InstallationError
-    except ValueError, ive:
+    except ValueError as ive:
         logging.error("Invalid file format in %s", IMAGE_INFO)
         logging.exception(ive)
         raise InstallationError
@@ -360,7 +360,7 @@ def save_timezone_in_init(basedir, timezone):
     init_file = basedir + INIT_FILE
     try:
         with open(init_file, 'r') as ih:
-            with NamedTemporaryFile(dir="/tmp", delete=False) as th:
+            with NamedTemporaryFile(dir="/tmp", delete=False, mode='w') as th:
                 tmp_fname = th.name
 
                 for line in ih:
@@ -375,7 +375,7 @@ def save_timezone_in_init(basedir, timezone):
                     new_line = TIMEZONE_KW + "=" + timezone + "\n"
                     th.write(new_line)
 
-		th.close()
+                th.close()
 
                 # Set the owner, group and permission bits from original file
                 # to temp file.  The copystat() call will cause the last
@@ -385,7 +385,7 @@ def save_timezone_in_init(basedir, timezone):
                 shutil.copystat(init_file, tmp_fname)
                 shutil.copy2(tmp_fname, init_file)
                 os.remove(tmp_fname)
-    except IOError, ioe:
+    except IOError as ioe:
         logging.error("Failed to save timezone into %s", init_file)
         logging.exception(ioe)
         raise InstallationError
@@ -403,7 +403,7 @@ def setup_etc_vfstab_for_swap(swap_device, basedir):
         with open (fname, 'a+') as vf:
             vf.write("%s\t%s\t\t%s\t\t%s\t%s\t%s\t%s\n" % 
                         (swap_device, "-", "-", "swap", "-", "no", "-"))
-    except IOError, ioe:
+    except IOError as ioe:
         logging.error("Failed to write to %s", fname)
         logging.exception(ioe)
         raise InstallationError
@@ -417,9 +417,10 @@ def pool_list(arg):
 
     try:
         (zpoolout, zpoolerr) = Popen(argslist, stdout=PIPE,
-                  stderr=PIPE).communicate()
+                                     universal_newlines=True,
+                                     stderr=PIPE).communicate()
 
-    except OSError, err:
+    except OSError as err:
         logging.error("OSError occured during zpool call: %s", err)
         return pool_names
 
@@ -465,8 +466,9 @@ def get_zpool_free_size(name):
             argslist = ["/usr/sbin/zfs", "get", "-Hp", "-o", "value",
                         "available", name]
             (zfsout, zfserr) = Popen(argslist, stdout=PIPE,
-       	          stderr=PIPE).communicate()
-        except OSError, err:
+                                     universal_newlines=True,
+                                     stderr=PIPE).communicate()
+        except OSError as err:
             logging.error("OSError occured during zfs call: %s", err)
             return -1
 
@@ -499,8 +501,9 @@ def get_zpool_be_names(name):
             argslist = ["/usr/sbin/zfs", "list", "-t", "filesystem", "-d", "1",
                         "-H", "-o","name", "-r", prefix ]
             (zfsout, zfserr) = Popen(argslist, stdout=PIPE,
-                  stderr=PIPE).communicate()
-        except OSError, err:
+                                     universal_newlines=True,
+                                     stderr=PIPE).communicate()
+        except OSError as err:
             logging.error("OSError occured during zfs call: %s", err)
             return be_names
 

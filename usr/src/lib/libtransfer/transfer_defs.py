@@ -27,7 +27,7 @@
 import re
 import sys
 
-H_FILE = file('/usr/include/admin/transfermod.h', 'r').read()
+H_FILE = open('/usr/include/admin/transfermod.h', 'r').read()
 
 # Search transfermod.h for the #defines and place the name value
 # pairs into a dictionary.
