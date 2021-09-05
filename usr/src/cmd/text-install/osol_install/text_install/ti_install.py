@@ -658,8 +658,13 @@ def run_ICTs(install_profile, hostname, ict_mesg, locale,
 
     if install_profile.overwrite_boot_configuration:
         try:
-            exec_cmd(["/usr/sbin/bootadm", "install-bootloader", "-Mvf", "-R", INSTALLED_ROOT_DIR,
-                      "-P", rootpool_name], "execute bootadm install-bootloader")
+            # -M causes a crash on SPARC see bootadm.1
+            if platform.processor() == "i386":
+                exec_cmd(["/usr/sbin/bootadm", "install-bootloader", "-Mvf", "-R", INSTALLED_ROOT_DIR,
+                          "-P", rootpool_name], "execute bootadm install-bootloader")
+            else:
+                exec_cmd(["/usr/sbin/bootadm", "install-bootloader", "-vf", "-R", INSTALLED_ROOT_DIR,
+                          "-P", rootpool_name], "execute bootadm install-bootloader")
         except ti_utils.InstallationError:
             failed_icts += 1
 

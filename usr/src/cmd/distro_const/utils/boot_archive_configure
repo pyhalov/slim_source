@@ -51,6 +51,12 @@ create_sym_links()
         PKG_IMG_FILELIST=$1
         BOOT_ARCHIVE_FILELIST=$2
         MNT_PT=$3
+	cp -p ${PKG_IMG_FILELIST} ${PKG_IMG_FILELIST}.bck
+	sort -d ${BOOT_ARCHIVE_FILELIST} > /tmp/bootsort
+	sort -d ${PKG_IMG_FILELIST} > /tmp/imagesort
+	/usr/gnu/bin/diff -u /tmp/bootsort /tmp/imagesort | sed "/^+++/d" | \
+		grep "^+" | sed -e "s@^+@@g" > ${PKG_IMG_FILELIST}
+	rm /tmp/bootsort /tmp/imagesort
 
 	# Create a fresh empty list of processed files.
         PROC_FILELIST=${TMP_DIR}/plist
@@ -60,17 +66,6 @@ create_sym_links()
 	# Loop through all files in the package image area
         while read -r pi_file
         do
-		# Quote refs to pi_file as needed to accommodate filenames
-		# with spaces in them
-		#
-                # Skip this file if it has already been processed or it
-                # already exists in the boot archive
-                #
-                $GREP "^${pi_file}\$" ${PROC_FILELIST} > /dev/null
-                [ $? -eq 0 ] && continue
-                $GREP "^${pi_file}\$" ${BOOT_ARCHIVE_FILELIST} > /dev/null
-                [ $? -eq 0 ] && continue
-
 		#
 		# Create any missing directory path to the file and
 		# add it to the list of processed files/dirs.
@@ -91,6 +86,7 @@ create_sym_links()
 		# Add the file to the list of processed files/dirs.
                 echo "$pi_file" >> ${PROC_FILELIST}
         done < ${PKG_IMG_FILELIST}
+	mv ${PKG_IMG_FILELIST}.bck ${PKG_IMG_FILELIST}
 
 }
 

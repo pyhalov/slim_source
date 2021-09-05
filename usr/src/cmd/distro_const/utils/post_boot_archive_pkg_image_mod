@@ -148,7 +148,7 @@ cd $PKG_IMG_PATH
 
 # sbin, kernel and lib are all in the root archive
 print "Removing sbin, kernel and lib from package image area"
-rm -rf sbin kernel lib
+rm -rf sbin kernel lib tmp/tmp_*
 
 print "Generating usr filesystem image"
 if [ ! -d $PKG_IMG_PATH ] ; then

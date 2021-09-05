@@ -1864,7 +1864,7 @@ class ICT(object):
         _register_task(inspect.currentframe())
 
         if self.is_sparc:
-            return_status = self.set_partition_active_sparc()
+            return_status = 0
         else:
             return_status = self.set_partition_active_x86()
 

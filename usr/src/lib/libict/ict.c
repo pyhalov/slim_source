@@ -626,9 +626,16 @@ ict_installboot(char *target, char *poolname)
 		return (set_error(ICT_INVALID_ARG));
 	}
 
+/* using -M on SPARC results in error, man bootadm.1 */
+#ifdef	__sparc__
+	(void) snprintf(cmd, sizeof (cmd),
+	    "/usr/sbin/bootadm install-bootloader -vf -R %s -P %s",
+	    target, poolname);
+#else
 	(void) snprintf(cmd, sizeof (cmd),
 	    "/usr/sbin/bootadm install-bootloader -Mvf -R %s -P %s",
 	    target, poolname);
+#endif
 
 	ict_debug_print(ICT_DBGLVL_INFO, INSTALLBOOT_MSG, _this_func_);
 	ict_debug_print(ICT_DBGLVL_INFO, ICT_SAFE_SYSTEM_CMD, _this_func_, cmd);
