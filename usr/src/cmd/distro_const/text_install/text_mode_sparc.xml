@@ -440,7 +440,6 @@
 			<base_include type="file" fiocompress="false">etc/path_to_inst</base_include>
 			<base_include type="file" fiocompress="false">etc/default/init</base_include>
 			<base_include type="file" fiocompress="false">etc/nsswitch.conf</base_include>
-			<base_include type="file" fiocompress="false">etc/certs/CA/NetLock_Arany_(Class_Gold)_Fotanusitvany.pem</base_include>
 		</boot_archive_contents>
 	</img_params>
 	<key_value_pairs/>
