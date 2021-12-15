@@ -173,12 +173,12 @@
 		<!--
 		     The preferred authority to install packages into the
 		     pkg_image area from.
-		     The default url is: http://pkg.openindiana.org/dev
+		     The default url is: https://pkg.openindiana.aurora-opencloud.org/oi-sparc/
 		     The default authname is openindiana.org
 		-->
 		<pkg_repo_default_authority>
 			<main
-				url="http://pkg.openindiana.org/dev"
+				url="https://pkg.openindiana.aurora-opencloud.org/oi-sparc/"
 				authname="openindiana.org"/>
 			<!--
 			     If you want to use one or more  mirrors that are
@@ -208,14 +208,14 @@
 		<!--
 		     The default preferred authority to be used by the system
 		     after it has been installed.
-		     The default url is: http://pkg.openindiana.org/dev
+		     The default url is: https://pkg.openindiana.aurora-opencloud.org/oi-sparc/
 		     The default authname is openindiana.org
 		     If you want to use one or more  mirrors that are
 		     setup for the authority, specify the urls here.
 		-->
 		<post_install_repo_default_authority>
 			<main
-				url="http://pkg.openindiana.org/dev"
+				url="https://pkg.openindiana.aurora-opencloud.org/oi-sparc/"
 				authname="openindiana.org"/>
 			<!--
 			     Uncomment before using.
@@ -440,6 +440,7 @@
 			<base_include type="file" fiocompress="false">etc/path_to_inst</base_include>
 			<base_include type="file" fiocompress="false">etc/default/init</base_include>
 			<base_include type="file" fiocompress="false">etc/nsswitch.conf</base_include>
+			<base_include type="file" fiocompress="false">etc/certs/CA/NetLock_Arany_(Class_Gold)_Főtanúsítvány.pem</base_include>
 		</boot_archive_contents>
 	</img_params>
 	<key_value_pairs/>
