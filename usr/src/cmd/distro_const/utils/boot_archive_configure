@@ -165,6 +165,7 @@ TOUCH=/usr/bin/touch
 TR=/usr/bin/tr
 SED=/usr/bin/sed
 SVCCFG_CMD=$PKG_IMG_PATH/usr/sbin/svccfg
+MV=/usr/bin/mv
 
 # These commands are not delivered with the core OS.
 MANIFEST_READ=/usr/bin/ManifestRead
@@ -251,6 +252,13 @@ if [ "$?" != "0" ] ; then
 fi
 cp $TMP_DIR/hosts.mod $BA_BUILD/etc/inet/hosts
 rm $TMP_DIR/hosts.mod
+
+# Move varpd out of the manifest search path to exclude it
+# This has become necessary as varpd and live media SMF manifests
+# have a completely different view on the dependency tree of the OS.
+# One assumes Filesystems and network are ordered the other handles them as
+# concurrent. Leading to a complex loop.
+$MV ${BA_BUILD}/lib/svc/manifest/network/varpd.xml ${BA_BUILD}/lib
 
 print "Preloading SMF repository..."
 
@@ -354,5 +362,7 @@ $FIND * > ${TMP_DIR}/boot_archive_filelist
 # /mnt/misc will contain pkg_image area /etc and /var contents
 (cd $PKG_IMG_PATH; $FIND etc var) > ${TMP_DIR}/mlst
 create_sym_links ${TMP_DIR}/mlst  ${TMP_DIR}/boot_archive_filelist "/mnt/misc"
+
+$MV ${BA_BUILD}/lib/varpd.xml ${BA_BUILD}/lib/svc/manifest/network/
 
 exit 0
